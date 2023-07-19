@@ -14,36 +14,162 @@ use WWW::PaLM::GenerateText;
 use WWW::PaLM::GenerateMessage;
 
 use LLM::Functions::Configuration;
+use LLM::Functions::Evaluator;
 
 unit module LLM::Functions;
 
 #===========================================================
+# LLM configuration
+#===========================================================
+
 #| LLM configuration creation and retrieval.
 our proto llm-configuration(|) is export {*}
 
-multi sub llm-configuration(Str $spec) {
-   given $spec.lc {
-       when 'openai' {
-           my $obj =
-                   LLM::Functions::Configuration .= new(
-                   name => 'openai',
-                   module => 'WWW::OpenAI',
-                   model => 'text-davinci-003',
-                   evaluator => &OpenAITextCompletion,
-                   temperature => 0.8,
-                   totalProbabilityCutoff => 0.03,
-                   prompts => Empty,
-                   promptDelimiter => ' ');
+multi sub llm-configuration($spec) {
+    return do given $spec {
+        when Whatever {
+            llm-configuration('openai')
+        }
 
-           $obj
-       }
-   }
+        when $_ ~~ Str && $_.lc eq 'openai' {
+
+            LLM::Functions::Configuration.new(
+                    name => 'openai',
+                    api-key => Whatever,
+                    api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
+                    module => 'WWW::OpenAI',
+                    model => 'text-davinci-003',
+                    function => &OpenAITextCompletion,
+                    temperature => 0.8,
+                    max-tokens => 300,
+                    total-probability-cutoff => 0.03,
+                    prompts => Empty,
+                    prompt-delimiter => ' ',
+                    argument-renames => %( 'api-key' => 'auth-key'),
+                    format => 'values');
+        }
+
+        when $_ ~~ Str && $_.lc eq 'chatgpt' {
+
+            my $obj =  llm-configuration('openai');
+
+            $obj.function = &OpenAIChatCompletion;
+            $obj.model = 'gpt-3.5-turbo';
+            $obj.evaluator = LLM::Functions::ChatEvaluator.new(conf => $obj);
+
+            $obj;
+        }
+
+        when $_ ~~ Str && $_.lc eq 'palm' {
+
+            LLM::Functions::Configuration.new(
+                    name => 'palm',
+                    api-key => Whatever,
+                    api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
+                    module => 'WWW::PaLM',
+                    model => 'text-bison-001',
+                    function => &PaLMGenerateText,
+                    temperature => 0.4,
+                    max-tokens => 300,
+                    total-probability-cutoff => 0.03,
+                    prompts => Empty,
+                    prompt-delimiter => ' ',
+                    argument-renames => %( 'api-key' => 'auth-key', 'max-tokens' => 'max-output-tokens'),
+                    format => 'values');
+        }
+
+        default {
+            llm-configuration('openai')
+        }
+    }
 }
 
+
 #===========================================================
+# Get LLM evaluator
+#===========================================================
+
+sub get-llm-evaluator($llm-evaluator is copy) {
+
+    $llm-evaluator = do given $llm-evaluator {
+
+        when Whatever {
+            LLM::Functions::Evaluator.new(conf => llm-configuration('openai'));
+        }
+
+        when WhateverCode {
+            LLM::Functions::Evaluator.new(conf => llm-configuration('openai'));
+        }
+
+        when $_ ~~ Str {
+            get-llm-evaluator(llm-configuration($_));
+        }
+
+        when $_ ~~ LLM::Functions::Configuration {
+
+            my $conf = $_;
+
+            if $conf.evaluator.isa(Whatever) {
+
+                LLM::Functions::Evaluator.new(:$conf);
+
+            } else {
+
+                die 'The configuration attribute .evaluator is expected to be of type if LLM::Functions::Evaluator or Whatever.'
+                unless $conf.evaluator ~~ LLM::Functions::Evaluator;
+
+                $conf.evaluator.conf = $conf;
+
+                $conf.evaluator
+            }
+        }
+    }
+
+    die 'The argument \$llm-evaluator is expected to be of type if LLM::Functions::Evaluator or Whatever.'
+    unless $llm-evaluator ~~ LLM::Functions::Evaluator;
+
+    return $llm-evaluator;
+}
+
+
+#===========================================================
+# LLM Function
+#===========================================================
+
+#-----------------------------------------------------------
 #| Represents a template for a large language model(LLM) prompt.
 our proto llm-function(|) is export {*}
 
-multi sub llm-functionl(Str $prompt, llm-evaluator => WhateverCode) {
+# No positional args
+multi sub llm-function(:$llm-evaluator is copy = Whatever) {
+    return llm-function('', :$llm-evaluator);
+}
 
+# Using a string
+multi sub llm-function(Str $prompt,
+                       :$llm-evaluator is copy = Whatever) {
+
+    $llm-evaluator = get-llm-evaluator($llm-evaluator);
+
+    $llm-evaluator.conf.prompts.append($prompt);
+
+    return -> $text, *%args { $llm-evaluator.eval($text, |%args) };
+}
+
+# Using a function
+multi sub llm-function(&queryFunc,
+                       :$llm-evaluator is copy = Whatever) {
+
+    $llm-evaluator = get-llm-evaluator($llm-evaluator);
+
+    # Find known parameters
+    my @queryFuncParamNames = &queryFunc.signature.params.map({ $_.usage-name });
+
+    return -> *@args, *%args {
+        my %args2 = %args.grep({ $_.key ∉ <prompts> && $_.key ∈ @queryFuncParamNames }).Hash;
+        my $prompt = &queryFunc(|@args, |%args2);
+        my $text = $llm-evaluator.conf.prompts.append($prompt);
+        my %args3 = %args.grep({ $_.key ∉ <prompts> && $_.key ∉ @queryFuncParamNames }).Hash;
+        $llm-evaluator.eval($text, |%args3)
+    };
 }
