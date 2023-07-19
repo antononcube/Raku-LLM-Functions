@@ -11,8 +11,13 @@ class LLM::Functions::Evaluator {
         return [$prompt, |@texts].join($.conf.prompt-delimiter);
     }
 
-    multi method eval($text, *%args) {
-        return self.eval([$text,], |%args);
+    multi method eval(Str $text, *%args) {
+        my $res = self.eval([$text,], |%args);
+        return do if $res ~~ Iterable && $res.elems == 1 {
+            $res.head;
+        } else {
+            $res;
+        }
     }
 
     multi method eval(@texts, *%args) {
