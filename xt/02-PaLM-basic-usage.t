@@ -15,17 +15,23 @@ ok llm-configuration('palm');
 
 ## 2
 my $prompt2 = "Make a recipe for the given phrase.";
-ok ($prompt2 ==> llm-function(llm-evaluator => llm-configuration('palm') ))("greek salad");
+ok llm-function($prompt2, llm-evaluator => llm-configuration('palm'))("greek salad");
 
 ## 3
-ok ($prompt2 ==> llm-function(llm-evaluator => 'palm'))("greek salad");
-
-## 3
-my &prompt3 = {"How many $^a can fit inside one $^b?"};
-ok (&prompt3 ==> llm-function(llm-evaluator => 'palm'))(['basket balls', 'toyota corolla 2010']);
+isa-ok llm-function($prompt2, llm-evaluator => 'palm')("greek salad"),
+        Str,
+        'greek salad';
 
 ## 4
-my &prompt4 = -> :$dish, :$cuisine {"Given a recipe for $dish in the $cuisine cuisine."}
-ok (&prompt4 ==> llm-function(llm-evaluator => 'palm'))(dish => 'salad', cuisine => 'Russion', max-tokens => 300);
+my &prompt3 = { "How many $^a can fit inside one $^b?" };
+is llm-function(&prompt3, llm-evaluator => 'palm')(['basket balls', 'toyota corolla 2010']).all ~~ Str,
+        True,
+        'basket balls in toyota corolla 2010';
+
+## 5
+my &prompt4 = -> :$dish, :$cuisine { "Given a recipe for $dish in the $cuisine cuisine." }
+is llm-function(&prompt4, llm-evaluator => 'palm')(dish => 'salad', cuisine => 'Russion', max-tokens => 300).all ~~ Str,
+        True,
+        'recipe';
 
 done-testing;
