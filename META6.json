@@ -15,7 +15,8 @@
   "test-depends": [],
   "provides": {
     "LLM::Functions": "lib/LLM/Functions.rakumod",
-    "LLM::Functions::Configuration": "lib/LLM/Functions/Configuration.rakumod"
+    "LLM::Functions::Configuration": "lib/LLM/Functions/Configuration.rakumod",
+    "LLM::Functions::Evaluator": "lib/LLM/Functions/Evaluator.rakumod"
   },
   "resources": [
     "prompts/LAN-GPT.txt",
