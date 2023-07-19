@@ -1,0 +1,45 @@
+{
+  "name": "LLM::Functions",
+  "description": "LLM::Functions provides functions and function objects to access, interact, and utilize LLMs",
+  "version": "0.1.0",
+  "perl": "6.*",
+  "authors": [
+    "Anton Antonov"
+  ],
+  "auth": "zef:antononcube",
+  "depends": [
+    "HTTP::Tiny:ver<0.2.5+>",
+    "JSON::Fast:ver<0.17+>"
+  ],
+  "build-depends": [],
+  "test-depends": [],
+  "provides": {
+    "LLM::Functions": "lib/LLM/Functions.rakumod",
+    "LLM::Functions::Configuration": "lib/LLM/Functions/Configuration.rakumod"
+  },
+  "resources": [
+    "prompts/LAN-GPT.txt",
+    "prompts/Mind-Map.txt",
+    "prompts/Code-Writer.txt"
+  ],
+  "license": "Artistic-2.0",
+  "tags": [
+    "ai",
+    "api",
+    "art",
+    "censorship",
+    "chat-gpt",
+    "chatgpt",
+    "generative art",
+    "generative",
+    "moderation",
+    "censorship",
+    "openai",
+    "transcription",
+    "translation",
+    "web service",
+    "web"
+  ],
+  "api": "1",
+  "source-url": "https://github.com/antononcube/Raku-LLM-Functions"
+}
