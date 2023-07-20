@@ -11,7 +11,7 @@ with ChatGPT (OpenAI) and PaLM via the package
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and 
 ["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3]. 
-Other LLM access packages can utilizes via appropriate LLM configurations. 
+Other LLM access packages can utilized via appropriate LLM configurations. 
 
 **Remark:** In
 ["WWW::OpeAI"](https://raku.land/zef:antononcube/WWW::OpenAI)
