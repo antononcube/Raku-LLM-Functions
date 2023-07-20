@@ -139,6 +139,7 @@ Answer the questions appropriate for computer programming processings.
 Answer the questions concisely.
 DO NOT use the word "and" as list separator. Separate list elements with commas.
 DO NOT number the list or the items of the list.
+Give preference to numeric results, and Yes/No results.
 Try to put the question-answer pairs in GitHub Markdown table.
 END
 ```
@@ -146,17 +147,19 @@ END
 Here we make a special configuration with the prompt above:
 
 ```perl6
-my $conf = llm-configuration('ChatGPT');
-$conf.prompts = [$preFTA,];
+my $conf = llm-configuration('ChatGPT', prompts => [$preFTA,]);
 ```
 
-Here we create an LLM-function that use function-prompt:
+Here we create a LLM-function that uses a function-prompt:
 
 ```perl6
 my &gptFTA = llm-function( -> $cmd, @qs { "Given the text: $cmd, answer the questions {@qs.join(' ')}." }, llm-evaluator => $conf);
 ```
 
-Here is a computational workflow command:
+**Remark:** At this point the function `&gptFTA` has the "chat-global" LLM prompt `$preFTA` 
+and gives the LLM messages based on a template takes a command (`$cmd`) and an array of questions (`@qs`.)
+
+Here is a computational workflow specification:
 
 ```perl6
 my $command = 'Make a classifier with the method RandomForest over the data dfTitanic; show recall, precision and accuracy; split the data with ratio 0.73';
@@ -170,7 +173,8 @@ my @questions =
          'What is the method?',
          'Which metrics to show?',
          'What is the splitting ratio?',
-         'How to split the data?'
+         'How to split the data?',
+         'Are ROC metrics specified?'   
         ];
 ```
 

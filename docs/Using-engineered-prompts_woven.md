@@ -9,8 +9,8 @@ with ChatGPT (OpenAI) and PaLM via the package
 
 **Remark:** "Out of the box" 
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
-["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), and 
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM). 
+["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and 
+["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3]. 
 Other LLM access packages can utilizes via appropriate LLM configurations. 
 
 **Remark:** In
@@ -42,23 +42,23 @@ Here is the ChatGPT configuration:
 ```
 ```
 # format => values
-# prompts => []
+# name => openai
 # model => gpt-3.5-turbo
-# api-key => (Whatever)
-# api-user-id => user:982153772954
-# evaluator => (my \LLM::Functions::ChatEvaluator_2343833148880 = LLM::Functions::ChatEvaluator.new(conf => LLM::Functions::Configuration.new(name => "openai", api-key => Whatever, api-user-id => "user:982153772954", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", stop-tokens => [".", "?", "!"], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_2343833148880)))
+# tool-response-insertion-function => (WhateverCode)
 # stop-tokens => [. ? !]
 # module => WWW::OpenAI
-# tool-response-insertion-function => (WhateverCode)
+# api-key => (Whatever)
 # tools => []
+# api-user-id => user:143318792976
+# function => &OpenAIChatCompletion
+# total-probability-cutoff => 0.03
+# max-tokens => 300
+# prompts => []
 # tool-prompt => 
 # prompt-delimiter =>  
-# tool-request-parser => (WhateverCode)
-# function => &OpenAIChatCompletion
-# max-tokens => 300
-# total-probability-cutoff => 0.03
 # temperature => 0.8
-# name => openai
+# tool-request-parser => (WhateverCode)
+# evaluator => (my \LLM::Functions::ChatEvaluator_4958840084504 = LLM::Functions::ChatEvaluator.new(conf => LLM::Functions::Configuration.new(name => "openai", api-key => Whatever, api-user-id => "user:143318792976", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", stop-tokens => [".", "?", "!"], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_4958840084504)))
 ```
 
 ### PaLM
@@ -69,24 +69,24 @@ Here is the PaLM configuration
 .say for llm-configuration('PaLM').Hash;
 ```
 ```
-# temperature => 0.4
+# evaluator => (Whatever)
+# api-key => (Whatever)
+# tool-response-insertion-function => (WhateverCode)
+# name => palm
+# tool-prompt => 
 # prompt-delimiter =>  
-# tool-request-parser => (WhateverCode)
+# format => values
+# api-user-id => user:892002494573
+# prompts => []
 # function => &PaLMGenerateText
 # stop-tokens => [. ? !]
-# format => values
-# total-probability-cutoff => 0
-# name => palm
-# tools => []
-# tool-prompt => 
-# prompts => []
-# evaluator => (Whatever)
-# tool-response-insertion-function => (WhateverCode)
-# max-tokens => 300
+# temperature => 0.4
 # model => text-bison-001
-# api-key => (Whatever)
-# api-user-id => user:891995850896
 # module => WWW::PaLM
+# max-tokens => 300
+# total-probability-cutoff => 0
+# tool-request-parser => (WhateverCode)
+# tools => []
 ```
 
 
@@ -124,7 +124,7 @@ Here we create a Chat-GPT-based LLM-function to do "emojification" with:
 my &gptEmojify = llm-function($preEmojify, llm-evaluator => 'ChatGPT'); 
 ```
 ```
-# -> $text, *%args { #`(Block|2343849086120) ... }
+# -> $text, *%args { #`(Block|4958840391520) ... }
 ```
 
 Here is an example of chat completion with emojification:
@@ -133,7 +133,7 @@ Here is an example of chat completion with emojification:
 gptEmojify('Python sucks, Raku rocks, and Perl is annoying');
 ```
 ```
-# 🐍 Python 🤬, Raku 🤘, and Perl 😡
+# 🐍 Python 🙅‍♂️, Raku 🤘, and Perl 😒
 ```
 
 Here we create PaLM-based LLM-function:
@@ -142,7 +142,7 @@ Here we create PaLM-based LLM-function:
 my &palmEmojify = llm-function($preEmojify, llm-evaluator => 'PaLM'); 
 ```
 ```
-# -> $text, *%args { #`(Block|2343882376984) ... }
+# -> $text, *%args { #`(Block|4958878361784) ... }
 ```
 
 Here is an invocation over the same text:
@@ -151,7 +151,7 @@ Here is an invocation over the same text:
 palmEmojify('Python sucks, Raku rocks, and Perl is annoying');
 ```
 ```
-# 🐍 👎 , 🦀 👍 , 🐍 🙄
+# 🐍 👎, 🦀 👍, 🐍 😒
 ```
 
 ---------
@@ -196,27 +196,27 @@ for @descriptions -> $d {
 # ================================================================================
 # Raku SDK for Resend
 # --------------------------------------------------------------------------------
-# There once was a SDK called Raku,
-# To resend messages, it knew what to do.
-# With its code so neat,
-# It made messages repeat,
-# Ensuring they reached their destination, true!
+# There once was a coder named Fred,
+# Who needed an SDK to embed.
+# With Raku in hand,
+# He could easily command,
+# And his code was a masterpiece, widespread.
 # ================================================================================
 # A module that allows true inline use of Brainfuck code
 # --------------------------------------------------------------------------------
-# There once was a module so fine,
-# That let Brainfuck code intertwine.
-# With each line of code,
-# It would cleverly decode,
-# Inline use, a feat so divine.
+# There once was a module, quite neat,
+# For Brainfuck it offered a treat.
+# Inline use was its aim,
+# With rhyme scheme to claim,
+# Coding tricks in a limerick, sweet!
 # ================================================================================
 # ML::FindTextualAnswer provides function(s) for finding sub-strings in given text that appear to answer given questions.
 # --------------------------------------------------------------------------------
-# There once was a function so fine,
-# To find answers in text, it'd shine.
-# ML::FindTextualAnswer,
-# Helps queries uncover,
-# Sub-strings that fit questions, it's prime!
+# When searching for text that's been sought,
+# ML::FindTextualAnswer's been brought.
+# With functions precise,
+# It finds answers nice,
+# To questions, it's surely a thought.
 ```
 
 -------
@@ -232,6 +232,7 @@ Answer the questions appropriate for computer programming processings.
 Answer the questions concisely.
 DO NOT use the word "and" as list separator. Separate list elements with commas.
 DO NOT number the list or the items of the list.
+Give preference to numeric results, and Yes/No results.
 Try to put the question-answer pairs in GitHub Markdown table.
 END
 ```
@@ -241,35 +242,39 @@ END
 # Answer the questions concisely.
 # DO NOT use the word "and" as list separator. Separate list elements with commas.
 # DO NOT number the list or the items of the list.
+# Give preference to numeric results, and Yes/No results.
 # Try to put the question-answer pairs in GitHub Markdown table.
 ```
 
 Here we make a special configuration with the prompt above:
 
 ```perl6
-my $conf = llm-configuration('ChatGPT');
-$conf.prompts = [$preFTA,];
+my $conf = llm-configuration('ChatGPT', prompts => [$preFTA,]);
 ```
 ```
-# [The following text describes elements of a computational workflow.
+# prompts	The following text describes elements of a computational workflow.
 # Answer the questions appropriate for computer programming processings.
 # Answer the questions concisely.
 # DO NOT use the word "and" as list separator. Separate list elements with commas.
 # DO NOT number the list or the items of the list.
+# Give preference to numeric results, and Yes/No results.
 # Try to put the question-answer pairs in GitHub Markdown table.
-# ]
+#  format	values tool-prompt	 tool-request-parser	WhateverCode function	OpenAIChatCompletion api-user-id	user:403821603985 total-probability-cutoff	0.03 model	gpt-3.5-turbo name	openai evaluator	LLM::Functions::ChatEvaluator<4958945034416> api-key	Whatever temperature	0.8 tools	 max-tokens	300 module	WWW::OpenAI prompt-delimiter	  tool-response-insertion-function	WhateverCode stop-tokens	. ? !
 ```
 
-Here we create an LLM-function that use function-prompt:
+Here we create a LLM-function that uses a function-prompt:
 
 ```perl6
 my &gptFTA = llm-function( -> $cmd, @qs { "Given the text: $cmd, answer the questions {@qs.join(' ')}." }, llm-evaluator => $conf);
 ```
 ```
-# -> **@args, *%args { #`(Block|2343946998576) ... }
+# -> **@args, *%args { #`(Block|4958866010344) ... }
 ```
 
-Here is a computational workflow command:
+**Remark:** At this point the function `&gptFTA` has the "chat-global" LLM prompt `$preFTA` 
+and gives the LLM messages based on a template takes a command (`$cmd`) and an array of questions (`@qs`.)
+
+Here is a computational workflow specification:
 
 ```perl6
 my $command = 'Make a classifier with the method RandomForest over the data dfTitanic; show recall, precision and accuracy; split the data with ratio 0.73';
@@ -286,11 +291,12 @@ my @questions =
          'What is the method?',
          'Which metrics to show?',
          'What is the splitting ratio?',
-         'How to split the data?'
+         'How to split the data?',
+         'Are ROC metrics specified?'   
         ];
 ```
 ```
-# [What is the dataset? What is the method? Which metrics to show? What is the splitting ratio? How to split the data?]
+# [What is the dataset? What is the method? Which metrics to show? What is the splitting ratio? How to split the data? Are ROC metrics specified?]
 ```
 
 Here we find the answers of the questions:
@@ -304,17 +310,18 @@ Here we find the answers of the questions:
 | What is the method? | RandomForest |
 | Which metrics to show? | Recall, Precision, Accuracy |
 | What is the splitting ratio? | 0.73 |
-| How to split the data? | Split the data using the given ratio |
+| How to split the data? | Not specified |
+| Are ROC metrics specified? | No |
+
 
 **Remark:** The code cell above has the parameter `results=asis` which instructs
-the CLI program `file-code-chunks-eval` of the package
-["Text::CodeProcessing"](https://raku.land/zef:antononcube/Text::CodeProcessing), [AAp4],
-to place the LLM result without changes.
+the CLI program `file-code-chunks-eval` of the package 
+["Text::CodeProcessing"](https://raku.land/zef:antononcube/Text::CodeProcessing), [AAp4], 
+to place the LLM result without changes. 
 
-**Remark:** If the result adheres to conventions of GitHub's Markdown table specifications,
-then GitHub (and IDEs like IntelliJ) would render the table.
+**Remark:** If the result adheres to conventions of GitHub's Markdown table specifications, 
+then GitHub (and IDEs like IntelliJ) would render the table. 
 The result adherence is "very likely" -- see the last line of the prompt.
-
 
 -------
 
