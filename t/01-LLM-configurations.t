@@ -3,7 +3,6 @@ use v6.d;
 use lib '.';
 use lib './lib';
 
-use WWW::OpenAI;
 use LLM::Functions;
 
 use Test;
@@ -27,5 +26,12 @@ ok llm-configuration('openai', prompts => [$pre3, ]);
 is-deeply
         llm-configuration('PaLM').Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
         llm-configuration('palm').Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
+
+## 6
+my $conf6 = llm-configuration('openai', prompts => [$pre3, ]);
+isa-ok $conf6.prompts, Positional;
+
+## 7
+is-deeply $conf6.prompts, [$pre3,];
 
 done-testing;
