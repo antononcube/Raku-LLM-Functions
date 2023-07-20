@@ -153,7 +153,7 @@ $conf.prompts = [$preFTA,];
 Here we create an LLM-function that use function-prompt:
 
 ```perl6
-my &gptFTA = llm-function( -> $cmd, $qs { "Given the text: $cmd, answer the questions $qs." }, llm-evaluator => $conf);
+my &gptFTA = llm-function( -> $cmd, @qs { "Given the text: $cmd, answer the questions {@qs.join(' ')}." }, llm-evaluator => $conf);
 ```
 
 Here is a computational workflow command:
@@ -177,7 +177,7 @@ my @questions =
 Here we find the answers of the questions:
 
 ```perl6, results=asis
-&gptFTA($command, @questions.join("\n"));
+&gptFTA($command, @questions);
 ```
 
 -------
