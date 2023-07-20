@@ -1,7 +1,7 @@
 use v6.d;
 
 use JSON::Fast;
-use HTTP::Tiny;
+use Hash::Merge;
 
 use WWW::OpenAI;
 use WWW::OpenAI::Models;
@@ -92,15 +92,34 @@ multi sub llm-configuration($spec, *%args) {
 
 multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
 
+    # Make the corresponding configuration hash and modify it
     my %newConf = $conf.Hash;
 
-    for %args.kv -> $k, $v {
-        if %newConf{$k}:exists {
-            %newConf{$k} = $v;
-        }
+    # Nice and concise but does not work because Raku containerizes the array(s)
+    %newConf = merge-hash(%newConf, %args);
+
+    # Create object
+    my $newConf = LLM::Functions::Configuration.new(|%newConf);
+
+    # I do not why I should be doing those assignments.
+    # At this point if, say, 'prompts' is in %args then
+    # $newConf has it containerized in an array, e.g. [$(...),]
+    # Maybe these explanations for Perl apply : https://www.perlmonks.org/?node_id=347308
+
+    if %args<prompts>:exists {
+        $newConf.prompts = %args<prompts>;
     }
 
-    return LLM::Functions::Configuration.new(|%newConf);
+    if %args<tools>:exists {
+        $newConf.tools = %args<tools>;
+    }
+
+    if %args<stop-tokens>:exists {
+        $newConf.stop-tokens = %args<stop-tokens>;
+    }
+
+    # Result
+    return $newConf;
 }
 
 
