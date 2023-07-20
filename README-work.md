@@ -1,9 +1,10 @@
-# Raku-LLM-Functions
+# LLM::Functions 
 
 ## In brief
 
-Raku package provides functions and function objects to access, interact, and utilize LLMs,
-like [OpenAI](https://platform.openai.com), [OAI1], and 
+Thi Raku package provides functions and function objects to access, interact, and utilize 
+Large Language Mondels (LLMs), like 
+[OpenAI](https://platform.openai.com), [OAI1], and 
 [PaLM](https://developers.generativeai.google/products/palm), [ZG1].
 
 For more details how the concrete LLMs are accessed see the packages
@@ -37,7 +38,7 @@ zef install https://github.com/antononcube/Raku-LLM-Functions.git
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
 ["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
-Other LLM access packages can utilizes via appropriate LLM configurations.
+Other LLM access packages can utilized via appropriate LLM configurations.
 
 The configurations are instances of the class `LLM::Functions::Configuration`.
 The configurations are used by instances of the class `LLM::Functions::Evaluator`.
@@ -46,8 +47,8 @@ New LLM functions are constructed with the function `llm-function`.
 
 The function `llm-function`:
 
-- Has the option "llm-evaluator" that takes evaluators or configurations as values
-- Returns anonymous functions (that access LLMs via evaluators/configurations)
+- Has the option "llm-evaluator" that takes evaluators, configurations, or string shorthands as values
+- Returns anonymous functions (that access LLMs via evaluators/configurations.)
 - Gives result functions that can be applied to different types of arguments depending on the first argument
 - Takes as a first argument a prompt that can be a:
     - String
@@ -55,30 +56,86 @@ The function `llm-function`:
     - Function with named arguments
 
 
+Here is a sequence diagram that corresponds to typical creation procedure of LLM configuration and evaluator objects,
+and corresponding LLM-functions are created:
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant llmfunc as llm-function
+  participant llmconf as llm-configuration
+  participant LLMConf as LLM configuration
+  participant LLMEval as LLM evaluator
+  participant AnonFunc as Anonymous function
+  User ->> llmfunc: prompt<br>conf spec
+  llmfunc ->> llmconf: conf spec
+  llmconf ->> LLMConf: conf spec
+  LLMConf ->> LLMEval: wrap with
+  LLMEval ->> llmfunc: evaluator object
+  llmfunc ->> AnonFunc: create with<br>evaluator object
+  AnonFunc ->> llmfunc: handle
+  llmfunc ->> User: handle
+```
+
+Here is a sequence diagram for making a LLM configuration with a global (engineered) prompt,
+and using that configuration to complete a chat message:
+
+```mermaid
+sequenceDiagram
+  participant WWWOpenAI as WWW::OpenAI
+  participant User
+  participant llmfunc as llm-function
+  participant llmconf as llm-configuration
+  participant LLMConf as LLM configuration
+  participant LLMChatEval as LLM chat evaluator
+  participant AnonFunc as Anonymous function
+  User ->> llmconf: engineered prompt
+  llmconf ->> User: configuration object
+  User ->> llmfunc: prompt<br>configuration object
+  llmfunc ->> LLMChatEval: configuration object
+  LLMChatEval ->> llmfunc: evaluator object
+  llmfunc ->> AnonFunc: create with<br>evaluator object
+  AnonFunc ->> llmfunc: handle
+  llmfunc ->> User: handle
+  User ->> AnonFunc: invoke with<br>message argument
+  AnonFunc ->> WWWOpenAI: engineered prompt<br>message
+  WWWOpenAI ->> User: LLM response 
+```
+
 ------
 
-## Basic usage examples
+## Configurations
 
-### Configurations
+### OpenAI-based
 
-Here is a default configuration:
+Here is a default, OpenAI-based configuration:
 
 ```perl6
 use LLM::Functions;
 .raku.say for llm-configuration(Whatever).Hash;
 ```
 
-Here is the ChatGPT configuration:
+Here is the ChatGPT-based configuration:
 
 ```perl6
 .say for llm-configuration('ChatGPT').Hash;
 ```
+
+**Remark:** Both the "OpenAI" and "ChatGPT" configuration use the "WWW::OpenAI" package.
+The "OpenAI" configuration is for text-completions;
+the "ChatGPT" configuration is for chat-completions. 
+
+### PaLM-based
 
 Here is the PaLM configuration
 
 ```perl6
 .say for llm-configuration('PaLM').Hash;
 ```
+
+-----
+
+## Basic usage of LLM functions
 
 ### Textual prompts
 
