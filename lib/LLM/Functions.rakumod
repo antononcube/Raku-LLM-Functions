@@ -25,63 +25,82 @@ unit module LLM::Functions;
 #| LLM configuration creation and retrieval.
 our proto llm-configuration(|) is export {*}
 
-multi sub llm-configuration($spec) {
-    return do given $spec {
-        when Whatever {
-            llm-configuration('openai')
-        }
+multi sub llm-configuration($spec, *%args) {
+    my $resObj =
+            do given $spec {
+                when Whatever {
+                    llm-configuration('openai')
+                }
 
-        when $_ ~~ Str && $_.lc eq 'openai' {
+                when $_ ~~ Str && $_.lc eq 'openai' {
 
-            LLM::Functions::Configuration.new(
-                    name => 'openai',
-                    api-key => Whatever,
-                    api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
-                    module => 'WWW::OpenAI',
-                    model => 'text-davinci-003',
-                    function => &OpenAITextCompletion,
-                    temperature => 0.8,
-                    max-tokens => 300,
-                    total-probability-cutoff => 0.03,
-                    prompts => Empty,
-                    prompt-delimiter => ' ',
-                    argument-renames => %( 'api-key' => 'auth-key'),
-                    format => 'values');
-        }
+                    LLM::Functions::Configuration.new(
+                            name => 'openai',
+                            api-key => Whatever,
+                            api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
+                            module => 'WWW::OpenAI',
+                            model => 'text-davinci-003',
+                            function => &OpenAITextCompletion,
+                            temperature => 0.8,
+                            max-tokens => 300,
+                            total-probability-cutoff => 0.03,
+                            prompts => Empty,
+                            prompt-delimiter => ' ',
+                            argument-renames => %( 'api-key' => 'auth-key'),
+                            format => 'values');
+                }
 
-        when $_ ~~ Str && $_.lc eq 'chatgpt' {
+                when $_ ~~ Str && $_.lc eq 'chatgpt' {
 
-            my $obj =  llm-configuration('openai');
+                    my $obj = llm-configuration('openai');
 
-            $obj.function = &OpenAIChatCompletion;
-            $obj.model = 'gpt-3.5-turbo';
-            $obj.evaluator = LLM::Functions::ChatEvaluator.new(conf => $obj);
+                    $obj.function = &OpenAIChatCompletion;
+                    $obj.model = 'gpt-3.5-turbo';
+                    $obj.evaluator = LLM::Functions::ChatEvaluator.new(conf => $obj);
 
-            $obj;
-        }
+                    $obj;
+                }
 
-        when $_ ~~ Str && $_.lc eq 'palm' {
+                when $_ ~~ Str && $_.lc eq 'palm' {
 
-            LLM::Functions::Configuration.new(
-                    name => 'palm',
-                    api-key => Whatever,
-                    api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
-                    module => 'WWW::PaLM',
-                    model => 'text-bison-001',
-                    function => &PaLMGenerateText,
-                    temperature => 0.4,
-                    max-tokens => 300,
-                    total-probability-cutoff => 0,
-                    prompts => Empty,
-                    prompt-delimiter => ' ',
-                    argument-renames => %( 'api-key' => 'auth-key', 'max-tokens' => 'max-output-tokens'),
-                    format => 'values');
-        }
+                    LLM::Functions::Configuration.new(
+                            name => 'palm',
+                            api-key => Whatever,
+                            api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
+                            module => 'WWW::PaLM',
+                            model => 'text-bison-001',
+                            function => &PaLMGenerateText,
+                            temperature => 0.4,
+                            max-tokens => 300,
+                            total-probability-cutoff => 0,
+                            prompts => Empty,
+                            prompt-delimiter => ' ',
+                            argument-renames => %( 'api-key' => 'auth-key', 'max-tokens' => 'max-output-tokens'),
+                            format => 'values');
+                }
 
-        default {
-            llm-configuration('openai')
+                default {
+                    llm-configuration('openai')
+                }
+            }
+
+    if %args {
+        return llm-configuration($resObj, |%args);
+    }
+    return $resObj;
+}
+
+multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
+
+    my %newConf = $conf.Hash;
+
+    for %args.kv -> $k, $v {
+        if %newConf{$k}:exists {
+            %newConf{$k} = $v;
         }
     }
+
+    return LLM::Functions::Configuration.new(|%newConf);
 }
 
 
