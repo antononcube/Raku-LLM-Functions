@@ -306,6 +306,15 @@ Here we find the answers of the questions:
 | What is the splitting ratio? | 0.73 |
 | How to split the data? | Split the data using the given ratio |
 
+**Remark:** The code cell above has the parameter `results=asis` which instructs
+the CLI program `file-code-chunks-eval` of the package
+["Text::CodeProcessing"](https://raku.land/zef:antononcube/Text::CodeProcessing), [AAp4],
+to place the LLM result without changes.
+
+**Remark:** If the result adheres to conventions of GitHub's Markdown table specifications,
+then GitHub (and IDEs like IntelliJ) would render the table.
+The result adherence is "very likely" -- see the last line of the prompt.
+
 
 -------
 
@@ -326,4 +335,9 @@ Here we find the answers of the questions:
 [AAp3] Anton Antonov,
 [WWW::PaLM Raku package](https://github.com/antononcube/Raku-WWW-PaLM),
 (2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp4] Anton Antonov,
+[Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
+(2021),
 [GitHub/antononcube](https://github.com/antononcube).
