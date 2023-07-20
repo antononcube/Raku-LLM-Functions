@@ -184,7 +184,7 @@ Here we find the answers of the questions:
 
 ## References
 
-### Package, repositories
+### Packages, repositories
 
 [AAp1] Anton Antonov,
 [LLM::Functions Raku package](https://github.com/antononcube/Raku-LLM-Functions),
