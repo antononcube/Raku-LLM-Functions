@@ -71,7 +71,7 @@ multi sub llm-configuration($spec) {
                     function => &PaLMGenerateText,
                     temperature => 0.4,
                     max-tokens => 300,
-                    total-probability-cutoff => 0.03,
+                    total-probability-cutoff => 0,
                     prompts => Empty,
                     prompt-delimiter => ' ',
                     argument-renames => %( 'api-key' => 'auth-key', 'max-tokens' => 'max-output-tokens'),
