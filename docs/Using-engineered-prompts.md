@@ -9,8 +9,8 @@ with ChatGPT (OpenAI) and PaLM via the package
 
 **Remark:** "Out of the box" 
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
-["WWW::OpeAI"](https://raku.land/zef:antononcube/WWW::OpenAI), and 
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM). 
+["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and 
+["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3]. 
 Other LLM access packages can utilizes via appropriate LLM configurations. 
 
 **Remark:** In
