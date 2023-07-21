@@ -73,7 +73,7 @@ sequenceDiagram
   llmconf ->> LLMConf: conf spec
   LLMConf ->> LLMEval: wrap with
   LLMEval ->> llmfunc: evaluator object
-  llmfunc ->> AnonFunc: create with<br>evaluator object
+  llmfunc ->> AnonFunc: create with:<br>・evaluator object<br>・prompt
   AnonFunc ->> llmfunc: handle
   llmfunc ->> User: handle
 ```
@@ -95,7 +95,7 @@ sequenceDiagram
   User ->> llmfunc: ・prompt<br>・configuration object
   llmfunc ->> LLMChatEval: configuration object
   LLMChatEval ->> llmfunc: evaluator object
-  llmfunc ->> AnonFunc: create with<br>evaluator object
+  llmfunc ->> AnonFunc: create with:<br>・evaluator object<br>・prompt
   AnonFunc ->> llmfunc: handle
   llmfunc ->> User: handle
   User ->> AnonFunc: invoke with<br>message argument
