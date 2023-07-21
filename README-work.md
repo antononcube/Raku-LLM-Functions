@@ -3,7 +3,7 @@
 ## In brief
 
 Thi Raku package provides functions and function objects to access, interact, and utilize 
-Large Language Mondels (LLMs), like 
+Large Language Models (LLMs), like 
 [OpenAI](https://platform.openai.com), [OAI1], and 
 [PaLM](https://developers.generativeai.google/products/palm), [ZG1].
 
@@ -38,10 +38,12 @@ zef install https://github.com/antononcube/Raku-LLM-Functions.git
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
 ["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
-Other LLM access packages can utilized via appropriate LLM configurations.
+Other LLM access packages can be utilized via appropriate LLM configurations.
 
-The configurations are instances of the class `LLM::Functions::Configuration`.
-The configurations are used by instances of the class `LLM::Functions::Evaluator`.
+Configurations:
+- Are instances of the class `LLM::Functions::Configuration`
+- Are used by instances of the class `LLM::Functions::Evaluator`
+- Can be converted to Hash objects (i.e. have a `.Hash` method)
 
 New LLM functions are constructed with the function `llm-function`.
 
@@ -55,9 +57,8 @@ The function `llm-function`:
     - Function with positional arguments
     - Function with named arguments
 
-
-Here is a sequence diagram that corresponds to typical creation procedure of LLM configuration and evaluator objects,
-and corresponding LLM-functions are created:
+Here is a sequence diagram that follows the steps of a typical creation procedure of 
+LLM configuration- and evaluator objects, and the corresponding LLM-function that utilizes them:
 
 ```mermaid
 sequenceDiagram
@@ -67,7 +68,7 @@ sequenceDiagram
   participant LLMConf as LLM configuration
   participant LLMEval as LLM evaluator
   participant AnonFunc as Anonymous function
-  User ->> llmfunc: prompt<br>conf spec
+  User ->> llmfunc: ・prompt<br>・conf spec
   llmfunc ->> llmconf: conf spec
   llmconf ->> LLMConf: conf spec
   LLMConf ->> LLMEval: wrap with
@@ -78,7 +79,7 @@ sequenceDiagram
 ```
 
 Here is a sequence diagram for making a LLM configuration with a global (engineered) prompt,
-and using that configuration to complete a chat message:
+and using that configuration to generate a chat message response:
 
 ```mermaid
 sequenceDiagram
@@ -91,14 +92,14 @@ sequenceDiagram
   participant AnonFunc as Anonymous function
   User ->> llmconf: engineered prompt
   llmconf ->> User: configuration object
-  User ->> llmfunc: prompt<br>configuration object
+  User ->> llmfunc: ・prompt<br>・configuration object
   llmfunc ->> LLMChatEval: configuration object
   LLMChatEval ->> llmfunc: evaluator object
   llmfunc ->> AnonFunc: create with<br>evaluator object
   AnonFunc ->> llmfunc: handle
   llmfunc ->> User: handle
   User ->> AnonFunc: invoke with<br>message argument
-  AnonFunc ->> WWWOpenAI: engineered prompt<br>message
+  AnonFunc ->> WWWOpenAI: ・engineered prompt<br>・message
   WWWOpenAI ->> User: LLM response 
 ```
 
@@ -108,11 +109,11 @@ sequenceDiagram
 
 ### OpenAI-based
 
-Here is a default, OpenAI-based configuration:
+Here is the default, OpenAI-based configuration:
 
 ```perl6
 use LLM::Functions;
-.raku.say for llm-configuration(Whatever).Hash;
+.raku.say for llm-configuration('OpenAI').Hash;
 ```
 
 Here is the ChatGPT-based configuration:
@@ -121,13 +122,15 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 
-**Remark:** Both the "OpenAI" and "ChatGPT" configuration use the "WWW::OpenAI" package.
+**Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
+
+**Remark:** Both the "OpenAI" and "ChatGPT" configuration use functions of the package "WWW::OpenAI", [AAp2].
 The "OpenAI" configuration is for text-completions;
 the "ChatGPT" configuration is for chat-completions. 
 
 ### PaLM-based
 
-Here is the PaLM configuration
+Here is the default PaLM configuration:
 
 ```perl6
 .say for llm-configuration('PaLM').Hash;
@@ -139,7 +142,7 @@ Here is the PaLM configuration
 
 ### Textual prompts
 
-Here we make a LLM function with simple (short textual) prompt:
+Here we make a LLM function with a simple (short, textual) prompt:
 
 ```perl6
 my &func = llm-function('Show a recipe for:');
@@ -153,7 +156,7 @@ say &func('greek salad');
 
 ### Positional arguments
 
-Here we make a LLM function with function-prompt:
+Here we make a LLM function with a function-prompt:
 
 ```perl6
 my &func2 = llm-function({"How many $^a can fit inside one $^b?"}, llm-evaluator => 'palm');
@@ -184,12 +187,12 @@ Here is an invocation:
 ## Using chat-global prompts
 
 The configuration objects can be given prompts that influence the LLM responses 
-"globally" throughout the whole chat.
+"globally" throughout the whole chat. (See the second sequence diagram above.)
 
 For detailed examples see the documents:
 
-- ["Using engineered prompts"](./docs/Using-engineered-prompts.md)
-- ["Expand tests into documentation examples"](./docs/Expand-tests-into-doc-examples.md)
+- ["Using engineered prompts"](./docs/Using-engineered-prompts_woven.md)
+- ["Expand tests into documentation examples"](./docs/Expand-tests-into-doc-examples_woven.md)
 
 --------
 
