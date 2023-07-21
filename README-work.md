@@ -200,7 +200,8 @@ For detailed examples see the documents:
 
 - [ ] TODO Resources
   - [ ] TODO Gather prompts
-  - [ ] TODO Process prompts into a suitable database 
+  - [ ] TODO Process prompts into a suitable database
+    - Using JSON.
 - [ ] TODO Implementation
   - [ ] TODO Prompt class
     - For retrieval and management
@@ -209,6 +210,11 @@ For detailed examples see the documents:
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
 - [ ] TODO Documentation  
+  - [ ] TODO Detailed parameters description
+  - [X] DONE Using engineered prompts
+  - [X] DONE Expand tests in documentation examples
+  - [ ] TODO Using retrieved prompts
+  - [ ] TODO Longer conversations / chats
 
 --------
 
