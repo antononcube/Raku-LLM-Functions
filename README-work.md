@@ -2,7 +2,7 @@
 
 ## In brief
 
-Thi Raku package provides functions and function objects to access, interact, and utilize 
+This Raku package provides functions and function objects to access, interact, and utilize 
 Large Language Models (LLMs), like 
 [OpenAI](https://platform.openai.com), [OAI1], and 
 [PaLM](https://developers.generativeai.google/products/palm), [ZG1].
@@ -10,6 +10,22 @@ Large Language Models (LLMs), like
 For more details how the concrete LLMs are accessed see the packages
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
 ["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
+
+The primary motivation to have handy, configurable functions for utilizing LLMs
+came from my work on the packages
+["ML::FindTextualAnswer"](https://raku.land/zef:antononcube/ML::FindTextualAnswer), [AAp5], and
+["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/ML::NLPTemplateEngine), [AAp6].
+
+A very similar design of functionalities is developed by Wolfram Research Inc.;
+see the paclet
+["LLMFunctions"](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/), [WRIp1].
+
+For well curated and instructive examples of LLM prompts see the
+[Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
+
+The article
+["Generating documents via templates and LLMs"](https://rakuforprediction.wordpress.com/2023/07/11/generating-documents-via-templates-and-llms/), [AA1],
+shows an alternative way of streamlining LLMs usage (via Markdown, Org-mode, or Pod6 templates.)
 
 -----
 
@@ -222,12 +238,24 @@ For detailed examples see the documents:
 
 ### Articles
 
+[AA1] Anton Antonov,
+["Generating documents via templates and LLMs"](https://rakuforprediction.wordpress.com/2023/07/11/generating-documents-via-templates-and-llms/),
+(2023),
+[RakuForPrediction at WordPress](https://rakuforprediction.wordpress.com).
+
 [ZG1] Zoubin Ghahramani,
 ["Introducing PaLM 2"](https://blog.google/technology/ai/google-palm-2-ai-large-language-model/),
 (2023),
 [Google Official Blog on AI](https://blog.google/technology/ai/).
 
-### Packages, repositories, sites
+### Repositories, sites
+
+[OAI1] OpenAI Platform, [OpenAI platform](https://platform.openai.com/).
+
+[WRIr1] Wolfram Research, Inc.
+[Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
+
+### Packages, paclets
 
 [AAp1] Anton Antonov,
 [LLM::Functions Raku package](https://github.com/antononcube/Raku-LLM-Functions),
@@ -249,5 +277,17 @@ For detailed examples see the documents:
 (2021),
 [GitHub/antononcube](https://github.com/antononcube).
 
-[OAI1] OpenAI Platform, [OpenAI platform](https://platform.openai.com/).
+[AAp5] Anton Antonov,
+[ML::FindTextualAnswer Raku package](https://github.com/antononcube/Raku-ML-FindTextualAnswer),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
 
+[AAp6] Anton Antonov,
+[ML::NLPTemplateEngine Raku package](https://github.com/antononcube/Raku-ML-NLPTemplateEngine),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[WRIp1] Wolfram Research, Inc.
+[LLMFunctions paclet](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/),
+(2023),
+[Wolfram Language Paclet Repository](https://resources.wolframcloud.com/PacletRepository/).
