@@ -44,7 +44,7 @@ say '=' x 120;
 say 'Named agruments';
 say '-' x 120;
 
-my &func3 = llm-function(-> :$dish, :$cuisine {"Given a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
+my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 
 say &func3;
 
