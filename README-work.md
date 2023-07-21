@@ -173,7 +173,7 @@ Here were we apply the function:
 Here the first argument is a template with two named arguments: 
 
 ```perl6
-my &func3 = llm-function(-> :$dish, :$cuisine {"Given a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
+my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 ```
 
 Here is an invocation:
@@ -193,6 +193,22 @@ For detailed examples see the documents:
 
 - ["Using engineered prompts"](./docs/Using-engineered-prompts_woven.md)
 - ["Expand tests into documentation examples"](./docs/Expand-tests-into-doc-examples_woven.md)
+
+--------
+
+## TODO
+
+- [ ] TODO Resources
+  - [ ] TODO Gather prompts
+  - [ ] TODO Process prompts into a suitable database 
+- [ ] TODO Implementation
+  - [ ] TODO Prompt class
+    - For retrieval and management
+  - [ ] TODO Chat class / object
+    - For long conversations
+- [ ] TODO CLI
+  - [ ] TODO Based on Chat objects
+- [ ] TODO Documentation  
 
 --------
 
