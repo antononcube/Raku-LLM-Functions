@@ -16,7 +16,7 @@ came from my work on the packages
 ["ML::FindTextualAnswer"](https://raku.land/zef:antononcube/ML::FindTextualAnswer), [AAp5], and
 ["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/ML::NLPTemplateEngine), [AAp6].
 
-A very similar design of functionalities is developed by Wolfram Research Inc.;
+A very similar system of functionalities is developed by Wolfram Research Inc.;
 see the paclet
 ["LLMFunctions"](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/), [WRIp1].
 
@@ -25,7 +25,7 @@ For well curated and instructive examples of LLM prompts see the
 
 The article
 ["Generating documents via templates and LLMs"](https://rakuforprediction.wordpress.com/2023/07/11/generating-documents-via-templates-and-llms/), [AA1],
-shows an alternative way of streamlining LLMs usage (via Markdown, Org-mode, or Pod6 templates.)
+shows an alternative way of streamlining LLMs usage. (Via Markdown, Org-mode, or Pod6 templates.)
 
 -----
 
