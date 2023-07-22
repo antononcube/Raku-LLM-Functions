@@ -25,10 +25,7 @@ class LLM::Functions::Evaluator {
         # To echo or not
         my $echo = %args<echo> // False;
 
-        if $echo {
-            note "Configuration : {self.conf.Hash.raku}";
-            #{.note for self.conf.Hash};
-        }
+        note "Configuration : {self.conf.Hash.raku}" if $echo;
 
         # Load module
         my $packageName = $.conf.module;
@@ -43,16 +40,12 @@ class LLM::Functions::Evaluator {
             if $no-package { warn "Cannot load package named $packageName."; }
         }
 
-        if $echo {
-            note "Loaded : $packageName";
-        }
+        note "Loaded : $packageName"  if $echo;
 
         # Find known parameters
         my @knownParamNames = $!conf.function.candidates.map({ $_.signature.params.map({ $_.usage-name }) }).flat;
 
-        if $echo {
-            note "Known param mames : {@knownParamNames.raku}";
-        }
+        note "Known param mames : {@knownParamNames.raku}" if $echo;
 
         # Make all named parameters hash
         my %args2 = merge-hash($!conf.Hash, %args);
@@ -65,15 +58,11 @@ class LLM::Functions::Evaluator {
         # Make "full" prompt
         my $prompt = $!conf.prompts.join($.conf.prompt-delimiter);
 
-        if $echo {
-            note 'Full prompt : ', $prompt.raku;
-        }
+        note 'Full prompt : ', $prompt.raku if $echo;
 
         my @messages = self.prompt-texts-combiner($prompt, @texts);
 
-        if $echo {
-            note 'Messages : ', @messages.raku;
-        }
+        note 'Messages : ', @messages.raku if $echo;
 
         # Invoke the LLM function
         return $!conf.function.( @messages,
