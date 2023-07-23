@@ -213,3 +213,45 @@ multi sub llm-function(&queryFunc,
         $llm-evaluator.eval($text, |%args3)
     };
 }
+
+
+#===========================================================
+# LLM Example Function
+#===========================================================
+
+#-----------------------------------------------------------
+#| Creates an LLMFunction from few-shot examples.
+our proto llm-example-function(|) is export {*}
+
+multi sub llm-example-function( Pair $pair where $pair.key ~~ Positional && $pair.value ~~ Positional && $pair.key.elems == $pair.value.elems,
+                                :$llm-evaluator = Whatever ) {
+    my @pairs = $pair.key Z=> $pair.value;
+    return llm-example-function(@pairs, :$llm-evaluator);
+}
+
+multi sub llm-example-function( Pair $pair,
+                                :$llm-evaluator = Whatever ) {
+    return llm-example-function([$pair, ], :$llm-evaluator);
+}
+
+multi sub llm-example-function( %training, :$llm-evaluator = Whatever ) {
+    return llm-example-function(%training.pairs, :$llm-evaluator);
+}
+
+multi sub llm-example-function( @pairs,
+                                :$hint is copy = Whatever;
+                                :$llm-evaluator = Whatever ) {
+
+    if @pairs.all ~~ Pair {
+        my $pre = @pairs.map({ "Input: { $_.key.Str } \n Output: { $_.value.Str } \n" }).join("\n");
+
+        if $hint ~~ Str && $hint.chars > 0 {
+            $hint = $hint ~~ /<punct> $/ ?? $hint !! $hint ~ '.';
+            $pre = "$hint\n\n$pre";
+        }
+
+        return llm-function({ $pre ~ "\nInput: $_\nOutput:" }, :$llm-evaluator);
+    }
+
+    die "The first argument is expected to be a list of pairs or a pair of two positionals with the same length.";
+}
