@@ -71,6 +71,16 @@ class LLM::Functions::Configuration {
     has $.evaluator is rw = Whatever;
 
     #--------------------------------------------------------
+    method clone {
+        nextwith
+                :prompts(@!prompts.clone),
+                :stop-tokens(@!stop-tokens.clone),
+                :tools(@!tools.clone),
+                :argument-renames(%!argument-renames.clone),
+                |%_
+    }
+
+    #--------------------------------------------------------
     #| To Hash
     method Hash(-->Hash) {
         return

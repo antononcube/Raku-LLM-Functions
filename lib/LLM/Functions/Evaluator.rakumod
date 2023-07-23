@@ -8,6 +8,9 @@ class LLM::Functions::Evaluator {
     has $.conf is rw = Whatever;
 
     #-------------------------------------------------------
+    method clone { nextwith :conf($!conf.clone), |%_ }
+
+    #-------------------------------------------------------
     method prompt-texts-combiner($prompt, @texts) {
         return [$prompt, |@texts].join($.conf.prompt-delimiter);
     }
