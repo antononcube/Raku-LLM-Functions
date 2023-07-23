@@ -7,17 +7,23 @@ class LLM::Functions::Evaluator {
 
     has $.conf is rw = Whatever;
 
+    #-------------------------------------------------------
     method prompt-texts-combiner($prompt, @texts) {
         return [$prompt, |@texts].join($.conf.prompt-delimiter);
     }
 
-    multi method eval(Str $text, *%args) {
-        my $res = self.eval([$text,], |%args);
+    #-------------------------------------------------------
+    method post-process($res) {
         return do if $res ~~ Iterable && $res.elems == 1 {
             $res.head;
         } else {
             $res;
         }
+    }
+
+    #-------------------------------------------------------
+    multi method eval(Str $text, *%args) {
+        return self.eval([$text,], |%args);
     }
 
     multi method eval(@texts, *%args) {
@@ -65,12 +71,15 @@ class LLM::Functions::Evaluator {
         note 'Messages : ', @messages.raku if $echo;
 
         # Invoke the LLM function
-        return $!conf.function.( @messages,
+        my $res = $!conf.function.( @messages,
                 |%args2.grep({ $_.key ∉ <prompts> && $_.key ∈ @knownParamNames }).Hash
         );
+
+        return self.post-process($res);
     }
 }
 
+#===========================================================
 class LLM::Functions::ChatEvaluator
         is LLM::Functions::Evaluator {
 
