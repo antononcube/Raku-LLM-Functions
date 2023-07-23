@@ -46,7 +46,7 @@ multi sub llm-configuration($spec, *%args) {
                             total-probability-cutoff => 0.03,
                             prompts => Empty,
                             prompt-delimiter => ' ',
-                            argument-renames => %( 'api-key' => 'auth-key'),
+                            argument-renames => %('api-key' => 'auth-key'),
                             format => 'values');
                 }
 
@@ -75,7 +75,7 @@ multi sub llm-configuration($spec, *%args) {
                             total-probability-cutoff => 0,
                             prompts => Empty,
                             prompt-delimiter => ' ',
-                            argument-renames => %( 'api-key' => 'auth-key', 'max-tokens' => 'max-output-tokens'),
+                            argument-renames => %('api-key' => 'auth-key', 'max-tokens' => 'max-output-tokens'),
                             format => 'values');
                 }
 
@@ -145,7 +145,7 @@ sub get-llm-evaluator($llm-evaluator is copy) {
 
         when $_ ~~ LLM::Functions::Configuration {
 
-            my $conf = $_;
+            my $conf = $_.clone;
 
             if $conf.evaluator.isa(Whatever) {
 
@@ -160,6 +160,10 @@ sub get-llm-evaluator($llm-evaluator is copy) {
 
                 $conf.evaluator
             }
+        }
+
+        when LLM::Functions::Evaluator {
+            $_.clone;
         }
     }
 
@@ -208,7 +212,7 @@ multi sub llm-function(&queryFunc,
     return -> **@args, *%args {
         my %args2 = %args.grep({ $_.key ∉ <prompts> && $_.key ∈ @queryFuncParamNames }).Hash;
         my $prompt = &queryFunc(|@args, |%args2);
-        my $text = $llm-evaluator.conf.prompts[*-1] = $prompt;
+        my $text = $llm-evaluator.conf.prompts[*- 1] = $prompt;
         my %args3 = %args.grep({ $_.key ∉ <prompts> && $_.key ∉ @queryFuncParamNames }).Hash;
         $llm-evaluator.eval($text, |%args3)
     };
@@ -223,24 +227,24 @@ multi sub llm-function(&queryFunc,
 #| Creates an LLMFunction from few-shot examples.
 our proto llm-example-function(|) is export {*}
 
-multi sub llm-example-function( Pair $pair where $pair.key ~~ Positional && $pair.value ~~ Positional && $pair.key.elems == $pair.value.elems,
-                                :$llm-evaluator = Whatever ) {
-    my @pairs = $pair.key Z=> $pair.value;
-    return llm-example-function(@pairs, :$llm-evaluator);
+multi sub llm-example-function(Pair $pair, *%args) {
+    if $pair.key ~~ Positional &&
+            $pair.value ~~ Positional &&
+            $pair.key.elems == $pair.value.elems {
+        my @pairs = $pair.key Z=> $pair.value;
+        return llm-example-function(@pairs, |%args);
+    } else {
+        return llm-example-function([$pair,], |%args);
+    }
 }
 
-multi sub llm-example-function( Pair $pair,
-                                :$llm-evaluator = Whatever ) {
-    return llm-example-function([$pair, ], :$llm-evaluator);
+multi sub llm-example-function(%training, *%args) {
+    return llm-example-function(%training.pairs, |%args);
 }
 
-multi sub llm-example-function( %training, :$llm-evaluator = Whatever ) {
-    return llm-example-function(%training.pairs, :$llm-evaluator);
-}
-
-multi sub llm-example-function( @pairs,
-                                :$hint is copy = Whatever;
-                                :$llm-evaluator = Whatever ) {
+multi sub llm-example-function(@pairs,
+                               :$hint is copy = Whatever;
+                               :$llm-evaluator is copy = Whatever) {
 
     if @pairs.all ~~ Pair {
         my $pre = @pairs.map({ "Input: { $_.key.Str } \n Output: { $_.value.Str } \n" }).join("\n");
