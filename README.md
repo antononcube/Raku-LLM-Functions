@@ -132,24 +132,24 @@ use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 ```
-# :max-tokens(300)
-# :tool-response-insertion-function(WhateverCode)
-# :prompt-delimiter(" ")
-# :evaluator(Whatever)
-# :prompts($[])
+# :tool-prompt("")
+# :format("values")
 # :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
+# :module("WWW::OpenAI")
+# :prompts($[])
 # :tool-request-parser(WhateverCode)
 # :api-key(Whatever)
-# :tools($[])
+# :prompt-delimiter(" ")
+# :api-user-id("user:732339189692")
+# :evaluator(Whatever)
 # :temperature(0.8)
-# :module("WWW::OpenAI")
-# :total-probability-cutoff(0.03)
-# :name("openai")
-# :format("values")
-# :api-user-id("user:106783131376")
-# :tool-prompt("")
-# :model("text-davinci-003")
 # :stop-tokens($[".", "?", "!"])
+# :max-tokens(300)
+# :model("text-davinci-003")
+# :name("openai")
+# :tool-response-insertion-function(WhateverCode)
+# :total-probability-cutoff(0.03)
+# :tools($[])
 ```
 
 Here is the ChatGPT-based configuration:
@@ -158,24 +158,24 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# prompts => []
-# max-tokens => 300
-# total-probability-cutoff => 0.03
-# temperature => 0.8
-# tool-prompt => 
-# api-user-id => user:684744195047
-# evaluator => (my \LLM::Functions::ChatEvaluator_5129686912680 = LLM::Functions::ChatEvaluator.new(conf => LLM::Functions::Configuration.new(name => "openai", api-key => Whatever, api-user-id => "user:684744195047", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", stop-tokens => [".", "?", "!"], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_5129686912680)))
-# module => WWW::OpenAI
 # model => gpt-3.5-turbo
-# stop-tokens => [. ? !]
-# format => values
+# tool-prompt => 
+# module => WWW::OpenAI
 # function => &OpenAIChatCompletion
-# tool-response-insertion-function => (WhateverCode)
-# tool-request-parser => (WhateverCode)
-# prompt-delimiter =>  
+# api-user-id => user:645119954074
+# temperature => 0.8
+# max-tokens => 300
+# stop-tokens => [. ? !]
 # api-key => (Whatever)
-# tools => []
+# prompts => []
+# format => values
 # name => openai
+# tool-request-parser => (WhateverCode)
+# tool-response-insertion-function => (WhateverCode)
+# prompt-delimiter =>  
+# tools => []
+# total-probability-cutoff => 0.03
+# evaluator => (my \LLM::Functions::ChatEvaluator_2399528923000 = LLM::Functions::ChatEvaluator.new(conf => LLM::Functions::Configuration.new(name => "openai", api-key => Whatever, api-user-id => "user:645119954074", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", stop-tokens => [".", "?", "!"], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_2399528923000)))
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -192,23 +192,23 @@ Here is the default PaLM configuration:
 .say for llm-configuration('PaLM').Hash;
 ```
 ```
-# tools => []
-# name => palm
-# format => values
-# api-user-id => user:157844929178
-# prompt-delimiter =>  
-# prompts => []
 # tool-prompt => 
-# total-probability-cutoff => 0
-# max-tokens => 300
-# temperature => 0.4
-# model => text-bison-001
 # evaluator => (Whatever)
-# api-key => (Whatever)
+# module => WWW::PaLM
+# prompt-delimiter =>  
+# temperature => 0.4
 # stop-tokens => [. ? !]
+# api-key => (Whatever)
+# format => values
+# api-user-id => user:235062678416
+# max-tokens => 300
+# name => palm
+# prompts => []
+# total-probability-cutoff => 0
 # function => &PaLMGenerateText
 # tool-response-insertion-function => (WhateverCode)
-# module => WWW::PaLM
+# model => text-bison-001
+# tools => []
 # tool-request-parser => (WhateverCode)
 ```
 
@@ -224,7 +224,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# -> $text, *%args { #`(Block|5129723222144) ... }
+# -> $text, *%args { #`(Block|2399534554584) ... }
 ```
 
 Here we evaluate over a message: 
@@ -233,31 +233,39 @@ Here we evaluate over a message:
 say &func('greek salad');
 ```
 ```
+# Greek Salad
+# 
 # Ingredients:
 # 
-# -1 head of romaine lettuce, chopped
-# -1 large cucumber, diced
-# -1 large tomato, diced
-# -1/2 red onion, diced
-# -1/2 cup kalamata olives, pitted
-# -1/2 cup feta cheese, crumbled
-# -1/4 cup fresh parsley, chopped
-# -2 tablespoons olive oil
-# -1 tablespoon red wine vinegar
-# -1 teaspoon oregano
-# -Salt and pepper, to taste
+# · 2-3 cups of chopped Romaine lettuce
+# 
+# · 1 cup of cherry tomatoes, halved
+# 
+# · 1/2 cup of diced cucumber
+# 
+# · 1/2 cup of crumbled feta cheese
+# 
+# · 1/4 cup of sliced kalamata olives
+# 
+# · 2 tablespoons of red onion, diced
+# 
+# · 2 tablespoons of olive oil
+# 
+# · 1 tablespoon of red wine vinegar
+# 
+# · 1 teaspoon of dried oregano
+# 
+# · Salt and pepper, to taste
 # 
 # Instructions:
 # 
-# 1. In a large bowl, combine the romaine lettuce, cucumber, tomato, red onion, and kalamata olives.
+# 1. In a large bowl, combine the Romaine lettuce, cherry tomatoes, cucumber, feta cheese, and olives.
 # 
-# 2. Top with feta cheese and parsley.
+# 2. In a small bowl, whisk together the olive oil, red wine vinegar, oregano, salt, and pepper.
 # 
-# 3. In a small bowl, whisk together the olive oil, red wine vinegar, oregano, and salt and pepper.
+# 3. Add the dressing to the salad and toss to combine.
 # 
-# 4. Drizzle the dressing over the salad and toss to combine.
-# 
-# 5. Serve immediately. Enjoy!
+# 4. Serve and enjoy.
 ```
 
 ### Positional arguments
@@ -268,7 +276,7 @@ Here we make a LLM function with a function-prompt:
 my &func2 = llm-function({"How many $^a can fit inside one $^b?"}, llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|5129803451072) ... }
+# -> **@args, *%args { #`(Block|2399613800616) ... }
 ```
 
 Here were we apply the function:
@@ -277,7 +285,7 @@ Here were we apply the function:
 &func2("tenis balls", "toyota corolla 2010");
 ```
 ```
-# (260)
+# 320
 ```
 
 ### Named arguments
@@ -288,7 +296,7 @@ Here the first argument is a template with two named arguments:
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|5129739321704) ... }
+# -> **@args, *%args { #`(Block|2399549302536) ... }
 ```
 
 Here is an invocation:
@@ -297,27 +305,84 @@ Here is an invocation:
 &func3(dish => 'salad', cuisine => 'Russion', max-tokens => 300);
 ```
 ```
-# (**Ingredients**
+# **Ingredients**
 # 
 # * 1 head of cabbage, shredded
-# * 1 carrot, shredded
 # * 1/2 cup of mayonnaise
-# * 1/4 cup of sour cream
-# * 1/4 cup of chopped fresh dill
-# * 1/4 cup of chopped fresh parsley
+# * 1/2 cup of sour cream
+# * 1/4 cup of finely chopped onion
+# * 1/4 cup of finely chopped dill
+# * 1/4 cup of finely chopped parsley
 # * Salt and pepper to taste
 # 
 # **Instructions**
 # 
-# 1. In a large bowl, combine the cabbage, carrots, mayonnaise, sour cream, dill, parsley, salt, and pepper.
+# 1. In a large bowl, combine the cabbage, mayonnaise, sour cream, onion, dill, parsley, salt, and pepper.
 # 2. Stir until well combined.
 # 3. Serve immediately or chill for later.
 # 
 # **Tips**
 # 
-# * To make the salad ahead of time, chill it for at least 30 minutes before serving.
-# * For a more flavorful salad, add some chopped red onion or celery.
-# * Serve the salad with your favorite bread or crackers.)
+# * For a more flavorful salad, add some chopped carrots, celery, or radishes.
+# * You can also add some chopped nuts or seeds for a crunchy texture.
+# * If you don't have any fresh herbs on hand, you can use dried herbs instead. Just use half the amount of dried herbs as you would fresh herbs.
+# * This salad is best served cold, so make sure to chill it for at least a few hours before serving.
+```
+
+--------
+
+## LLM example functions
+
+The function `llm-example-function` can be given a training set of examples in order 
+to generating results according to the "laws" implied by that training set.  
+
+Here a LLM is asked to produce a generalization:
+
+```perl6
+llm-example-function([ 'finger' => 'hand', 'hand' => 'arm' ])('foot')
+```
+```
+# leg
+```
+
+Here is an array of training pairs is used:
+
+```perl6
+'Oppenheimer' ==> (["Einstein" => "14 March 1879", "Pauli" => "April 25, 1900"] ==> llm-example-function)()
+```
+```
+# April 22, 1904
+```
+
+Here is defined a LLM function for translating WL associations into Python dictionaries:
+
+```perl6
+my &fea = llm-example-function( '<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }');
+&fea('<| 23->3, G->33, T -> R5|>');
+```
+```
+# { 23:3, G:33, T:R5 }
+```
+
+The function `llm-example-function` takes as a first argument:
+- Single `Pair` object of two scalars
+- Single `Pair` object of two `Positional` objects with the same length
+- A `Hash`
+- A `Positional` object of pairs
+
+**Remark:** The function `llm-example-function` is implemented with `llm-function` and suitable prompt.
+
+Here is an example of using hints:
+
+```perl6
+my &fec = llm-example-function(
+        ["crocodile" => "grasshopper", "fox" => "cardinal"],
+        hint => 'animal colors');
+
+say &fec('raccoon');
+```
+```
+# gray
 ```
 
 --------
@@ -341,10 +406,19 @@ For detailed examples see the documents:
   - [ ] TODO Process prompts into a suitable database
     - Using JSON.
 - [ ] TODO Implementation
+  - [ ] TODO Processing and array of prompts as a first argument
   - [ ] TODO Prompt class
     - For retrieval and management
   - [ ] TODO Chat class / object
     - For long conversations
+  - [X] DONE LLM example function
+    - [X] DONE First version with the signatures:
+      - [X] `@pairs`
+      - [X] `@input => @output`
+      - [X] Hint option
+    - [X] DONE Verify works with OpenAI 
+    - [X] DONE Verify works with PaLM
+  - [ ] Interpreter argument for `llm-function`
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
 - [ ] TODO Documentation  

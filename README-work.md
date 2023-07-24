@@ -200,6 +200,50 @@ Here is an invocation:
 
 --------
 
+## LLM example functions
+
+The function `llm-example-function` can be given a training set of examples in order 
+to generating results according to the "laws" implied by that training set.  
+
+Here a LLM is asked to produce a generalization:
+
+```perl6
+llm-example-function([ 'finger' => 'hand', 'hand' => 'arm' ])('foot')
+```
+
+Here is an array of training pairs is used:
+
+```perl6
+'Oppenheimer' ==> (["Einstein" => "14 March 1879", "Pauli" => "April 25, 1900"] ==> llm-example-function)()
+```
+
+Here is defined a LLM function for translating WL associations into Python dictionaries:
+
+```perl6
+my &fea = llm-example-function( '<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }');
+&fea('<| 23->3, G->33, T -> R5|>');
+```
+
+The function `llm-example-function` takes as a first argument:
+- Single `Pair` object of two scalars
+- Single `Pair` object of two `Positional` objects with the same length
+- A `Hash`
+- A `Positional` object of pairs
+
+**Remark:** The function `llm-example-function` is implemented with `llm-function` and suitable prompt.
+
+Here is an example of using hints:
+
+```perl6
+my &fec = llm-example-function(
+        ["crocodile" => "grasshopper", "fox" => "cardinal"],
+        hint => 'animal colors');
+
+say &fec('raccoon');
+```
+
+--------
+
 ## Using chat-global prompts
 
 The configuration objects can be given prompts that influence the LLM responses 
@@ -219,10 +263,19 @@ For detailed examples see the documents:
   - [ ] TODO Process prompts into a suitable database
     - Using JSON.
 - [ ] TODO Implementation
+  - [ ] TODO Processing and array of prompts as a first argument
   - [ ] TODO Prompt class
     - For retrieval and management
   - [ ] TODO Chat class / object
     - For long conversations
+  - [X] DONE LLM example function
+    - [X] DONE First version with the signatures:
+      - [X] `@pairs`
+      - [X] `@input => @output`
+      - [X] Hint option
+    - [X] DONE Verify works with OpenAI 
+    - [X] DONE Verify works with PaLM
+  - [ ] Interpreter argument for `llm-function`
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
 - [ ] TODO Documentation  
