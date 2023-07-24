@@ -3,7 +3,6 @@ use v6.d;
 use lib '.';
 use lib './lib';
 
-use WWW::OpenAI;
 use LLM::Functions;
 
 use Test;
@@ -24,7 +23,7 @@ isa-ok llm-function($prompt2, llm-evaluator => 'palm')("greek salad"),
 
 ## 4
 my &prompt3 = { "How many $^a can fit inside one $^b?" };
-is llm-function(&prompt3, llm-evaluator => 'palm')(['basket balls', 'toyota corolla 2010']).all ~~ Str,
+is llm-function(&prompt3, llm-evaluator => 'palm')('basket balls', 'toyota corolla 2010').all ~~ Str,
         True,
         'basket balls in toyota corolla 2010';
 

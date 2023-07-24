@@ -3,7 +3,6 @@ use v6.d;
 use lib '.';
 use lib './lib';
 
-use WWW::OpenAI;
 use LLM::Functions;
 
 use Test;
