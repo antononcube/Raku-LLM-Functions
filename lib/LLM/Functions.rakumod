@@ -183,26 +183,31 @@ sub get-llm-evaluator($llm-evaluator is copy) {
 our proto llm-function(|) is export {*}
 
 # No positional args
-multi sub llm-function(:$llm-evaluator is copy = Whatever) {
+multi sub llm-function(:$form = 'Str',
+                       :$llm-evaluator is copy = Whatever) {
     return llm-function('', :$llm-evaluator);
 }
 
 # Using a string
 multi sub llm-function(Str $prompt,
+                       :form(:$formatron) = 'Str',
                        :$llm-evaluator is copy = Whatever) {
 
     $llm-evaluator = get-llm-evaluator($llm-evaluator);
 
     $llm-evaluator.conf.prompts.append($prompt);
+    $llm-evaluator.formatron = $formatron;
 
     return -> $text, *%args { $llm-evaluator.eval($text, |%args) };
 }
 
 # Using a function
 multi sub llm-function(&queryFunc,
+                       :form(:$formatron) = 'Str',
                        :$llm-evaluator is copy = Whatever) {
 
     $llm-evaluator = get-llm-evaluator($llm-evaluator);
+    $llm-evaluator.formatron = $formatron;
 
     # Find known parameters
     my @queryFuncParamNames = &queryFunc.signature.params.map({ $_.usage-name });
@@ -243,7 +248,8 @@ multi sub llm-example-function(%training, *%args) {
 }
 
 multi sub llm-example-function(@pairs,
-                               :$hint is copy = Whatever;
+                               :$hint is copy = Whatever,
+                               :form(:$formatron) = 'Str',
                                :$llm-evaluator is copy = Whatever) {
 
     if @pairs.all ~~ Pair {
@@ -254,7 +260,7 @@ multi sub llm-example-function(@pairs,
             $pre = "$hint\n\n$pre";
         }
 
-        return llm-function({ $pre ~ "\nInput: $_\nOutput:" }, :$llm-evaluator);
+        return llm-function({ $pre ~ "\nInput: $_\nOutput:" }, :$formatron, :$llm-evaluator);
     }
 
     die "The first argument is expected to be a list of pairs or a pair of two positionals with the same length.";

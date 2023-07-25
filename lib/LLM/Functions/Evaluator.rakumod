@@ -2,10 +2,12 @@ use v6.d;
 
 use Hash::Merge;
 use LLM::Functions::Configuration;
+use Text::SubParsers;
 
 class LLM::Functions::Evaluator {
 
     has $.conf is rw = Whatever;
+    has $.formatron is rw = 'Str';
 
     #-------------------------------------------------------
     method clone { nextwith :conf($!conf.clone), |%_ }
@@ -16,12 +18,29 @@ class LLM::Functions::Evaluator {
     }
 
     #-------------------------------------------------------
-    method post-process($res) {
-        return do if $res ~~ Iterable && $res.elems == 1 {
+    method get-formatron($spec) {
+        return do given $spec {
+            when Str:U { Text::SubParsers::get-parser(:$spec) }
+            when $_ ~~ Str:D && $_ eq 'Str' { Nil }
+            when Text::SubParsers::Core { $spec }
+            default { Text::SubParsers::get-parser(:$spec) }
+        }
+    }
+
+    #-------------------------------------------------------
+    method post-process($res is copy ) {
+
+        $res = do if $res ~~ Iterable && $res.elems == 1 {
             $res.head;
         } else {
             $res;
         }
+
+        my $reformater = self.get-formatron($!formatron);
+        with $reformater {
+            return $reformater.process($res);
+        }
+        return $res;
     }
 
     #-------------------------------------------------------
