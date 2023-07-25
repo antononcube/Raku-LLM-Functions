@@ -172,17 +172,27 @@ say &func('greek salad');
 
 ### Positional arguments
 
-Here we make a LLM function with a function-prompt:
+Here we make a LLM function with a function-prompt and numeric interpreter of the result:
 
 ```perl6
-my &func2 = llm-function({"How many $^a can fit inside one $^b?"}, llm-evaluator => 'palm');
+my &func2 = llm-function(
+        {"How many $^a can fit inside one $^b?"},
+        form => Numeric,
+        llm-evaluator => 'palm');
 ```
 
 Here were we apply the function:
 
 ```perl6
-&func2("tenis balls", "toyota corolla 2010");
+my $res2 = &func2("tenis balls", "toyota corolla 2010");
 ```
+
+Here we show that we got a number:
+
+```perl6
+$res2 ~~ Numeric
+```
+
 
 ### Named arguments
 
@@ -275,7 +285,8 @@ For detailed examples see the documents:
       - [X] Hint option
     - [X] DONE Verify works with OpenAI 
     - [X] DONE Verify works with PaLM
-  - [ ] Interpreter argument for `llm-function`
+  - [X] DONE Interpreter argument for `llm-function`
+    - See the `formatron` attribute of `LLM::Functions::Evaluator`. 
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
 - [ ] TODO Documentation  

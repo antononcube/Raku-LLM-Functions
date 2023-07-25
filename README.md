@@ -132,24 +132,24 @@ use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 ```
-# :tool-prompt("")
-# :format("values")
-# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
-# :module("WWW::OpenAI")
-# :prompts($[])
 # :tool-request-parser(WhateverCode)
-# :api-key(Whatever)
-# :prompt-delimiter(" ")
-# :api-user-id("user:732339189692")
-# :evaluator(Whatever)
-# :temperature(0.8)
-# :stop-tokens($[".", "?", "!"])
 # :max-tokens(300)
-# :model("text-davinci-003")
-# :name("openai")
+# :temperature(0.8)
+# :module("WWW::OpenAI")
+# :prompt-delimiter(" ")
 # :tool-response-insertion-function(WhateverCode)
 # :total-probability-cutoff(0.03)
+# :format("values")
+# :api-key(Whatever)
+# :model("text-davinci-003")
+# :name("openai")
+# :prompts($[])
+# :tool-prompt("")
+# :stop-tokens($[".", "?", "!"])
+# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
 # :tools($[])
+# :api-user-id("user:800730111871")
+# :evaluator(Whatever)
 ```
 
 Here is the ChatGPT-based configuration:
@@ -158,24 +158,24 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# model => gpt-3.5-turbo
-# tool-prompt => 
-# module => WWW::OpenAI
-# function => &OpenAIChatCompletion
-# api-user-id => user:645119954074
-# temperature => 0.8
-# max-tokens => 300
-# stop-tokens => [. ? !]
-# api-key => (Whatever)
-# prompts => []
-# format => values
-# name => openai
-# tool-request-parser => (WhateverCode)
 # tool-response-insertion-function => (WhateverCode)
-# prompt-delimiter =>  
-# tools => []
+# tool-prompt => 
+# temperature => 0.8
 # total-probability-cutoff => 0.03
-# evaluator => (my \LLM::Functions::ChatEvaluator_2399528923000 = LLM::Functions::ChatEvaluator.new(conf => LLM::Functions::Configuration.new(name => "openai", api-key => Whatever, api-user-id => "user:645119954074", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", stop-tokens => [".", "?", "!"], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_2399528923000)))
+# tools => []
+# max-tokens => 300
+# evaluator => (my \LLM::Functions::ChatEvaluator_4210096345120 = LLM::Functions::ChatEvaluator.new(conf => LLM::Functions::Configuration.new(name => "openai", api-key => Whatever, api-user-id => "user:673248032631", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", stop-tokens => [".", "?", "!"], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_4210096345120), formatron => "Str"))
+# model => gpt-3.5-turbo
+# api-user-id => user:673248032631
+# prompts => []
+# api-key => (Whatever)
+# function => &OpenAIChatCompletion
+# name => openai
+# format => values
+# stop-tokens => [. ? !]
+# prompt-delimiter =>  
+# module => WWW::OpenAI
+# tool-request-parser => (WhateverCode)
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -192,24 +192,24 @@ Here is the default PaLM configuration:
 .say for llm-configuration('PaLM').Hash;
 ```
 ```
-# tool-prompt => 
-# evaluator => (Whatever)
-# module => WWW::PaLM
-# prompt-delimiter =>  
-# temperature => 0.4
-# stop-tokens => [. ? !]
-# api-key => (Whatever)
-# format => values
-# api-user-id => user:235062678416
-# max-tokens => 300
-# name => palm
-# prompts => []
 # total-probability-cutoff => 0
-# function => &PaLMGenerateText
-# tool-response-insertion-function => (WhateverCode)
-# model => text-bison-001
-# tools => []
+# api-key => (Whatever)
+# prompts => []
 # tool-request-parser => (WhateverCode)
+# api-user-id => user:282937984331
+# tools => []
+# module => WWW::PaLM
+# temperature => 0.4
+# model => text-bison-001
+# name => palm
+# function => &PaLMGenerateText
+# stop-tokens => [. ? !]
+# tool-prompt => 
+# prompt-delimiter =>  
+# tool-response-insertion-function => (WhateverCode)
+# max-tokens => 300
+# evaluator => (Whatever)
+# format => values
 ```
 
 -----
@@ -224,7 +224,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# -> $text, *%args { #`(Block|2399534554584) ... }
+# -> $text, *%args { #`(Block|4210103437376) ... }
 ```
 
 Here we evaluate over a message: 
@@ -235,58 +235,59 @@ say &func('greek salad');
 ```
 # Greek Salad
 # 
-# Ingredients:
-# 
-# · 2-3 cups of chopped Romaine lettuce
-# 
-# · 1 cup of cherry tomatoes, halved
-# 
-# · 1/2 cup of diced cucumber
-# 
-# · 1/2 cup of crumbled feta cheese
-# 
-# · 1/4 cup of sliced kalamata olives
-# 
-# · 2 tablespoons of red onion, diced
-# 
-# · 2 tablespoons of olive oil
-# 
-# · 1 tablespoon of red wine vinegar
-# 
-# · 1 teaspoon of dried oregano
-# 
-# · Salt and pepper, to taste
+# Ingredients: 
+# - 1/2 head romaine lettuce, chopped
+# - 2 medium tomatoes, chopped
+# - 1/2 cucumber, chopped
+# - 1/2 red onion, chopped
+# - 1/2 cup olives, sliced
+# - 2 ounces feta cheese, crumbled
+# - 2 tablespoons extra virgin olive oil
+# - 2 tablespoons red wine vinegar
+# - 1 teaspoon dried oregano
+# - 1/2 teaspoon garlic powder
+# - Salt and pepper, to taste
 # 
 # Instructions:
-# 
-# 1. In a large bowl, combine the Romaine lettuce, cherry tomatoes, cucumber, feta cheese, and olives.
-# 
-# 2. In a small bowl, whisk together the olive oil, red wine vinegar, oregano, salt, and pepper.
-# 
-# 3. Add the dressing to the salad and toss to combine.
-# 
-# 4. Serve and enjoy.
+# 1. In a large bowl, combine the lettuce, tomatoes, cucumber, onion, and olives.
+# 2. Sprinkle the feta cheese on top.
+# 3. In a small bowl, mix together the olive oil, red wine vinegar, oregano, garlic powder, and salt and pepper.
+# 4. Drizzle the dressing over the salad and toss to combine.
+# 5. Serve immediately.
 ```
 
 ### Positional arguments
 
-Here we make a LLM function with a function-prompt:
+Here we make a LLM function with a function-prompt and numeric interpreter of the result:
 
 ```perl6
-my &func2 = llm-function({"How many $^a can fit inside one $^b?"}, llm-evaluator => 'palm');
+my &func2 = llm-function(
+        {"How many $^a can fit inside one $^b?"},
+        form => Numeric,
+        llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|2399613800616) ... }
+# -> **@args, *%args { #`(Block|4210143868712) ... }
 ```
 
 Here were we apply the function:
 
 ```perl6
-&func2("tenis balls", "toyota corolla 2010");
+my $res2 = &func2("tenis balls", "toyota corolla 2010");
 ```
 ```
-# 320
+# 430
 ```
+
+Here we show that we got a number:
+
+```perl6
+$res2 ~~ Numeric
+```
+```
+# True
+```
+
 
 ### Named arguments
 
@@ -296,7 +297,7 @@ Here the first argument is a template with two named arguments:
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|2399549302536) ... }
+# -> **@args, *%args { #`(Block|4210084197160) ... }
 ```
 
 Here is an invocation:
@@ -305,28 +306,29 @@ Here is an invocation:
 &func3(dish => 'salad', cuisine => 'Russion', max-tokens => 300);
 ```
 ```
-# **Ingredients**
+# **Ingredients:**
 # 
 # * 1 head of cabbage, shredded
+# * 1 carrot, shredded
+# * 1/2 cup of green peas, cooked
+# * 1/2 cup of chopped walnuts
 # * 1/2 cup of mayonnaise
-# * 1/2 cup of sour cream
-# * 1/4 cup of finely chopped onion
-# * 1/4 cup of finely chopped dill
-# * 1/4 cup of finely chopped parsley
+# * 1/4 cup of sour cream
 # * Salt and pepper to taste
 # 
-# **Instructions**
+# **Instructions:**
 # 
-# 1. In a large bowl, combine the cabbage, mayonnaise, sour cream, onion, dill, parsley, salt, and pepper.
-# 2. Stir until well combined.
-# 3. Serve immediately or chill for later.
+# 1. In a large bowl, combine the cabbage, carrots, and green peas.
+# 2. In a small bowl, whisk together the mayonnaise, sour cream, salt, and pepper.
+# 3. Pour the dressing over the salad and toss to coat.
+# 4. Serve immediately or chill for later.
 # 
-# **Tips**
+# **Tips:**
 # 
-# * For a more flavorful salad, add some chopped carrots, celery, or radishes.
-# * You can also add some chopped nuts or seeds for a crunchy texture.
-# * If you don't have any fresh herbs on hand, you can use dried herbs instead. Just use half the amount of dried herbs as you would fresh herbs.
-# * This salad is best served cold, so make sure to chill it for at least a few hours before serving.
+# * For a more flavorful salad, add some chopped fresh herbs, such as dill or parsley.
+# * You can also add some chopped red onion or celery to the salad.
+# * If you don't have any walnuts on hand, you can use any other type of nut, such as almonds or pecans.
+# * For a vegan version of this salad, use vegan mayonnaise and sour cream.
 ```
 
 --------
@@ -418,7 +420,8 @@ For detailed examples see the documents:
       - [X] Hint option
     - [X] DONE Verify works with OpenAI 
     - [X] DONE Verify works with PaLM
-  - [ ] Interpreter argument for `llm-function`
+  - [X] DONE Interpreter argument for `llm-function`
+    - See the `formatron` attribute of `LLM::Functions::Evaluator`. 
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
 - [ ] TODO Documentation  
