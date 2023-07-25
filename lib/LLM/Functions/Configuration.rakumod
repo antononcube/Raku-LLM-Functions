@@ -65,6 +65,7 @@ class LLM::Functions::Configuration {
     has &.tool-response-insertion-function = WhateverCode;
 
     # Argument remaps
+    # Re-naming into arguments known by the LLM function &!function .
     has %.argument-renames;
 
     # Evaluator object
@@ -92,6 +93,7 @@ class LLM::Functions::Configuration {
                   :@!prompts, :$!prompt-delimiter,
                   :@!stop-tokens,
                   :@!tools, :$!tool-prompt, :&!tool-request-parser, :&!tool-response-insertion-function,
+                  :%.argument-renames,
                   :$.evaluator
                 };
     }
