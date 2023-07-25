@@ -92,10 +92,14 @@ class LLM::Functions::Evaluator {
 
         note 'Messages : ', @messages.raku if $echo;
 
+        %args2 = %args2.grep({ $_.key ∉ <prompts> && $_.key ∈ @knownParamNames }).Hash;
+
+        note 'LLM function named arguments : ', %args2.raku if $echo;
+
         # Invoke the LLM function
-        my $res = $!conf.function.( @messages,
-                |%args2.grep({ $_.key ∉ <prompts> && $_.key ∈ @knownParamNames }).Hash
-        );
+        my $res = $!conf.function.( @messages, |%args2);
+
+        note 'LLM response : ', $res if $echo;
 
         return self.post-process($res);
     }
