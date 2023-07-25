@@ -4,6 +4,7 @@ use lib '.';
 use lib './lib';
 
 use LLM::Functions;
+use Text::SubParsers;
 
 use Test;
 
@@ -32,5 +33,13 @@ my &prompt4 = -> :$dish, :$cuisine { "Given a recipe for $dish in the $cuisine c
 is llm-function(&prompt4, llm-evaluator => 'palm')(dish => 'salad', cuisine => 'Russion', max-tokens => 300).all ~~ Str,
         True,
         'recipe';
+
+## 6
+my &f6 = llm-function(
+        { "What is the average speed of $_ ?" },
+        form => get-sub-parser(Numeric),
+        llm-evaluator => 'PaLM');
+
+isa-ok &f6('car in USA highway'), Positional;
 
 done-testing;
