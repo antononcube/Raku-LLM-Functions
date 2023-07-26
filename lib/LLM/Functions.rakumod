@@ -51,11 +51,11 @@ multi sub llm-configuration($spec, *%args) {
 
                 when $_ ~~ Str && $_.lc eq 'chatgpt' {
 
-                    my $obj = llm-configuration('openai');
+                    my $obj = llm-configuration('openai',
+                            name => 'chatgpt',
+                            function => &OpenAIChatCompletion,
+                            model => 'gpt-3.5-turbo');
 
-                    $obj.name = 'chatgpt';
-                    $obj.function = &OpenAIChatCompletion;
-                    $obj.model = 'gpt-3.5-turbo';
                     $obj.evaluator = LLM::Functions::ChatEvaluator.new(conf => $obj);
 
                     $obj;
