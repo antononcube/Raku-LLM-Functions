@@ -411,7 +411,7 @@ For detailed examples see the documents:
   - [ ] TODO Processing and array of prompts as a first argument
   - [ ] TODO Prompt class
     - For retrieval and management
-  - [ ] TODO Chat class / object
+  - [X] DONE Chat class / object
     - For long conversations
   - [X] DONE LLM example function
     - [X] DONE First version with the signatures:
