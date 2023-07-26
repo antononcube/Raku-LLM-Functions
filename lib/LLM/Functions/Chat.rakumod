@@ -15,10 +15,29 @@ class LLM::Functions::Chat {
     method clone { nextwith :llm-evaluator($!llm-evaluator.clone), :messages(@!messages.clone), |%_ }
 
     #-------------------------------------------------------
-    method make-message(Str :$role!, Str :$message!) {
-        return %(:$role,
-                 content => $message,
-                 timestamp => DateTime.now);
+    method re-assign(*%args) {
+        # There should be a more elegant way of doing this.
+        with %args<chat-id>        { self.chat-id = %args<chat-id>; }
+        with %args<llm-evaluator>  { self.llm-evaluator = %args<llm-evaluator>; }
+        with %args<messages>       { self.messages = %args<messages>; }
+        with %args<user-role>      { self.user-role = %args<user-role>; }
+        with %args<assistant-role> { self.assistant-role = %args<assistant-role>; }
+        with %args<system-role>    { self.system-role = %args<system-role>; }
+        return self;
+    }
+
+    #-------------------------------------------------------
+    multi method make-message(Str $message) {
+        return self.make-message(role => $!user-role, :$message, timestamp => DateTime.now);
+    }
+
+    multi method make-message(Str $role, Str $message) {
+        return self.make-message(:$role, :$message, timestamp => DateTime.now);
+    }
+
+    multi method make-message(Str :$role!, Str :$message!, :$timestamp is copy = Whatever) {
+        if $timestamp.isa(Whatever) { $timestamp = DateTime.now; }
+        return %(:$role, content => $message, :$timestamp);
     }
 
     #-------------------------------------------------------
@@ -71,5 +90,16 @@ class LLM::Functions::Chat {
         }
 
         return $res;
+    }
+
+    #-------------------------------------------------------
+    method say(:$delim = ('⸺' x 60)) {
+        say "Chat: {self.chat-id}";
+        say $delim;
+        say "Prompts: {self.llm-evaluator.conf.prompts}";
+        for self.messages -> %h {
+            say $delim;
+            .say for <role content timestamp>.map({ $_ => %h{$_} });
+        }
     }
 }
