@@ -55,4 +55,21 @@ class LLM::Functions::Chat {
         # Result
         return $res;
     }
+
+    #-------------------------------------------------------
+    method Str(-->Str) {
+        return self.gist;
+    }
+
+    method gist(-->Str) {
+        my $res = "LLM::Functions::Chat( chat-id = $!chat-id, llm-evaluator.conf.name = {self.llm-evaluator.conf.name}, messages.elems = {self.messages.elems}";
+
+        if self.messages.elems {
+            $res ~= ", last.message = {self.messages.tail.raku // 'Nil'})";
+        } else {
+            $res ~= ')'
+        }
+
+        return $res;
+    }
 }
