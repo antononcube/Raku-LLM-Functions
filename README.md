@@ -132,24 +132,25 @@ use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 ```
-# :tool-request-parser(WhateverCode)
-# :max-tokens(300)
-# :temperature(0.8)
 # :module("WWW::OpenAI")
-# :prompt-delimiter(" ")
+# :temperature(0.8)
+# :evaluator(Whatever)
 # :tool-response-insertion-function(WhateverCode)
+# :tools($[])
+# :model("text-davinci-003")
+# :max-tokens(300)
+# :stop-tokens($[".", "?", "!"])
+# :tool-request-parser(WhateverCode)
+# :api-key(Whatever)
+# :prompt-delimiter(" ")
+# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
+# :prompts($[])
+# :api-user-id("user:239970080122")
+# :tool-prompt("")
+# :argument-renames(${:api-key("auth-key")})
+# :name("openai")
 # :total-probability-cutoff(0.03)
 # :format("values")
-# :api-key(Whatever)
-# :model("text-davinci-003")
-# :name("openai")
-# :prompts($[])
-# :tool-prompt("")
-# :stop-tokens($[".", "?", "!"])
-# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
-# :tools($[])
-# :api-user-id("user:800730111871")
-# :evaluator(Whatever)
 ```
 
 Here is the ChatGPT-based configuration:
@@ -158,24 +159,25 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# tool-response-insertion-function => (WhateverCode)
-# tool-prompt => 
-# temperature => 0.8
-# total-probability-cutoff => 0.03
-# tools => []
-# max-tokens => 300
-# evaluator => (my \LLM::Functions::ChatEvaluator_4210096345120 = LLM::Functions::ChatEvaluator.new(conf => LLM::Functions::Configuration.new(name => "openai", api-key => Whatever, api-user-id => "user:673248032631", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", stop-tokens => [".", "?", "!"], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_4210096345120), formatron => "Str"))
 # model => gpt-3.5-turbo
-# api-user-id => user:673248032631
-# prompts => []
-# api-key => (Whatever)
-# function => &OpenAIChatCompletion
-# name => openai
+# temperature => 0.8
 # format => values
-# stop-tokens => [. ? !]
+# api-user-id => user:562251012935
+# evaluator => (my \LLM::Functions::ChatEvaluator_3415804767920 = LLM::Functions::ChatEvaluator.new(system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:562251012935", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [[],], prompt-delimiter => " ", stop-tokens => [[".", "?", "!"],], tools => [[],], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_3415804767920), formatron => "Str"))
+# total-probability-cutoff => 0.03
 # prompt-delimiter =>  
+# tools => [[]]
+# prompts => [[]]
+# api-key => (Whatever)
 # module => WWW::OpenAI
+# max-tokens => 300
+# tool-prompt => 
+# argument-renames => {api-key => auth-key}
+# function => &OpenAIChatCompletion
 # tool-request-parser => (WhateverCode)
+# tool-response-insertion-function => (WhateverCode)
+# stop-tokens => [[. ? !]]
+# name => chatgpt
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -192,24 +194,25 @@ Here is the default PaLM configuration:
 .say for llm-configuration('PaLM').Hash;
 ```
 ```
-# total-probability-cutoff => 0
-# api-key => (Whatever)
-# prompts => []
-# tool-request-parser => (WhateverCode)
-# api-user-id => user:282937984331
-# tools => []
-# module => WWW::PaLM
-# temperature => 0.4
-# model => text-bison-001
-# name => palm
-# function => &PaLMGenerateText
-# stop-tokens => [. ? !]
-# tool-prompt => 
-# prompt-delimiter =>  
 # tool-response-insertion-function => (WhateverCode)
-# max-tokens => 300
+# function => &PaLMGenerateText
+# model => text-bison-001
+# api-user-id => user:838106462129
+# prompt-delimiter =>  
+# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens}
 # evaluator => (Whatever)
+# prompts => []
+# temperature => 0.4
+# tool-request-parser => (WhateverCode)
+# tools => []
+# tool-prompt => 
+# name => palm
+# total-probability-cutoff => 0
+# module => WWW::PaLM
+# max-tokens => 300
 # format => values
+# api-key => (Whatever)
+# stop-tokens => [. ? !]
 ```
 
 -----
@@ -224,7 +227,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# -> $text, *%args { #`(Block|4210103437376) ... }
+# -> $text, *%args { #`(Block|3415807146312) ... }
 ```
 
 Here we evaluate over a message: 
@@ -235,25 +238,30 @@ say &func('greek salad');
 ```
 # Greek Salad
 # 
-# Ingredients: 
-# - 1/2 head romaine lettuce, chopped
-# - 2 medium tomatoes, chopped
-# - 1/2 cucumber, chopped
-# - 1/2 red onion, chopped
-# - 1/2 cup olives, sliced
-# - 2 ounces feta cheese, crumbled
-# - 2 tablespoons extra virgin olive oil
-# - 2 tablespoons red wine vinegar
-# - 1 teaspoon dried oregano
-# - 1/2 teaspoon garlic powder
-# - Salt and pepper, to taste
+# Ingredients:
+# 
+# -1 head of romaine lettuce, chopped
+# -2 tomatoes, diced
+# -1/2 red onion, diced
+# -1/2 cucumber, peeled and diced
+# -1/4 cup kalamata olives, pitted and sliced
+# -1/4 cup feta cheese, crumbled
+# -1/4 cup extra virgin olive oil
+# -3 tablespoons red wine vinegar
+# -1 tablespoon freshly squeezed lemon juice
+# -1 teaspoon dijon mustard
+# -1/2 teaspoon dried oregano
+# -salt and pepper to taste
 # 
 # Instructions:
-# 1. In a large bowl, combine the lettuce, tomatoes, cucumber, onion, and olives.
-# 2. Sprinkle the feta cheese on top.
-# 3. In a small bowl, mix together the olive oil, red wine vinegar, oregano, garlic powder, and salt and pepper.
-# 4. Drizzle the dressing over the salad and toss to combine.
-# 5. Serve immediately.
+# 
+# 1. In a large bowl, combine the lettuce, tomatoes, onion, cucumber, and olives.
+# 
+# 2. In a small bowl, whisk together the olive oil, vinegar, lemon juice, mustard, oregano, salt, and pepper.
+# 
+# 3. Pour the dressing over the salad and toss to combine.
+# 
+# 4. Sprinkle the feta cheese over the salad and serve.
 ```
 
 ### Positional arguments
@@ -267,7 +275,7 @@ my &func2 = llm-function(
         llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|4210143868712) ... }
+# -> **@args, *%args { #`(Block|3415876637480) ... }
 ```
 
 Here were we apply the function:
@@ -276,7 +284,7 @@ Here were we apply the function:
 my $res2 = &func2("tenis balls", "toyota corolla 2010");
 ```
 ```
-# 430
+# 167
 ```
 
 Here we show that we got a number:
@@ -297,7 +305,7 @@ Here the first argument is a template with two named arguments:
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|4210084197160) ... }
+# -> **@args, *%args { #`(Block|3415876646840) ... }
 ```
 
 Here is an invocation:
@@ -306,29 +314,31 @@ Here is an invocation:
 &func3(dish => 'salad', cuisine => 'Russion', max-tokens => 300);
 ```
 ```
-# **Ingredients:**
+# **Russian Salad**
 # 
-# * 1 head of cabbage, shredded
-# * 1 carrot, shredded
-# * 1/2 cup of green peas, cooked
-# * 1/2 cup of chopped walnuts
-# * 1/2 cup of mayonnaise
-# * 1/4 cup of sour cream
+# Ingredients:
+# 
+# * 2 pounds (900g) red potatoes, peeled and cubed
+# * 1 pound (450g) carrots, peeled and cubed
+# * 1 pound (450g) celery, thinly sliced
+# * 1/2 cup (120ml) mayonnaise
+# * 1/2 cup (120ml) sour cream
+# * 1/4 cup (60ml) finely chopped fresh dill
+# * 1/4 cup (60ml) finely chopped fresh parsley
 # * Salt and pepper to taste
 # 
-# **Instructions:**
+# Instructions:
 # 
-# 1. In a large bowl, combine the cabbage, carrots, and green peas.
-# 2. In a small bowl, whisk together the mayonnaise, sour cream, salt, and pepper.
+# 1. In a large bowl, combine the potatoes, carrots, and celery.
+# 2. In a small bowl, whisk together the mayonnaise, sour cream, dill, parsley, salt, and pepper.
 # 3. Pour the dressing over the salad and toss to coat.
 # 4. Serve immediately or chill for later.
 # 
 # **Tips:**
 # 
-# * For a more flavorful salad, add some chopped fresh herbs, such as dill or parsley.
-# * You can also add some chopped red onion or celery to the salad.
-# * If you don't have any walnuts on hand, you can use any other type of nut, such as almonds or pecans.
-# * For a vegan version of this salad, use vegan mayonnaise and sour cream.
+# * To make the potatoes ahead of time, boil them in salted water until tender, then drain and cool completely. Store the potatoes in an airtight container in the refrigerator for up to 3 days.
+# * To make the salad ahead of time, assemble it and then cover and chill for up to 24 hours. Just before serving, add the dressing and toss to coat.
+# * This salad is also delicious with chopped walnuts or
 ```
 
 --------
@@ -398,6 +408,96 @@ For detailed examples see the documents:
 
 - ["Using engineered prompts"](./docs/Using-engineered-prompts_woven.md)
 - ["Expand tests into documentation examples"](./docs/Expand-tests-into-doc-examples_woven.md)
+
+--------
+
+## Chat objects
+
+Here we create chat object that uses OpenAI's ChatGPT:
+
+```perl6
+my $prompt = 'You are a gem expert and you give concise answers.';
+my $chat = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatGPT', :$prompt);
+```
+```
+# LLM::Functions::Chat(chat-id = gem-expert-talk, llm-evaluator.conf.name = chatgpt, messages.elems = 0)
+```
+
+```perl6
+$chat.eval('What is the most transparent gem?');
+```
+```
+# The most transparent gem is diamond.
+```
+
+```perl6
+$chat.eval('Ok. What are the second and third most transparent gems?');
+```
+```
+# The second most transparent gem is sapphire, and the third most transparent gem is aquamarine.
+```
+
+Here are the prompt(s) and all messages of the chat object:
+
+```perl6
+say $chat.llm-evaluator.conf.prompts;
+for $chat.messages -> %h {
+  say '-' x 60;
+  .say for <role content timestamp>.map({ $_ => %h{$_} });
+}
+```
+```
+# [You are a gem expert and you give concise answers.]
+# ------------------------------------------------------------
+# role => user
+# content => What is the most transparent gem?
+# timestamp => 2023-07-26T11:36:55.343196-04:00
+# ------------------------------------------------------------
+# role => assistant
+# content => The most transparent gem is diamond.
+# timestamp => 2023-07-26T11:36:56.539652-04:00
+# ------------------------------------------------------------
+# role => user
+# content => Ok. What are the second and third most transparent gems?
+# timestamp => 2023-07-26T11:36:56.550893-04:00
+# ------------------------------------------------------------
+# role => assistant
+# content => The second most transparent gem is sapphire, and the third most transparent gem is aquamarine.
+# timestamp => 2023-07-26T11:36:58.075892-04:00
+```
+
+--------
+
+## Potential problems
+
+With PaLM we have to make the assignment:
+
+```
+$chat.system-role = $chat.assistant-role;
+```
+
+because:
+
+**1.** By default `LLM::Functions::Chat` has three different roles: `<user assistant system>`.
+   So, we get the error:
+
+```
+error => {code => 400, message => Messages must have 0 or at most 2 authors: 3 specified., status => INVALID_ARGUMENT}
+```
+
+**2.** With: 
+
+```
+$chat.system-role = $chat.user-role;`
+```
+
+we get the error:
+
+```
+error => {code => 400, message => Messages must alternate between authors., status => INVALID_ARGUMENT}
+```
+
+**3.** Hence we make the following assignment and change the prompt to use "This assistant is ..." instead of "You are ..."
 
 --------
 

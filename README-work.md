@@ -266,6 +266,68 @@ For detailed examples see the documents:
 
 --------
 
+## Chat objects
+
+Here we create chat object that uses OpenAI's ChatGPT:
+
+```perl6
+my $prompt = 'You are a gem expert and you give concise answers.';
+my $chat = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatGPT', :$prompt);
+```
+
+```perl6
+$chat.eval('What is the most transparent gem?');
+```
+
+```perl6
+$chat.eval('Ok. What are the second and third most transparent gems?');
+```
+
+Here are the prompt(s) and all messages of the chat object:
+
+```perl6
+say $chat.llm-evaluator.conf.prompts;
+for $chat.messages -> %h {
+  say '-' x 60;
+  .say for <role content timestamp>.map({ $_ => %h{$_} });
+}
+```
+
+--------
+
+## Potential problems
+
+With PaLM we have to make the assignment:
+
+```
+$chat.system-role = $chat.assistant-role;
+```
+
+because:
+
+**1.** By default `LLM::Functions::Chat` has three different roles: `<user assistant system>`.
+   So, we get the error:
+
+```
+error => {code => 400, message => Messages must have 0 or at most 2 authors: 3 specified., status => INVALID_ARGUMENT}
+```
+
+**2.** With: 
+
+```
+$chat.system-role = $chat.user-role;`
+```
+
+we get the error:
+
+```
+error => {code => 400, message => Messages must alternate between authors., status => INVALID_ARGUMENT}
+```
+
+**3.** Hence we make the following assignment and change the prompt to use "This assistant is ..." instead of "You are ..."
+
+--------
+
 ## TODO
 
 - [ ] TODO Resources
