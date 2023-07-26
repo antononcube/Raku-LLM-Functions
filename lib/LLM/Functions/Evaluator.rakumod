@@ -13,7 +13,7 @@ class LLM::Functions::Evaluator {
     method clone { nextwith :conf($!conf.clone), |%_ }
 
     #-------------------------------------------------------
-    method prompt-texts-combiner($prompt, @texts) {
+    method prompt-texts-combiner($prompt, @texts, *%args) {
         return [$prompt, |@texts].join($.conf.prompt-delimiter);
     }
 
@@ -109,7 +109,30 @@ class LLM::Functions::Evaluator {
 class LLM::Functions::ChatEvaluator
         is LLM::Functions::Evaluator {
 
+    has Str $.system-role is rw = 'system';
+
     method prompt-texts-combiner($prompt, @texts) {
-        return ['system' => $prompt, |('user' X=> @texts)];
+        my @messages = do given @texts {
+            when $_.all ~~ Str {
+                ('user' X=> @texts);
+            }
+            when $_.all ~~ Pair {
+                @texts;
+            }
+
+            when $_.all ~~ Map {
+                @texts.map({ $_<role> => $_<content> }).Array;
+            }
+
+            default {
+                die 'Unknown form of the second argument (@texts).';
+            }
+        };
+
+        if $prompt {
+            return [$!system-role => $prompt, |@messages];
+        } else {
+            return @messages;
+        }
     }
 }
