@@ -36,4 +36,17 @@ is-deeply
         $chat4a.llm-evaluator.conf.Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
         $chat4b.llm-evaluator.conf.Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
 
+## 5
+my $prompt5 = 'You are an interviewer from a magazine about computer programming';
+my $llmEvalObj5 = LLM::Functions::ChatEvaluator.new(conf => llm-configuration('ChatGPT', prompts => $prompt5));
+
+ok llm-chat($chat2, chat-id => 'changed', llm-evaluator => $llmEvalObj5);
+
+# 6
+my $chat6 = llm-chat($chat2, chat-id => 'changed', llm-evaluator => $llmEvalObj5);
+
+is-deeply
+        ($chat6.chat-id, $chat6.llm-evaluator.conf.name, $chat6.llm-evaluator.conf.prompts),
+        ('changed', 'chatgpt', [$prompt5,]);
+
 done-testing;
