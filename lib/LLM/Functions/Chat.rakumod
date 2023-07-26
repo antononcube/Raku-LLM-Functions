@@ -12,6 +12,9 @@ class LLM::Functions::Chat {
     has Str $.system-role is rw = 'system';
 
     #-------------------------------------------------------
+    method clone { nextwith :llm-evaluator($!llm-evaluator.clone), :messages(@!messages.clone), |%_ }
+
+    #-------------------------------------------------------
     method make-message(Str :$role!, Str :$message!) {
         return %(:$role,
                  content => $message,
