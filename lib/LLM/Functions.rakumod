@@ -135,7 +135,7 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
 # Get LLM evaluator
 #===========================================================
 
-sub get-llm-evaluator($llm-evaluator is copy) {
+sub llm-evaluator($llm-evaluator is copy) {
 
     $llm-evaluator = do given $llm-evaluator {
 
@@ -148,7 +148,7 @@ sub get-llm-evaluator($llm-evaluator is copy) {
         }
 
         when $_ ~~ Str {
-            get-llm-evaluator(llm-configuration($_));
+            llm-evaluator(llm-configuration($_));
         }
 
         when $_ ~~ LLM::Functions::Configuration {
@@ -201,7 +201,7 @@ multi sub llm-function(Str $prompt,
                        :form(:$formatron) = 'Str',
                        :$llm-evaluator is copy = Whatever) {
 
-    $llm-evaluator = get-llm-evaluator($llm-evaluator);
+    $llm-evaluator = llm-evaluator($llm-evaluator);
 
     $llm-evaluator.conf.prompts.append($prompt);
     $llm-evaluator.formatron = $formatron;
@@ -214,7 +214,7 @@ multi sub llm-function(&queryFunc,
                        :form(:$formatron) = 'Str',
                        :$llm-evaluator is copy = Whatever) {
 
-    $llm-evaluator = get-llm-evaluator($llm-evaluator);
+    $llm-evaluator = llm-evaluator($llm-evaluator);
     $llm-evaluator.formatron = $formatron;
 
     # Find known parameters
@@ -281,6 +281,10 @@ multi sub llm-example-function(@pairs,
 #| Creates a new chat object
 proto sub llm-chat(|) is export {*}
 
+multi sub llm-chat(LLM::Functions::Chat $chat, *%args) {
+    return $chat.clone.re-assign(|%args);
+}
+
 multi sub llm-chat($prompt = '', *%args) {
     return llm-chat(:$prompt, |%args);
 }
@@ -297,7 +301,7 @@ multi sub llm-chat(:$prompt = '', *%args) {
         }
 
         when $_.isa(LLM::Functions::Configuration) {
-            LLM::Functions::ChatEvaluator.new(conf => $_);
+            LLM::Functions::ChatEvaluator.new(conf => llm-configuration($_, prompts => $prompt));
         }
 
         when $_ ~~ Str:D {
