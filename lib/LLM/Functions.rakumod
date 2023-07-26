@@ -274,13 +274,13 @@ multi sub llm-example-function(@pairs,
 #===========================================================
 
 #| Creates a new chat object
-proto sub chat-object(|) is export {*}
+proto sub llm-chat(|) is export {*}
 
-multi sub chat-object($prompt = '', *%args) {
-    return chat-object(:$prompt, |%args);
+multi sub llm-chat($prompt = '', *%args) {
+    return llm-chat(:$prompt, |%args);
 }
 
-multi sub chat-object(:$prompt = '', *%args) {
+multi sub llm-chat(:$prompt = '', *%args) {
 
     # Get evaluator spec
     my $spec = %args<llm-evaluator> // %args<llm-configuration> // %args<conf> // Whatever;
