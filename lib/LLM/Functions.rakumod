@@ -4,15 +4,14 @@ use JSON::Fast;
 use Hash::Merge;
 
 use WWW::OpenAI;
-use WWW::OpenAI::Models;
 use WWW::OpenAI::TextCompletions;
 use WWW::OpenAI::ChatCompletions;
 
 use WWW::PaLM;
-use WWW::PaLM::Models;
 use WWW::PaLM::GenerateText;
 use WWW::PaLM::GenerateMessage;
 
+use LLM::Functions::Chat;
 use LLM::Functions::Configuration;
 use LLM::Functions::Evaluator;
 
@@ -268,4 +267,48 @@ multi sub llm-example-function(@pairs,
     }
 
     die "The first argument is expected to be a list of pairs or a pair of two positionals with the same length.";
+}
+
+#===========================================================
+# LLM Chat object
+#===========================================================
+
+#| Creates a new chat object
+proto sub chat-object(|) is export {*}
+
+multi sub chat-object($prompt = '', *%args) {
+    return chat-object(:$prompt, |%args);
+}
+
+multi sub chat-object(:$prompt = '', *%args) {
+
+    # Get evaluator spec
+    my $spec = %args<llm-evaluator> // %args<llm-configuration> // %args<conf> // Whatever;
+
+    # Make evaluator object
+    my $llmEvalObj = do given $spec {
+        when $_.isa(Whatever) {
+            LLM::Functions::ChatEvaluator.new(conf => llm-configuration('PaLM-Chat', prompts => $prompt));
+        }
+
+        when $_.isa(LLM::Functions::Configuration) {
+            LLM::Functions::ChatEvaluator.new(conf => $_);
+        }
+
+        when $_ ~~ Str:D {
+            LLM::Functions::ChatEvaluator.new(conf => llm-configuration($_, prompts => $prompt));
+        }
+
+        when $_.isa(LLM::Functions::ChatEvaluator) {
+            # Do nothing
+        }
+
+        default {
+            die "Cannot obtain or make a LLM evaluator object with the given specs.";
+        }
+    }
+
+    # Result
+    my %args2 = %args.grep({ $_.key ∉ <llm-evaluator llm-configuration conf prompt>});
+    return LLM::Functions::Chat.new(llm-evaluator => $llmEvalObj, |%args2);
 }
