@@ -79,6 +79,10 @@ multi sub llm-configuration($spec, *%args) {
                             format => 'values');
                 }
 
+                when $_ ~~ Str && $_.lc ∈ <chatpalm chat-palm palmchat palm-chat> {
+                    llm-configuration('palm', function => &PaLMGenerateMessage, model => 'chat-bison-001')
+                }
+
                 default {
                     llm-configuration('openai')
                 }
