@@ -53,6 +53,7 @@ multi sub llm-configuration($spec, *%args) {
 
                     my $obj = llm-configuration('openai');
 
+                    $obj.name = 'chatgpt';
                     $obj.function = &OpenAIChatCompletion;
                     $obj.model = 'gpt-3.5-turbo';
                     $obj.evaluator = LLM::Functions::ChatEvaluator.new(conf => $obj);
@@ -79,7 +80,11 @@ multi sub llm-configuration($spec, *%args) {
                 }
 
                 when $_ ~~ Str && $_.lc ∈ <chatpalm chat-palm palmchat palm-chat> {
-                    llm-configuration('palm', function => &PaLMGenerateMessage, model => 'chat-bison-001')
+                    llm-configuration(
+                            'palm',
+                            name => 'chatpalm',
+                            function => &PaLMGenerateMessage,
+                            model => 'chat-bison-001')
                 }
 
                 default {
