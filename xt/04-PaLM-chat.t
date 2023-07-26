@@ -26,8 +26,8 @@ plan *;
 
 
 ## 1
-my $prompt1 = 'You are a gem expert and you give concise answers.';
-my $chat1 = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatPaLM', :$prompt1);
+my $prompt = 'You are a gem expert and you give concise answers.';
+my $chat1 = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatPaLM', :$prompt);
 $chat1.system-role = $chat1.assistant-role;
 
 ok $chat1.eval('What is the most transparent gem?');
