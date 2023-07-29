@@ -37,7 +37,7 @@ is llm-function(&prompt4, llm-evaluator => 'palm')(dish => 'salad', cuisine => '
 ## 6
 my &f6 = llm-function(
         { "What is the average speed of $_ ?" },
-        form => get-sub-parser(Numeric),
+        form => sub-parser(Numeric),
         llm-evaluator => 'PaLM');
 
 isa-ok &f6('car in USA highway'), Positional;
