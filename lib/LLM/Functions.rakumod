@@ -135,20 +135,23 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
 # Get LLM evaluator
 #===========================================================
 
-sub llm-evaluator($llm-evaluator is copy) {
+sub llm-evaluator($llm-evaluator is copy, *%args) is export {
+
+    my %argsConf = %args.grep({ $_ ∈ LLM::Functions::Configuration.^attributes });
+    my %argsEvlr = %args.grep({ $_ ∉ %argsConf.keys });
 
     $llm-evaluator = do given $llm-evaluator {
 
         when Whatever {
-            LLM::Functions::Evaluator.new(conf => llm-configuration('openai'));
+            LLM::Functions::Evaluator.new(conf => llm-configuration('openai', |%argsConf), |%argsEvlr);
         }
 
         when WhateverCode {
-            LLM::Functions::Evaluator.new(conf => llm-configuration('openai'));
+            LLM::Functions::Evaluator.new(conf => llm-configuration('openai', |%argsConf), |%argsEvlr);
         }
 
-        when $_ ~~ Str {
-            llm-evaluator(llm-configuration($_));
+        when $_ ~~ Str:D {
+            llm-evaluator(llm-configuration($_, |%argsConf), |%argsEvlr);
         }
 
         when $_ ~~ LLM::Functions::Configuration {
@@ -157,7 +160,7 @@ sub llm-evaluator($llm-evaluator is copy) {
 
             if $conf.evaluator.isa(Whatever) {
 
-                LLM::Functions::Evaluator.new(:$conf);
+                LLM::Functions::Evaluator.new(:$conf, |%argsEvlr);
 
             } else {
 
@@ -171,11 +174,13 @@ sub llm-evaluator($llm-evaluator is copy) {
         }
 
         when LLM::Functions::Evaluator {
-            $_.clone;
+            my $res = $_.clone;
+            with %argsEvlr<conf> { $res.conf = %argsEvlr<conf>; }
+            with %argsEvlr<formatron> { $res.conf = %argsEvlr<formatron>; }
         }
     }
 
-    die 'The argument \$llm-evaluator is expected to be of type if LLM::Functions::Evaluator or Whatever.'
+    die 'The first argument is expected to be Whatever, or one of the types Str:D, LLM::Functions::Evaluator, or LLM::Functions::Configuration.'
     unless $llm-evaluator ~~ LLM::Functions::Evaluator;
 
     return $llm-evaluator;
