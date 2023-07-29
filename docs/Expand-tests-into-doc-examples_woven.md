@@ -43,10 +43,10 @@ END
 ## Tests ingestion 
 
 ```perl6
-my &testNarrator = llm-function($pre, llm-evaluator => 'chatgpt');
+my &testNarrator = llm-function($pre, llm-evaluator => 'openai');
 ```
 ```
-# -> $text, *%args { #`(Block|3645374785080) ... }
+# -> $text, *%args { #`(Block|3019711648248) ... }
 ```
 
 ```perl6
@@ -69,49 +69,113 @@ my @testSpecs = $testCode.split( / '##' | 'done-testing' /).tail(*-1)>>.trim;
 # is-deeply
 #         llm-configuration('PaLM').Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
 #         llm-configuration('palm').Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
+# 6
+# my $conf6 = llm-configuration('openai', prompts => [$pre3, ]);
+# isa-ok $conf6.prompts, Positional;
+# 7
+# is-deeply $conf6.prompts, [$pre3,];
 ```
 
-```perl6
-for @testSpecs -> $t {
-    say "=" x 100;
-    say $t;
-    say "-" x 100;
+```perl6, results=asis
+for @testSpecs.kv -> $k, $t {
+    say "## ", $k + 1;
+    say "{'`' x 3}\n$t\n{'`' x 3}\n\n";
     say &testNarrator($t);
+    say "\n\n"
 }
 ```
+## 1
 ```
-# ====================================================================================================
-# 1
-# isa-ok llm-configuration(Whatever).Hash, Hash;
-# ----------------------------------------------------------------------------------------------------
-# error => {code => (Any), message => That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists. (Please include the request ID aaa0aaa2e7f37681c2c8c9320e8a4ce2 in your message.), param => (Any), type => server_error}
-# ====================================================================================================
-# 2
-# isa-ok llm-configuration('openai'), LLM::Functions::Configuration;
-# ----------------------------------------------------------------------------------------------------
-# The code `llm-configuration('openai')` is checking if the output of this function is an instance of the `LLM::Functions::Configuration` class. If the output is an instance of that class, the test will pass.
-# ====================================================================================================
-# 3
-# my $pre3 = 'Use to GitHub table specification of the result if possible.';
-# ok llm-configuration(llm-configuration('openai'), prompts => [$pre3, ]);
-# ----------------------------------------------------------------------------------------------------
-# error => {code => (Any), message => That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists. (Please include the request ID cb83b8f995ff30be561412b342d8722e in your message.), param => (Any), type => server_error}
-# ====================================================================================================
-# 4
-# ok llm-configuration('openai', prompts => [$pre3, ]);
-# ----------------------------------------------------------------------------------------------------
-# The code snippet provided is calling a function named "llm-configuration" with the argument 'openai' and a named argument 'prompts' which is an array containing a variable named '$pre3'. The function is expected to return a result without any issues during execution.
-# ====================================================================================================
-# 5
-# is-deeply
-#         llm-configuration('PaLM').Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
-#         llm-configuration('palm').Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
-# ----------------------------------------------------------------------------------------------------
-# The code snippet compares the outputs of two expressions using the `is-deeply` function in Raku. 
-# 
-# The first expression is `llm-configuration('PaLM').Hash.grep({ $_.key ∉ <api-user-id>}).Hash`, which retrieves the hash from the "PaLM" configuration in `llm-configuration`, and then filters out any elements whose key is not in the `<api-user-id>` list.
-# 
-# The second expression is `llm-configuration('palm').Hash.grep({ $_.key ∉ <api-user-id>}).Hash`, which does the same thing as the first expression, but with the configuration key "palm" instead of "PaLM".
-# 
-# The `is-deeply` function compares the outputs of these two expressions and checks if they are the same.
+1
+isa-ok llm-configuration(Whatever).Hash, Hash;
 ```
+
+
+
+
+The output of llm-configuration(Whatever).Hash is the same as a Hash object.
+
+
+
+## 2
+```
+2
+isa-ok llm-configuration('openai'), LLM::Functions::Configuration;
+```
+
+
+
+
+This code checks that the output of llm-configuration('openai') is an object of type LLM::Functions::Configuration.
+
+
+
+## 3
+```
+3
+my $pre3 = 'Use to GitHub table specification of the result if possible.';
+ok llm-configuration(llm-configuration('openai'), prompts => [$pre3, ]);
+```
+
+
+
+
+Here, we use the llm-configuration function to configure the OpenAI prompts. We pass in an llm-configuration object, plus an array containing the prompt we defined earlier. The llm-configuration returns an output, which we use ok to check that there were no problems during execution.
+
+
+
+## 4
+```
+4
+ok llm-configuration('openai', prompts => [$pre3, ]);
+```
+
+
+
+
+No problems during the execution of llm-configuration('openai', prompts => [$pre3, ]). This code sets the configuration for an openai module using the variable $pre3 as a prompt.
+
+
+
+## 5
+```
+5
+is-deeply
+        llm-configuration('PaLM').Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
+        llm-configuration('palm').Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
+```
+
+
+
+
+The code above will check the Hash of the llm-configuration('PaLM') and llm-configuration('palm') for any keys that do not equal <api-user-id>. If none are found, it will return an empty Hash. This can be tested using the is-deeply command to check that the output is the same as the expected result.
+
+
+
+## 6
+```
+6
+my $conf6 = llm-configuration('openai', prompts => [$pre3, ]);
+isa-ok $conf6.prompts, Positional;
+```
+
+
+
+is-deeply $conf6.prompts, [$pre3, ];
+ok llm-configuration('openai', prompts => [$pre3, ]).out(:$pre3);
+
+Here is an example of a configuration object created by the llm-configuration method using the 'openai' keyword. This configuration object contains one prompt, which is the $pre3 variable. The isa-ok test verifies that the value of the 'prompts' key is an array. The is-deeply test verifies that the array contains the value of the $pre3 variable. The ok test verifies that the configuration object's out method successfully returns the value of the $pre3 variable.
+
+
+
+## 7
+```
+7
+is-deeply $conf6.prompts, [$pre3,];
+```
+
+
+
+
+The output of $conf6.prompts is the same as [$pre3,].
+

@@ -32,7 +32,7 @@ END
 ## Tests ingestion 
 
 ```perl6
-my &testNarrator = llm-function($pre, llm-evaluator => 'chatgpt');
+my &testNarrator = llm-function($pre, llm-evaluator => 'openai');
 ```
 
 ```perl6
@@ -42,11 +42,11 @@ my @testSpecs = $testCode.split( / '##' | 'done-testing' /).tail(*-1)>>.trim;
 .say for @testSpecs;
 ```
 
-```perl6
-for @testSpecs -> $t {
-    say "=" x 100;
-    say $t;
-    say "-" x 100;
+```perl6, results=asis
+for @testSpecs.kv -> $k, $t {
+    say "## ", $k + 1;
+    say "{'`' x 3}\n$t\n{'`' x 3}\n\n";
     say &testNarrator($t);
+    say "\n\n"
 }
 ```
