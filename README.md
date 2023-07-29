@@ -132,25 +132,25 @@ use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 ```
-# :module("WWW::OpenAI")
-# :temperature(0.8)
-# :evaluator(Whatever)
-# :tool-response-insertion-function(WhateverCode)
-# :tools($[])
 # :model("text-davinci-003")
-# :max-tokens(300)
+# :api-user-id("user:167085543960")
+# :prompts($[])
+# :total-probability-cutoff(0.03)
+# :module("WWW::OpenAI")
+# :format("values")
 # :stop-tokens($[".", "?", "!"])
-# :tool-request-parser(WhateverCode)
-# :api-key(Whatever)
+# :evaluator(Whatever)
+# :name("openai")
 # :prompt-delimiter(" ")
 # :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
-# :prompts($[])
-# :api-user-id("user:239970080122")
-# :tool-prompt("")
 # :argument-renames(${:api-key("auth-key")})
-# :name("openai")
-# :total-probability-cutoff(0.03)
-# :format("values")
+# :tool-prompt("")
+# :tool-response-insertion-function(WhateverCode)
+# :temperature(0.8)
+# :max-tokens(300)
+# :tools($[])
+# :tool-request-parser(WhateverCode)
+# :api-key(Whatever)
 ```
 
 Here is the ChatGPT-based configuration:
@@ -159,25 +159,25 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# model => gpt-3.5-turbo
-# temperature => 0.8
-# format => values
-# api-user-id => user:562251012935
-# evaluator => (my \LLM::Functions::ChatEvaluator_3415804767920 = LLM::Functions::ChatEvaluator.new(system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:562251012935", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [[],], prompt-delimiter => " ", stop-tokens => [[".", "?", "!"],], tools => [[],], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_3415804767920), formatron => "Str"))
-# total-probability-cutoff => 0.03
-# prompt-delimiter =>  
-# tools => [[]]
-# prompts => [[]]
+# tool-prompt => 
 # api-key => (Whatever)
 # module => WWW::OpenAI
-# max-tokens => 300
-# tool-prompt => 
-# argument-renames => {api-key => auth-key}
-# function => &OpenAIChatCompletion
-# tool-request-parser => (WhateverCode)
-# tool-response-insertion-function => (WhateverCode)
 # stop-tokens => [[. ? !]]
+# format => values
+# max-tokens => 300
+# tool-request-parser => (WhateverCode)
+# temperature => 0.8
+# prompt-delimiter =>  
+# evaluator => (my \LLM::Functions::ChatEvaluator_4889074153024 = LLM::Functions::ChatEvaluator.new(system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:270718718616", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [[],], prompt-delimiter => " ", stop-tokens => [[".", "?", "!"],], tools => [[],], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_4889074153024), formatron => "Str"))
+# api-user-id => user:270718718616
+# tool-response-insertion-function => (WhateverCode)
+# prompts => [[]]
 # name => chatgpt
+# function => &OpenAIChatCompletion
+# argument-renames => {api-key => auth-key}
+# total-probability-cutoff => 0.03
+# tools => [[]]
+# model => gpt-3.5-turbo
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -195,24 +195,24 @@ Here is the default PaLM configuration:
 ```
 ```
 # tool-response-insertion-function => (WhateverCode)
-# function => &PaLMGenerateText
-# model => text-bison-001
-# api-user-id => user:838106462129
 # prompt-delimiter =>  
-# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens}
-# evaluator => (Whatever)
-# prompts => []
-# temperature => 0.4
-# tool-request-parser => (WhateverCode)
-# tools => []
-# tool-prompt => 
-# name => palm
-# total-probability-cutoff => 0
-# module => WWW::PaLM
 # max-tokens => 300
+# name => palm
+# tool-prompt => 
+# module => WWW::PaLM
 # format => values
-# api-key => (Whatever)
+# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens}
+# total-probability-cutoff => 0
+# temperature => 0.4
 # stop-tokens => [. ? !]
+# model => text-bison-001
+# prompts => []
+# tool-request-parser => (WhateverCode)
+# evaluator => (Whatever)
+# api-key => (Whatever)
+# function => &PaLMGenerateText
+# api-user-id => user:873516959121
+# tools => []
 ```
 
 -----
@@ -227,7 +227,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# -> $text, *%args { #`(Block|3415807146312) ... }
+# -> $text, *%args { #`(Block|4889083364632) ... }
 ```
 
 Here we evaluate over a message: 
@@ -237,31 +237,26 @@ say &func('greek salad');
 ```
 ```
 # Greek Salad
+# Ingredients: 
+# -3 cups romaine lettuce, chopped
+# -1 cup yellow tomatoes, diced
+# -1/2 cup red onions, chopped
+# -1/2 cup feta cheese, crumbled
+# -1/4 cup black olives, halved
+# -1/4 cup olive oil
+# -1/4 cup red wine vinegar
+# -1 tsp. oregano
+# -1/2 tsp. garlic powder
+# -Salt and pepper to taste
 # 
-# Ingredients:
+# Instructions: 
+# 1. In a large bowl, combine the lettuce, tomatoes, onions, feta cheese, and olives.
 # 
-# -1 head of romaine lettuce, chopped
-# -2 tomatoes, diced
-# -1/2 red onion, diced
-# -1/2 cucumber, peeled and diced
-# -1/4 cup kalamata olives, pitted and sliced
-# -1/4 cup feta cheese, crumbled
-# -1/4 cup extra virgin olive oil
-# -3 tablespoons red wine vinegar
-# -1 tablespoon freshly squeezed lemon juice
-# -1 teaspoon dijon mustard
-# -1/2 teaspoon dried oregano
-# -salt and pepper to taste
-# 
-# Instructions:
-# 
-# 1. In a large bowl, combine the lettuce, tomatoes, onion, cucumber, and olives.
-# 
-# 2. In a small bowl, whisk together the olive oil, vinegar, lemon juice, mustard, oregano, salt, and pepper.
+# 2. In a small bowl, whisk together the olive oil, red wine vinegar, oregano, garlic powder, salt, and pepper.
 # 
 # 3. Pour the dressing over the salad and toss to combine.
 # 
-# 4. Sprinkle the feta cheese over the salad and serve.
+# 4. Serve immediately. Enjoy!
 ```
 
 ### Positional arguments
@@ -275,7 +270,7 @@ my &func2 = llm-function(
         llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|3415876637480) ... }
+# -> **@args, *%args { #`(Block|4889151086184) ... }
 ```
 
 Here were we apply the function:
@@ -284,7 +279,7 @@ Here were we apply the function:
 my $res2 = &func2("tenis balls", "toyota corolla 2010");
 ```
 ```
-# 167
+# 100
 ```
 
 Here we show that we got a number:
@@ -293,7 +288,7 @@ Here we show that we got a number:
 $res2 ~~ Numeric
 ```
 ```
-# True
+# False
 ```
 
 
@@ -305,7 +300,7 @@ Here the first argument is a template with two named arguments:
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|3415876646840) ... }
+# -> **@args, *%args { #`(Block|4889054496160) ... }
 ```
 
 Here is an invocation:
@@ -314,31 +309,29 @@ Here is an invocation:
 &func3(dish => 'salad', cuisine => 'Russion', max-tokens => 300);
 ```
 ```
-# **Russian Salad**
+# **Ingredients:**
 # 
-# Ingredients:
-# 
-# * 2 pounds (900g) red potatoes, peeled and cubed
-# * 1 pound (450g) carrots, peeled and cubed
-# * 1 pound (450g) celery, thinly sliced
-# * 1/2 cup (120ml) mayonnaise
-# * 1/2 cup (120ml) sour cream
-# * 1/4 cup (60ml) finely chopped fresh dill
-# * 1/4 cup (60ml) finely chopped fresh parsley
+# * 1 head of cabbage, shredded
+# * 1 carrot, shredded
+# * 1/2 cup of mayonnaise
+# * 1/4 cup of sour cream
+# * 1/4 cup of chopped fresh dill
+# * 1/4 cup of chopped fresh parsley
 # * Salt and pepper to taste
 # 
-# Instructions:
+# **Instructions:**
 # 
-# 1. In a large bowl, combine the potatoes, carrots, and celery.
-# 2. In a small bowl, whisk together the mayonnaise, sour cream, dill, parsley, salt, and pepper.
-# 3. Pour the dressing over the salad and toss to coat.
-# 4. Serve immediately or chill for later.
+# 1. In a large bowl, combine the cabbage, carrots, mayonnaise, sour cream, dill, parsley, salt, and pepper.
+# 2. Stir until well combined.
+# 3. Serve immediately or chill for later.
 # 
 # **Tips:**
 # 
-# * To make the potatoes ahead of time, boil them in salted water until tender, then drain and cool completely. Store the potatoes in an airtight container in the refrigerator for up to 3 days.
-# * To make the salad ahead of time, assemble it and then cover and chill for up to 24 hours. Just before serving, add the dressing and toss to coat.
-# * This salad is also delicious with chopped walnuts or
+# * For a more flavorful salad, marinate the cabbage and carrots in a mixture of vinegar, sugar, and salt for several hours before adding the other ingredients.
+# * Feel free to add other vegetables to the salad, such as cucumbers, tomatoes, or radishes.
+# * Top the salad with croutons or crumbled bacon for a more hearty dish.
+# 
+# **Enjoy!**
 ```
 
 --------
@@ -434,7 +427,7 @@ $chat.eval('What is the most transparent gem?');
 $chat.eval('Ok. What are the second and third most transparent gems?');
 ```
 ```
-# The second most transparent gem is sapphire, and the third most transparent gem is aquamarine.
+# The second most transparent gem is sapphire, and the third most transparent gem is emerald.
 ```
 
 Here are the prompt(s) and all messages of the chat object:
@@ -451,19 +444,19 @@ for $chat.messages -> %h {
 # ------------------------------------------------------------
 # role => user
 # content => What is the most transparent gem?
-# timestamp => 2023-07-26T11:36:55.343196-04:00
+# timestamp => 2023-07-28T23:18:53.933263-04:00
 # ------------------------------------------------------------
 # role => assistant
 # content => The most transparent gem is diamond.
-# timestamp => 2023-07-26T11:36:56.539652-04:00
+# timestamp => 2023-07-28T23:18:54.820563-04:00
 # ------------------------------------------------------------
 # role => user
 # content => Ok. What are the second and third most transparent gems?
-# timestamp => 2023-07-26T11:36:56.550893-04:00
+# timestamp => 2023-07-28T23:18:54.833670-04:00
 # ------------------------------------------------------------
 # role => assistant
-# content => The second most transparent gem is sapphire, and the third most transparent gem is aquamarine.
-# timestamp => 2023-07-26T11:36:58.075892-04:00
+# content => The second most transparent gem is sapphire, and the third most transparent gem is emerald.
+# timestamp => 2023-07-28T23:18:55.843033-04:00
 ```
 
 --------
@@ -510,7 +503,20 @@ error => {code => 400, message => Messages must alternate between authors., stat
 - [ ] TODO Implementation
   - [ ] TODO Processing and array of prompts as a first argument
   - [ ] TODO Prompt class
-    - For retrieval and management
+    - For retrieval and management of prompts.
+      - Prompts can be both plain strings or templates / functions.
+      - Each prompt has associated metadata:
+        - Type: persona, function, modifier
+        - Tool/parser
+        - Keywords
+        - Contributor?
+        - Topics: "Advisor bot", "AI Guidance", "For Fun", ...
+          - See: https://resources.wolframcloud.com/PromptRepository/
+    - Most likely, there would be a separate package "LLM::Prompts".
+      - And/or "LLM::Prompts::Repository".
+  - [ ] MAYBE Random selection of LLM-evaluator
+    - Currently, the LLM-evaluator of the LLM-functions and LLM-chats is static, assigned at creation.
+    - This is easily implemented at "top-level." 
   - [X] DONE Chat class / object
     - For long conversations
   - [X] DONE LLM example function
@@ -521,15 +527,25 @@ error => {code => 400, message => Messages must alternate between authors., stat
     - [X] DONE Verify works with OpenAI 
     - [X] DONE Verify works with PaLM
   - [X] DONE Interpreter argument for `llm-function`
-    - See the `formatron` attribute of `LLM::Functions::Evaluator`. 
+    - See the `formatron` attribute of `LLM::Functions::Evaluator`.
+  - [X] DONE Adding `form` option to chat objects evaluator
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
+  - [ ] TODO Storage and retrieval of chats
+  - [ ] TODO Has as parameters all attributes of the LLM-configuration objects.
 - [ ] TODO Documentation  
   - [ ] TODO Detailed parameters description
+    - [ ] TODO Configuration
+    - [ ] TODO Evaluator
+    - [ ] TODO Chat
   - [X] DONE Using engineered prompts
   - [X] DONE Expand tests in documentation examples
+  - [X] DONE Conversion of a test file tests into Gherkin specs
   - [ ] TODO Using retrieved prompts
   - [ ] TODO Longer conversations / chats
+  - [ ] TODO Number game programming
+    - [ ] TODO Man vs Machine
+    - [ ] TODO Machine vs Machine
 
 --------
 

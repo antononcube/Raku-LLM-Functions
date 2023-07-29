@@ -337,7 +337,20 @@ error => {code => 400, message => Messages must alternate between authors., stat
 - [ ] TODO Implementation
   - [ ] TODO Processing and array of prompts as a first argument
   - [ ] TODO Prompt class
-    - For retrieval and management
+    - For retrieval and management of prompts.
+      - Prompts can be both plain strings or templates / functions.
+      - Each prompt has associated metadata:
+        - Type: persona, function, modifier
+        - Tool/parser
+        - Keywords
+        - Contributor?
+        - Topics: "Advisor bot", "AI Guidance", "For Fun", ...
+          - See: https://resources.wolframcloud.com/PromptRepository/
+    - Most likely, there would be a separate package "LLM::Prompts".
+      - And/or "LLM::Prompts::Repository".
+  - [ ] MAYBE Random selection of LLM-evaluator
+    - Currently, the LLM-evaluator of the LLM-functions and LLM-chats is static, assigned at creation.
+    - This is easily implemented at "top-level." 
   - [X] DONE Chat class / object
     - For long conversations
   - [X] DONE LLM example function
@@ -348,15 +361,25 @@ error => {code => 400, message => Messages must alternate between authors., stat
     - [X] DONE Verify works with OpenAI 
     - [X] DONE Verify works with PaLM
   - [X] DONE Interpreter argument for `llm-function`
-    - See the `formatron` attribute of `LLM::Functions::Evaluator`. 
+    - See the `formatron` attribute of `LLM::Functions::Evaluator`.
+  - [X] DONE Adding `form` option to chat objects evaluator
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
+  - [ ] TODO Storage and retrieval of chats
+  - [ ] TODO Has as parameters all attributes of the LLM-configuration objects.
 - [ ] TODO Documentation  
   - [ ] TODO Detailed parameters description
+    - [ ] TODO Configuration
+    - [ ] TODO Evaluator
+    - [ ] TODO Chat
   - [X] DONE Using engineered prompts
   - [X] DONE Expand tests in documentation examples
+  - [X] DONE Conversion of a test file tests into Gherkin specs
   - [ ] TODO Using retrieved prompts
   - [ ] TODO Longer conversations / chats
+  - [ ] TODO Number game programming
+    - [ ] TODO Man vs Machine
+    - [ ] TODO Machine vs Machine
 
 --------
 
