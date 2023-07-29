@@ -297,19 +297,27 @@ multi sub llm-chat(:$prompt = '', *%args) {
     # Make evaluator object
     my $llmEvalObj = do given $spec {
         when $_.isa(Whatever) {
-            LLM::Functions::ChatEvaluator.new(conf => llm-configuration('PaLM-Chat', prompts => $prompt));
+            LLM::Functions::ChatEvaluator.new(
+                    conf => llm-configuration('PaLM-Chat', prompts => $prompt),
+                    formatron => %args<form> // %args<formatron>);
         }
 
         when $_.isa(LLM::Functions::Configuration) {
-            LLM::Functions::ChatEvaluator.new(conf => llm-configuration($_, prompts => $prompt));
+            LLM::Functions::ChatEvaluator.new(
+                    conf => llm-configuration($_, prompts => $prompt),
+                    formatron => %args<form> // %args<formatron>);
+        }
+
+        when $_.isa(LLM::Functions::Evaluator) {
+            LLM::Functions::ChatEvaluator.new(
+                    conf => llm-configuration($_.conf, prompts => $prompt),
+                    formatron => %args<form> // %args<formatron> // $_.formatron);
         }
 
         when $_ ~~ Str:D {
-            LLM::Functions::ChatEvaluator.new(conf => llm-configuration($_, prompts => $prompt));
-        }
-
-        when $_.isa(LLM::Functions::ChatEvaluator) {
-            # Do nothing
+            LLM::Functions::ChatEvaluator.new(
+                    conf => llm-configuration($_, prompts => $prompt),
+                    formatron => %args<form> // %args<formatron>);
         }
 
         default {
@@ -318,6 +326,6 @@ multi sub llm-chat(:$prompt = '', *%args) {
     }
 
     # Result
-    my %args2 = %args.grep({ $_.key ∉ <llm-evaluator llm-configuration conf prompt>});
+    my %args2 = %args.grep({ $_.key ∉ <llm-evaluator llm-configuration conf prompt form formatron> });
     return LLM::Functions::Chat.new(llm-evaluator => $llmEvalObj, |%args2);
 }
