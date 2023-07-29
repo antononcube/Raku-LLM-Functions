@@ -137,8 +137,10 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
 
 sub llm-evaluator($llm-evaluator is copy, *%args) is export {
 
-    my %argsConf = %args.grep({ $_ ∈ LLM::Functions::Configuration.^attributes });
-    my %argsEvlr = %args.grep({ $_ ∉ %argsConf.keys });
+    my @attrConf = LLM::Functions::Configuration.^attribute_table.values>>.name.map({ $_.substr(2)});
+
+    my %argsConf = %args.grep({ $_.key ∈ @attrConf });
+    my %argsEvlr = %args.grep({ $_.key ∉ %argsConf.keys });
 
     $llm-evaluator = do given $llm-evaluator {
 
