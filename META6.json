@@ -10,7 +10,7 @@
   "depends": [
     "HTTP::Tiny:ver<0.2.5+>",
     "JSON::Fast:ver<0.17+>",
-    "Text::SubParsers:ver<0.1.0+>",
+    "Text::SubParsers:ver<0.1.1+>",
     "WWW::OpenAI:ver<0.2.7+>",
     "WWW::PaLM:ver<0.1.6+>"
   ],
