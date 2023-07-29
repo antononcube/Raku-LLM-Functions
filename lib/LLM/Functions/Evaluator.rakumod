@@ -45,7 +45,6 @@ class LLM::Functions::Evaluator {
                 };
 
         with $reformater {
-            note $reformater.raku;
             return $reformater.process($res);
         }
         return $res;
