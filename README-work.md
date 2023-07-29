@@ -11,10 +11,13 @@ For more details how the concrete LLMs are accessed see the packages
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
 ["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
 
+The LLM functions built by this package can have evaluators that use "sub-parsers" -- see 
+["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/Text::SubParsers), [AAp4].
+
 The primary motivation to have handy, configurable functions for utilizing LLMs
 came from my work on the packages
-["ML::FindTextualAnswer"](https://raku.land/zef:antononcube/ML::FindTextualAnswer), [AAp5], and
-["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/ML::NLPTemplateEngine), [AAp6].
+["ML::FindTextualAnswer"](https://raku.land/zef:antononcube/ML::FindTextualAnswer), [AAp6], and
+["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/ML::NLPTemplateEngine), [AAp7].
 
 A very similar system of functionalities is developed by Wolfram Research Inc.;
 see the paclet
@@ -68,6 +71,7 @@ The function `llm-function`:
 - Has the option "llm-evaluator" that takes evaluators, configurations, or string shorthands as values
 - Returns anonymous functions (that access LLMs via evaluators/configurations.)
 - Gives result functions that can be applied to different types of arguments depending on the first argument
+- Can take a (sub-)parser argument for post-processing of LLM results
 - Takes as a first argument a prompt that can be a:
     - String
     - Function with positional arguments
@@ -422,16 +426,21 @@ error => {code => 400, message => Messages must alternate between authors., stat
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp4] Anton Antonov,
+[Text::SubParsers Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp5] Anton Antonov,
 [Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
 (2021),
 [GitHub/antononcube](https://github.com/antononcube).
 
-[AAp5] Anton Antonov,
+[AAp6] Anton Antonov,
 [ML::FindTextualAnswer Raku package](https://github.com/antononcube/Raku-ML-FindTextualAnswer),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
-[AAp6] Anton Antonov,
+[AAp7] Anton Antonov,
 [ML::NLPTemplateEngine Raku package](https://github.com/antononcube/Raku-ML-NLPTemplateEngine),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).

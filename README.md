@@ -11,10 +11,13 @@ For more details how the concrete LLMs are accessed see the packages
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
 ["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
 
+The LLM functions built by this package can have evaluators that use "sub-parsers" -- see 
+["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/Text::SubParsers), [AAp4].
+
 The primary motivation to have handy, configurable functions for utilizing LLMs
 came from my work on the packages
-["ML::FindTextualAnswer"](https://raku.land/zef:antononcube/ML::FindTextualAnswer), [AAp5], and
-["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/ML::NLPTemplateEngine), [AAp6].
+["ML::FindTextualAnswer"](https://raku.land/zef:antononcube/ML::FindTextualAnswer), [AAp6], and
+["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/ML::NLPTemplateEngine), [AAp7].
 
 A very similar system of functionalities is developed by Wolfram Research Inc.;
 see the paclet
@@ -68,6 +71,7 @@ The function `llm-function`:
 - Has the option "llm-evaluator" that takes evaluators, configurations, or string shorthands as values
 - Returns anonymous functions (that access LLMs via evaluators/configurations.)
 - Gives result functions that can be applied to different types of arguments depending on the first argument
+- Can take a (sub-)parser argument for post-processing of LLM results
 - Takes as a first argument a prompt that can be a:
     - String
     - Function with positional arguments
@@ -132,25 +136,25 @@ use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 ```
-# :model("text-davinci-003")
-# :api-user-id("user:167085543960")
-# :prompts($[])
-# :total-probability-cutoff(0.03)
-# :module("WWW::OpenAI")
-# :format("values")
-# :stop-tokens($[".", "?", "!"])
-# :evaluator(Whatever)
-# :name("openai")
-# :prompt-delimiter(" ")
-# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
 # :argument-renames(${:api-key("auth-key")})
-# :tool-prompt("")
-# :tool-response-insertion-function(WhateverCode)
 # :temperature(0.8)
-# :max-tokens(300)
-# :tools($[])
-# :tool-request-parser(WhateverCode)
+# :total-probability-cutoff(0.03)
 # :api-key(Whatever)
+# :api-user-id("user:439906350571")
+# :module("WWW::OpenAI")
+# :tool-prompt("")
+# :max-tokens(300)
+# :prompts($[])
+# :format("values")
+# :prompt-delimiter(" ")
+# :tools($[])
+# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
+# :evaluator(Whatever)
+# :stop-tokens($[".", "?", "!"])
+# :model("text-davinci-003")
+# :name("openai")
+# :tool-request-parser(WhateverCode)
+# :tool-response-insertion-function(WhateverCode)
 ```
 
 Here is the ChatGPT-based configuration:
@@ -159,25 +163,25 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# tool-prompt => 
-# api-key => (Whatever)
-# module => WWW::OpenAI
-# stop-tokens => [[. ? !]]
-# format => values
-# max-tokens => 300
-# tool-request-parser => (WhateverCode)
-# temperature => 0.8
+# api-user-id => user:248207889693
 # prompt-delimiter =>  
-# evaluator => (my \LLM::Functions::ChatEvaluator_4889074153024 = LLM::Functions::ChatEvaluator.new(system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:270718718616", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [[],], prompt-delimiter => " ", stop-tokens => [[".", "?", "!"],], tools => [[],], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_4889074153024), formatron => "Str"))
-# api-user-id => user:270718718616
-# tool-response-insertion-function => (WhateverCode)
-# prompts => [[]]
-# name => chatgpt
+# module => WWW::OpenAI
+# max-tokens => 300
 # function => &OpenAIChatCompletion
-# argument-renames => {api-key => auth-key}
+# evaluator => (my \LLM::Functions::ChatEvaluator_4667916307432 = LLM::Functions::ChatEvaluator.new(system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:248207889693", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [[],], prompt-delimiter => " ", stop-tokens => [[".", "?", "!"],], tools => [[],], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_4667916307432), formatron => "Str"))
+# format => values
+# name => chatgpt
+# temperature => 0.8
+# api-key => (Whatever)
+# tool-prompt => 
+# prompts => [[]]
 # total-probability-cutoff => 0.03
-# tools => [[]]
+# tool-request-parser => (WhateverCode)
 # model => gpt-3.5-turbo
+# tools => [[]]
+# stop-tokens => [[. ? !]]
+# argument-renames => {api-key => auth-key}
+# tool-response-insertion-function => (WhateverCode)
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -195,24 +199,24 @@ Here is the default PaLM configuration:
 ```
 ```
 # tool-response-insertion-function => (WhateverCode)
-# prompt-delimiter =>  
-# max-tokens => 300
-# name => palm
+# evaluator => (Whatever)
 # tool-prompt => 
+# prompt-delimiter =>  
+# name => palm
+# api-user-id => user:966980664710
+# function => &PaLMGenerateText
 # module => WWW::PaLM
-# format => values
-# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens}
-# total-probability-cutoff => 0
-# temperature => 0.4
+# max-tokens => 300
+# tools => []
 # stop-tokens => [. ? !]
+# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens}
+# api-key => (Whatever)
+# temperature => 0.4
+# total-probability-cutoff => 0
 # model => text-bison-001
+# format => values
 # prompts => []
 # tool-request-parser => (WhateverCode)
-# evaluator => (Whatever)
-# api-key => (Whatever)
-# function => &PaLMGenerateText
-# api-user-id => user:873516959121
-# tools => []
 ```
 
 -----
@@ -227,7 +231,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# -> $text, *%args { #`(Block|4889083364632) ... }
+# -> $text, *%args { #`(Block|4667927171656) ... }
 ```
 
 Here we evaluate over a message: 
@@ -237,24 +241,25 @@ say &func('greek salad');
 ```
 ```
 # Greek Salad
-# Ingredients: 
-# -3 cups romaine lettuce, chopped
-# -1 cup yellow tomatoes, diced
-# -1/2 cup red onions, chopped
-# -1/2 cup feta cheese, crumbled
-# -1/4 cup black olives, halved
-# -1/4 cup olive oil
-# -1/4 cup red wine vinegar
-# -1 tsp. oregano
-# -1/2 tsp. garlic powder
-# -Salt and pepper to taste
 # 
-# Instructions: 
-# 1. In a large bowl, combine the lettuce, tomatoes, onions, feta cheese, and olives.
+# Ingredients:
+# • 2 cups of romaine lettuce, chopped
+# • 1/2 cucumber, sliced
+# • 1/2 cup of grape tomatoes, sliced in half
+# • 1/2 cup of red onion, finely diced
+# • 1/2 cup of Kalamata olives, pitted
+# • 1/2 cup of feta cheese, crumbled
+# • 2 tablespoons of extra-virgin olive oil
+# • 1 tablespoon of red wine vinegar
+# • 1 teaspoon of dried oregano
+# • Salt and freshly ground black pepper, to taste
 # 
-# 2. In a small bowl, whisk together the olive oil, red wine vinegar, oregano, garlic powder, salt, and pepper.
+# Instructions:
+# 1. In a large bowl, combine the lettuce, cucumber, tomatoes, red onion, and olives.
 # 
-# 3. Pour the dressing over the salad and toss to combine.
+# 2. Drizzle with the olive oil and red wine vinegar, and season with oregano, salt, and pepper.
+# 
+# 3. Toss to combine, then sprinkle with feta cheese.
 # 
 # 4. Serve immediately. Enjoy!
 ```
@@ -270,7 +275,7 @@ my &func2 = llm-function(
         llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|4889151086184) ... }
+# -> **@args, *%args { #`(Block|4667993824224) ... }
 ```
 
 Here were we apply the function:
@@ -279,7 +284,7 @@ Here were we apply the function:
 my $res2 = &func2("tenis balls", "toyota corolla 2010");
 ```
 ```
-# 100
+# 339
 ```
 
 Here we show that we got a number:
@@ -300,7 +305,7 @@ Here the first argument is a template with two named arguments:
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|4889054496160) ... }
+# -> **@args, *%args { #`(Block|4667907609368) ... }
 ```
 
 Here is an invocation:
@@ -311,27 +316,26 @@ Here is an invocation:
 ```
 # **Ingredients:**
 # 
-# * 1 head of cabbage, shredded
-# * 1 carrot, shredded
+# * 1 head of cabbage, thinly sliced
+# * 1 carrot, grated
 # * 1/2 cup of mayonnaise
-# * 1/4 cup of sour cream
-# * 1/4 cup of chopped fresh dill
+# * 1/2 cup of sour cream
+# * 1 teaspoon of salt
+# * 1/2 teaspoon of black pepper
 # * 1/4 cup of chopped fresh parsley
-# * Salt and pepper to taste
 # 
 # **Instructions:**
 # 
-# 1. In a large bowl, combine the cabbage, carrots, mayonnaise, sour cream, dill, parsley, salt, and pepper.
+# 1. In a large bowl, combine the cabbage, carrot, mayonnaise, sour cream, salt, and pepper.
 # 2. Stir until well combined.
-# 3. Serve immediately or chill for later.
+# 3. Garnish with fresh parsley and serve immediately.
 # 
 # **Tips:**
 # 
-# * For a more flavorful salad, marinate the cabbage and carrots in a mixture of vinegar, sugar, and salt for several hours before adding the other ingredients.
+# * To make the salad ahead of time, store it in the refrigerator for up to 2 days.
+# * For a more flavorful salad, marinate the cabbage and carrot in the dressing for at least 30 minutes before serving.
 # * Feel free to add other vegetables to the salad, such as cucumbers, tomatoes, or radishes.
-# * Top the salad with croutons or crumbled bacon for a more hearty dish.
-# 
-# **Enjoy!**
+# * Serve the salad with your favorite Russian dishes, such as borscht, pelmeni, or chicken Kiev.
 ```
 
 --------
@@ -366,7 +370,7 @@ my &fea = llm-example-function( '<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }');
 &fea('<| 23->3, G->33, T -> R5|>');
 ```
 ```
-# { 23:3, G:33, T:R5 }
+# { 23:3, G:33, T: R5 }
 ```
 
 The function `llm-example-function` takes as a first argument:
@@ -427,7 +431,7 @@ $chat.eval('What is the most transparent gem?');
 $chat.eval('Ok. What are the second and third most transparent gems?');
 ```
 ```
-# The second most transparent gem is sapphire, and the third most transparent gem is emerald.
+# The second most transparent gem is sapphire, followed by emerald as the third most transparent gem.
 ```
 
 Here are the prompt(s) and all messages of the chat object:
@@ -444,19 +448,19 @@ for $chat.messages -> %h {
 # ------------------------------------------------------------
 # role => user
 # content => What is the most transparent gem?
-# timestamp => 2023-07-28T23:18:53.933263-04:00
+# timestamp => 2023-07-29T14:49:43.773714-04:00
 # ------------------------------------------------------------
 # role => assistant
 # content => The most transparent gem is diamond.
-# timestamp => 2023-07-28T23:18:54.820563-04:00
+# timestamp => 2023-07-29T14:49:44.489911-04:00
 # ------------------------------------------------------------
 # role => user
 # content => Ok. What are the second and third most transparent gems?
-# timestamp => 2023-07-28T23:18:54.833670-04:00
+# timestamp => 2023-07-29T14:49:44.501530-04:00
 # ------------------------------------------------------------
 # role => assistant
-# content => The second most transparent gem is sapphire, and the third most transparent gem is emerald.
-# timestamp => 2023-07-28T23:18:55.843033-04:00
+# content => The second most transparent gem is sapphire, followed by emerald as the third most transparent gem.
+# timestamp => 2023-07-29T14:49:45.409820-04:00
 ```
 
 --------
@@ -588,16 +592,21 @@ error => {code => 400, message => Messages must alternate between authors., stat
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp4] Anton Antonov,
+[Text::SubParsers Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp5] Anton Antonov,
 [Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
 (2021),
 [GitHub/antononcube](https://github.com/antononcube).
 
-[AAp5] Anton Antonov,
+[AAp6] Anton Antonov,
 [ML::FindTextualAnswer Raku package](https://github.com/antononcube/Raku-ML-FindTextualAnswer),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
-[AAp6] Anton Antonov,
+[AAp7] Anton Antonov,
 [ML::NLPTemplateEngine Raku package](https://github.com/antononcube/Raku-ML-NLPTemplateEngine),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
