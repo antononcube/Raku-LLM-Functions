@@ -44,7 +44,7 @@ END
 my &testNarrator = llm-function($pre, llm-evaluator => 'chatgpt');
 ```
 ```
-# -> $text, *%args { #`(Block|6535408581240) ... }
+# -> $text, *%args { #`(Block|5080813848184) ... }
 ```
 
 ```perl6
@@ -88,12 +88,15 @@ for @testSpecs -> $t {
 
 # 1
 # isa-ok llm-configuration(Whatever).Hash, Hash;
-Feature: Check if LLM configuration is a Hash
+Feature: Check type of `llm-configuration` result
 
-Scenario: Verify if LLM configuration is of type Hash
-  Given the LLM configuration object is of type Whatever
-  When I check the type of LLM configuration
-  Then the type of LLM configuration should be Hash
+Scenario: Verify `llm-configuration` result is a Hash
+
+Given a `Whatever` instance
+
+When `llm-configuration` is called on the instance
+
+Then the result should be a Hash
 ~~~
 
 
@@ -101,14 +104,12 @@ Scenario: Verify if LLM configuration is of type Hash
 
 # 2
 # isa-ok llm-configuration('openai'), LLM::Functions::Configuration;
-Feature: LLM Configuration
+Feature: Check Configuration
 
-Scenario: Checking LLM Configuration
+Scenario: Check LLM Configuration
 
-Given the LLM configuration for 'openai'
-
+Given I have an LLM configuration with the name 'openai'
 When I check if it is an instance of LLM::Functions::Configuration
-
 Then it should return true
 ~~~
 
@@ -118,18 +119,11 @@ Then it should return true
 # 3
 # my $pre3 = 'Use to GitHub table specification of the result if possible.';
 # ok llm-configuration(llm-configuration('openai'), prompts => [$pre3, ]);
-Feature: LLM Configuration
-
-Scenario: LLM Configuration with OpenAI prompt
-
-Given the LLM configuration is set to 'openai'
-
-When the LLM configuration is called with the following prompts:
-```
-- 'Use to GitHub table specification of the result if possible.'
-```
-
-Then the result should be successful
+Feature: Raku LLM Configuration
+  Scenario: LLM Configuration with OpenAI and Prompts
+    Given a variable $pre3 with the value 'Use to GitHub table specification of the result if possible.'
+    When the function llm-configuration is called with the parameters llm-configuration('openai') and prompts => [$pre3, ]
+    Then the result should be successful
 ~~~
 
 
@@ -137,15 +131,11 @@ Then the result should be successful
 
 # 4
 # ok llm-configuration('openai', prompts => [$pre3, ]);
-**Feature: LLM Configuration**
+Scenario: Configure LLM with OpenAI provider and prompts
 
-**Scenario: Setting OpenAI LLM Configuration**
-
-Given a LLM configuration with provider set to "openai"
-And the configuration includes the following prompts:
-"""
-$pre3
-"""
+Given the LLM is configured
+When configuring the LLM with the OpenAI provider and prompts
+Then the LLM should be successfully configured with the OpenAI provider and the provided prompts
 ~~~
 
 
@@ -155,15 +145,21 @@ $pre3
 # is-deeply
 #         llm-configuration('PaLM').Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
 #         llm-configuration('palm').Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
-Feature: Raku Test
+Feature: Raku test - is-deeply
 
-Scenario: Test is-deeply function with llm-configuration
+Scenario: Verify is-deeply function
 
-Given llm-configuration with Key 'PaLM' and Hash values where key is not equal to <api-user-id>
+Given a llm-configuration with 'PaLM' 
 
-When the is-deeply function is applied to the llm-configuration Hash
+When Hash is filtered by excluding <api-user-id> keys
 
-Then the result should be equal to llm-configuration Hash with Key 'PaLM'
+Then the filtered Hash should be deeply equal to the llm-configuration Hash
+
+Given a llm-configuration with 'palm' 
+
+When Hash is filtered by excluding <api-user-id> keys
+
+Then the filtered Hash should be deeply equal to the llm-configuration Hash
 ~~~
 
 
@@ -172,19 +168,14 @@ Then the result should be equal to llm-configuration Hash with Key 'PaLM'
 # 6
 # my $conf6 = llm-configuration('openai', prompts => [$pre3, ]);
 # isa-ok $conf6.prompts, Positional;
-Feature: Check LLM Configuration
+**Feature: Check LLM Configuration**
 
-Scenario: Verify LLM Configuration Prompts
-
-Given a LLM Configuration with provider "openai" and prompts
-
-```
-$pre3
-```
-
-When checking the type of `$conf6.prompts`
-
-Then it should be a `Positional`
+**Scenario: Verify Prompts**
+  Given a LLM configuration with the provider "openai" and prompts
+  | Prompt |
+  | $pre3  |
+  When I check the type of the prompts
+  Then the prompts should be a positional
 ~~~
 
 
@@ -192,29 +183,11 @@ Then it should be a `Positional`
 
 # 7
 # is-deeply $conf6.prompts, [$pre3,];
-Specification:
+Feature: Verify if the prompts are deeply equal
 
-```
-Feature: Verify the prompts of the configuration
-
-Scenario: Verify the prompts are deeply equal
-    Given a configuration with prompts
-    When the prompts are compared with an expected set of prompts
-    Then the prompts should be deeply equal
-```
-
-**Scenario Outline:**
-
-| conf6.prompts      | expected_prompts |
-|--------------------|-----------------|
-| [$pre3,]           | [$pre3,]        |
-
-Examples:
-
-```gherkin
-Given a configuration with prompts
-When the prompts are compared with an expected set of prompts
-Then the prompts should be deeply equal
-```
+Scenario: Verify if the prompts are deeply equal
+  Given a configuration object
+  When the prompts are checked for deep equality with the expected prompts
+  Then the prompts should be deeply equal to the expected prompts
 ~~~
 
