@@ -41,24 +41,25 @@ Here is the ChatGPT configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# format => values
-# name => openai
-# model => gpt-3.5-turbo
-# tool-response-insertion-function => (WhateverCode)
-# stop-tokens => [. ? !]
-# module => WWW::OpenAI
-# api-key => (Whatever)
-# tools => []
-# api-user-id => user:143318792976
-# function => &OpenAIChatCompletion
-# total-probability-cutoff => 0.03
-# max-tokens => 300
-# prompts => []
-# tool-prompt => 
 # prompt-delimiter =>  
-# temperature => 0.8
+# name => chatgpt
+# prompts => [[]]
+# format => values
+# model => gpt-3.5-turbo
+# total-probability-cutoff => 0.03
+# api-key => (Whatever)
+# function => &OpenAIChatCompletion
+# api-user-id => user:267091135027
+# tool-response-insertion-function => (WhateverCode)
 # tool-request-parser => (WhateverCode)
-# evaluator => (my \LLM::Functions::ChatEvaluator_4958840084504 = LLM::Functions::ChatEvaluator.new(conf => LLM::Functions::Configuration.new(name => "openai", api-key => Whatever, api-user-id => "user:143318792976", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", stop-tokens => [".", "?", "!"], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_4958840084504)))
+# evaluator => (my \LLM::Functions::ChatEvaluator_3988700512944 = LLM::Functions::ChatEvaluator.new(system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:267091135027", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [[],], prompt-delimiter => " ", stop-tokens => [[".", "?", "!"],], tools => [[],], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_3988700512944), formatron => "Str"))
+# stop-tokens => [[. ? !]]
+# tools => [[]]
+# max-tokens => 300
+# tool-prompt => 
+# module => WWW::OpenAI
+# argument-renames => {api-key => auth-key}
+# temperature => 0.8
 ```
 
 ### PaLM
@@ -69,24 +70,25 @@ Here is the PaLM configuration
 .say for llm-configuration('PaLM').Hash;
 ```
 ```
-# evaluator => (Whatever)
-# api-key => (Whatever)
-# tool-response-insertion-function => (WhateverCode)
-# name => palm
-# tool-prompt => 
-# prompt-delimiter =>  
-# format => values
-# api-user-id => user:892002494573
 # prompts => []
-# function => &PaLMGenerateText
-# stop-tokens => [. ? !]
-# temperature => 0.4
-# model => text-bison-001
+# tool-prompt => 
 # module => WWW::PaLM
-# max-tokens => 300
+# temperature => 0.4
+# function => &PaLMGenerateText
+# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens}
+# stop-tokens => [. ? !]
+# api-user-id => user:773684122137
+# name => palm
 # total-probability-cutoff => 0
+# evaluator => (Whatever)
 # tool-request-parser => (WhateverCode)
+# model => text-bison-001
 # tools => []
+# format => values
+# max-tokens => 300
+# tool-response-insertion-function => (WhateverCode)
+# prompt-delimiter =>  
+# api-key => (Whatever)
 ```
 
 
@@ -124,7 +126,7 @@ Here we create a Chat-GPT-based LLM-function to do "emojification" with:
 my &gptEmojify = llm-function($preEmojify, llm-evaluator => 'ChatGPT'); 
 ```
 ```
-# -> $text, *%args { #`(Block|4958840391520) ... }
+# -> $text, *%args { #`(Block|3988698276088) ... }
 ```
 
 Here is an example of chat completion with emojification:
@@ -133,7 +135,7 @@ Here is an example of chat completion with emojification:
 gptEmojify('Python sucks, Raku rocks, and Perl is annoying');
 ```
 ```
-# 🐍 Python 🙅‍♂️, Raku 🤘, and Perl 😒
+# 🐍 Python 🤢, Raku 🤘 rocks, and Perl 😫 is annoying
 ```
 
 Here we create PaLM-based LLM-function:
@@ -142,7 +144,7 @@ Here we create PaLM-based LLM-function:
 my &palmEmojify = llm-function($preEmojify, llm-evaluator => 'PaLM'); 
 ```
 ```
-# -> $text, *%args { #`(Block|4958878361784) ... }
+# -> $text, *%args { #`(Block|3988720653824) ... }
 ```
 
 Here is an invocation over the same text:
@@ -151,7 +153,7 @@ Here is an invocation over the same text:
 palmEmojify('Python sucks, Raku rocks, and Perl is annoying');
 ```
 ```
-# 🐍 👎, 🦀 👍, 🐍 😒
+# 🐍 👎, 🦀 👍, 🐌 🙄
 ```
 
 ---------
@@ -196,27 +198,27 @@ for @descriptions -> $d {
 # ================================================================================
 # Raku SDK for Resend
 # --------------------------------------------------------------------------------
-# There once was a coder named Fred,
-# Who needed an SDK to embed.
-# With Raku in hand,
-# He could easily command,
-# And his code was a masterpiece, widespread.
+# There once was a dev with great zest,
+# Who needed to code with the best.
+# Raku SDK in hand,
+# Resend feature was grand,
+# Errors fixed, no more time to invest!
 # ================================================================================
 # A module that allows true inline use of Brainfuck code
 # --------------------------------------------------------------------------------
-# There once was a module, quite neat,
-# For Brainfuck it offered a treat.
-# Inline use was its aim,
-# With rhyme scheme to claim,
-# Coding tricks in a limerick, sweet!
+# There once was a module quite grand,
+# That made Brainfuck code easier to understand.
+# With true inline use,
+# No longer did users confuse,
+# Their code now flowed as if it were planned.
 # ================================================================================
 # ML::FindTextualAnswer provides function(s) for finding sub-strings in given text that appear to answer given questions.
 # --------------------------------------------------------------------------------
-# When searching for text that's been sought,
-# ML::FindTextualAnswer's been brought.
-# With functions precise,
-# It finds answers nice,
-# To questions, it's surely a thought.
+# There's a function called ML,
+# For finding answers, oh so swell,
+# It searches for strings,
+# That answer questions it brings,
+# With FindTextualAnswer, all is well!
 ```
 
 -------
@@ -252,14 +254,14 @@ Here we make a special configuration with the prompt above:
 my $conf = llm-configuration('ChatGPT', prompts => [$preFTA,]);
 ```
 ```
-# prompts	The following text describes elements of a computational workflow.
+# api-key	Whatever tool-prompt	 argument-renames	api-key	auth-key tools	 model	gpt-3.5-turbo total-probability-cutoff	0.03 tool-request-parser	WhateverCode api-user-id	user:732587418409 name	chatgpt prompts	The following text describes elements of a computational workflow.
 # Answer the questions appropriate for computer programming processings.
 # Answer the questions concisely.
 # DO NOT use the word "and" as list separator. Separate list elements with commas.
 # DO NOT number the list or the items of the list.
 # Give preference to numeric results, and Yes/No results.
 # Try to put the question-answer pairs in GitHub Markdown table.
-#  format	values tool-prompt	 tool-request-parser	WhateverCode function	OpenAIChatCompletion api-user-id	user:403821603985 total-probability-cutoff	0.03 model	gpt-3.5-turbo name	openai evaluator	LLM::Functions::ChatEvaluator<4958945034416> api-key	Whatever temperature	0.8 tools	 max-tokens	300 module	WWW::OpenAI prompt-delimiter	  tool-response-insertion-function	WhateverCode stop-tokens	. ? !
+#  module	WWW::OpenAI format	values prompt-delimiter	  function	OpenAIChatCompletion max-tokens	300 temperature	0.8 stop-tokens	. ? ! tool-response-insertion-function	WhateverCode evaluator	LLM::Functions::ChatEvaluator<3988789014672>
 ```
 
 Here we create a LLM-function that uses a function-prompt:
@@ -268,7 +270,7 @@ Here we create a LLM-function that uses a function-prompt:
 my &gptFTA = llm-function( -> $cmd, @qs { "Given the text: $cmd, answer the questions {@qs.join(' ')}." }, llm-evaluator => $conf);
 ```
 ```
-# -> **@args, *%args { #`(Block|4958866010344) ... }
+# -> **@args, *%args { #`(Block|3988785002176) ... }
 ```
 
 **Remark:** At this point the function `&gptFTA` has the "chat-global" LLM prompt `$preFTA` 
@@ -304,14 +306,14 @@ Here we find the answers of the questions:
 ```perl6, results=asis
 &gptFTA($command, @questions);
 ```
-| Question | Answer |
-| --- | --- |
-| What is the dataset? | dfTitanic |
-| What is the method? | RandomForest |
-| Which metrics to show? | Recall, Precision, Accuracy |
-| What is the splitting ratio? | 0.73 |
-| How to split the data? | Not specified |
-| Are ROC metrics specified? | No |
+| Question                  | Answer                         |
+|---------------------------|--------------------------------|
+| What is the dataset?      | dfTitanic                      |
+| What is the method?       | RandomForest                  |
+| Which metrics to show?    | Recall, Precision, Accuracy    |
+| What is the splitting ratio? | 0.73                           |
+| How to split the data?    | Split the data using the specified ratio |
+| Are ROC metrics specified? | No                             |
 
 
 **Remark:** The code cell above has the parameter `results=asis` which instructs
