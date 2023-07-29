@@ -19,16 +19,17 @@ class LLM::Functions::Evaluator {
 
     #-------------------------------------------------------
     method get-formatron($spec) {
+        return Nil unless $spec;
         return do given $spec {
             when Str:U { Text::SubParsers::get-parser(:$spec) }
             when $_ ~~ Str:D && $_ eq 'Str' { Nil }
-            when Text::SubParsers::Core { $spec }
+            when $_ ~~ Text::SubParsers::Core { $spec }
             default { Text::SubParsers::get-parser(:$spec) }
         }
     }
 
     #-------------------------------------------------------
-    method post-process($res is copy ) {
+    method post-process($res is copy, :$form = Whatever) {
 
         $res = do if $res ~~ Iterable && $res.elems == 1 {
             $res.head;
@@ -36,8 +37,15 @@ class LLM::Functions::Evaluator {
             $res;
         }
 
-        my $reformater = self.get-formatron($!formatron);
+        my $reformater =
+                do if $form.isa(Whatever) || $form.isa(WhateverCode) {
+                    self.get-formatron($!formatron);
+                } else {
+                    self.get-formatron($form);
+                };
+
         with $reformater {
+            note $reformater.raku;
             return $reformater.process($res);
         }
         return $res;
@@ -101,13 +109,18 @@ class LLM::Functions::Evaluator {
 
         note 'LLM response : ', $res if $echo;
 
-        return self.post-process($res);
+        return self.post-process($res, form => %args<form> // Whatever);
     }
 }
 
 #===========================================================
 class LLM::Functions::ChatEvaluator
         is LLM::Functions::Evaluator {
+
+    submethod TWEAK {
+        without self.conf { self.conf = Whatever; }
+        without self.formatron { self.formatron = 'Str'; }
+    }
 
     has Str $.system-role is rw = 'system';
 
