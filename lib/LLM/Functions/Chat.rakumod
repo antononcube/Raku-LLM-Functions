@@ -41,6 +41,10 @@ class LLM::Functions::Chat {
     }
 
     #-------------------------------------------------------
+    multi method eval(@message, $role = Whatever, *%args) {
+        return self.eval(message => @message.join(' '), :$role, |%args);
+    }
+
     multi method eval(Str $message, $role = Whatever, *%args) {
         return self.eval(:$message, :$role, |%args);
     }
@@ -62,14 +66,15 @@ class LLM::Functions::Chat {
         # Get LLM result
         my $res = $!llm-evaluator.eval(@!messages, |%args);
 
-        # Do not proceed if failed
-        if $res !~~ Str {
-            note $res;
-            return Nil;
-        }
+        # Dedicated error handling should implemented
+        # if $res !~~ Str {
+        #     Do not proceed if failed
+        #     note $res;
+        #     return Nil;
+        # }
 
         # Make and store message response
-        @!messages.push(self.make-message(role => $!assistant-role, message => $res));
+        @!messages.push(self.make-message(role => $!assistant-role, message => $res.Str));
 
         # Result
         return $res;
