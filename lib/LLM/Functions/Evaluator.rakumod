@@ -21,10 +21,10 @@ class LLM::Functions::Evaluator {
     method get-formatron($spec) {
         return Nil unless $spec;
         return do given $spec {
-            when Str:U { Text::SubParsers::get-parser(:$spec) }
+            when Str:U { Text::SubParsers::exact-parser(:$spec) }
             when $_ ~~ Str:D && $_ eq 'Str' { Nil }
             when $_ ~~ Text::SubParsers::Core { $spec }
-            default { Text::SubParsers::get-parser(:$spec) }
+            default { Text::SubParsers::exact-parser(:$spec) }
         }
     }
 
