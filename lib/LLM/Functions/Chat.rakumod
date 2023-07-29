@@ -12,7 +12,9 @@ class LLM::Functions::Chat {
     has Str $.system-role is rw = 'system';
 
     #-------------------------------------------------------
-    method clone { nextwith :llm-evaluator($!llm-evaluator.clone), :messages(@!messages.clone), |%_ }
+    method clone {
+        nextwith :llm-evaluator($!llm-evaluator.clone), :messages(@!messages.clone), |%_
+    }
 
     #-------------------------------------------------------
     method re-assign(*%args) {
@@ -66,15 +68,19 @@ class LLM::Functions::Chat {
         # Get LLM result
         my $res = $!llm-evaluator.eval(@!messages, |%args);
 
-        # Dedicated error handling should implemented
-        # if $res !~~ Str {
-        #     Do not proceed if failed
-        #     note $res;
-        #     return Nil;
-        # }
+        # Try to convert LLM response into a message
+        my Str $msgRes;
+        try {
+            $msgRes = $res.Str;
+        }
+
+        if $! {
+            note "Cannot store as a string the LLM response: ｢{ $res.raku }｣.";
+            $msgRes = $res.raku;
+        }
 
         # Make and store message response
-        @!messages.push(self.make-message(role => $!assistant-role, message => $res.Str));
+        @!messages.push(self.make-message(role => $!assistant-role, message => $msgRes));
 
         # Result
         return $res;
@@ -86,10 +92,10 @@ class LLM::Functions::Chat {
     }
 
     method gist(-->Str) {
-        my $res = "LLM::Functions::Chat(chat-id = $!chat-id, llm-evaluator.conf.name = {self.llm-evaluator.conf.name}, messages.elems = {self.messages.elems}";
+        my $res = "LLM::Functions::Chat(chat-id = $!chat-id, llm-evaluator.conf.name = { self.llm-evaluator.conf.name }, messages.elems = { self.messages.elems }";
 
         if self.messages.elems {
-            $res ~= ", last.message = {self.messages.tail.raku // 'Nil'})";
+            $res ~= ", last.message = { self.messages.tail.raku // 'Nil' })";
         } else {
             $res ~= ')'
         }
@@ -99,9 +105,9 @@ class LLM::Functions::Chat {
 
     #-------------------------------------------------------
     method say(:$delim = ('⸺' x 60)) {
-        say "Chat: {self.chat-id}";
+        say "Chat: { self.chat-id }";
         say $delim;
-        say "Prompts: {self.llm-evaluator.conf.prompts}";
+        say "Prompts: { self.llm-evaluator.conf.prompts }";
         for self.messages -> %h {
             say $delim;
             .say for <role content timestamp>.map({ $_ => %h{$_} });
