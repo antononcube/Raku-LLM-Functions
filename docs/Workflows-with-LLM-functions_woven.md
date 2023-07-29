@@ -379,16 +379,6 @@ Here we request to get the code of pie chart for the continent sizes:
 ```perl6, results=asis
 my $mmdRes = &fmmd("pie chart", "relative continent sizes")
 ```
-```mermaid
-pie
-  title Relative Continent Sizes
-  label size
-  Africa : 20
-  Asia : 30
-  Europe : 25
-  North America : 15
-  South America : 10
-```
 
 
 Here, "just in case", we normalize the numbers of the result and "dump" the code as Markdown code cell:
