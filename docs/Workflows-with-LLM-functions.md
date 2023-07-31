@@ -67,8 +67,8 @@ for a few of the sections.
 
 Here are sections of the article:
 
-- **Flowchart**   
-  ... Visualizing the overall process used in all LLM workflow examples.
+- **General structure of LLM-based workflows**   
+  ... Formulating and visualizing the overall process used in all LLM workflow examples.
 - **Plot data**   
   ... Plotting LLM-retrieved data.
 - **Normalizing outputs**   
@@ -126,10 +126,12 @@ Markdown cells, like, tables, Mermaid-JS diagrams, or JavaScript plots.
 
 ----
 
-## Flowchart
+## General structure of LLM-based workflows
 
-This flowchart outlines a systematic approach to developing and refining LLM functions, 
-with several decision points and iterations to ensure satisfactory results.
+All systematic approaches of unfolding and refining workflows based on LLM functions, 
+will include several decision points and iterations to ensure satisfactory results.
+
+This flowchart outlines such a systematic approach:
 
 ```mermaid
 graph TD
@@ -177,10 +179,10 @@ Here is a corresponding description:
 - **End**: The end of the process.
 
 To summarise:
-- The flowchart has a loop providing an iterative process for refining the results of LLM function(s) pipeline.
-- If the overall results are not satisfactory, it loops back to the outlining workflow stage.
-- If additional LLM functions are made, it returns to the pipeline creation stage.
-- The human inability or unwillingness to program transformations has a few decision steps for delegation to LLM .
+- We work within an iterative process for refining the results of LLM function(s) pipeline.
+- If the overall results are not satisfactory, we loop back to the outlining workflow stage.
+- If additional LLM functions are made, we return to the pipeline creation stage.
+- Our (human) inability or unwillingness to program transformations has a few decision steps for delegation to LLMs.
 
 ------
 
@@ -405,7 +407,7 @@ $uObj.raku;
 ```
 
 Of course, the steps above can be combined into one function.
-In general, though, care should be taken handle or prevent the situations in which function inputs and outputs
+In general, though, care should be taken to handle or prevent situations in which function inputs and outputs
 do not agree with each other.
 
 ------
@@ -422,7 +424,6 @@ do not agree with each other.
 Here we define LLM functions for retrieving chemical formulas with specified species:
 
 ```perl6 
-my &cf = llm-function({ "Give a chemical formula that includes $^a." }, llm-evaluator => 'OpenAI');
 my &cfn = llm-function(
         { "Give $^a chemical stoichiometry formulas that includes $^b. Give the result as a JSON list." },
         llm-evaluator => 'OpenAI', form => sub-parser('JSON'));
@@ -431,37 +432,42 @@ my &cfn = llm-function(
 Here is a query:
 
 ```perl6 
-my $chemRes = &cfn(3, 'sulfur');
+my $chemRes1 = &cfn(3, 'sulfur');
 ```
 
 Let us convince ourselves that we got a list of strings:
 
 ```perl6
-deduce-type($chemRes)
+deduce-type($chemRes1)
 ```
 
 Let us see to we have consistent reactions the "right" equations by checking that 
 the molecular masses on Left Hand Sides (LHSs) and Right Hand Side (RHSs) are the same:
 
 ```perl6
-to-pretty-table(transpose( %(formula => $chemRes.Array, balancing => molecular-mass($chemRes)>>.gist ) ))
+to-pretty-table(transpose( %(formula => $chemRes1.Array, balancing => molecular-mass($chemRes1)>>.gist ) ))
 ```
 
 **Remark:** If the column "balancing" shows two different numbers separated by "=>" that 
 means the LLM hallucinated inconsistent chemical reaction equation.
+(Because the LLM does not know, or disregarded for some reason, the 
+[law of conservation of mass](https://en.wikipedia.org/wiki/Conservation_of_mass).) 
 
 Here we define a regex that parses chemical components:
 
 ```perl6 
 sub chem-component(Str $x) {
-    with Chemistry::Stoichiometry::Grammar.parse($x, rule => 'mult-molecule') { $_.Str => molecular-mass($_.Str) }
+  with Chemistry::Stoichiometry::Grammar.parse($x, rule => 'mult-molecule') {
+    return $_.Str.subst(/^ \d+/, '') => molecular-mass($_.Str);
+  }
+  return Nil;
 }
 ```
 
 Here for each formula we extract the chemical components and find the corresponding molecular masses:
 
 ```perl6 
-my @chemData = $chemRes.map({ [formula => $_, |sub-parser(&chem-component).subparse($_).grep({ $_ ~~ Pair })].Hash });
+my @chemData = $chemRes1.map({ [formula => $_, |sub-parser(&chem-component).subparse($_).grep({ $_ ~~ Pair })].Hash });
 ```
 
 Here we all unique column names (keys) in the obtained dataset:
@@ -476,11 +482,40 @@ Here we tabulate the result:
 to-pretty-table(@chemData, align => 'l', field-names => @colnames)
 ```
 
+### Alternative workflow and solution
+
+Assume that we only wanted to extract the chemical components together with their molecular masses
+from the LLM generated equations.
+
+Then we:
+- Use the function `chem-component` defined above as a sub-parser in the retrieval LLM-function
+- Pick `Pair` objects from the LLM function result 
+
+Here is the LLM function:
+
+```perl6 
+my &cfnp = llm-function(
+        { "Give $^a chemical stoichiometry formulas that includes $^b." },
+        llm-evaluator => 'OpenAI', form => sub-parser(&chem-component));
+```
+
+Here is an invocation:
+
+```perl6
+my $chemRes2 = &cfnp(4, 'sulfur and hydrogen');
+```
+
+Here we filter result's elements:
+
+```perl6
+$chemRes2.grep(* ~~ Pair)
+```
+
 ------
 
 ## Making (embedded) Mermaid diagrams
 
-**Workflow:** We to get "quick start"
+**Workflow:** We want to get a "quick start"
 [Mermaid-JS](https://mermaid.js.org)
 code for certain type of diagrams.
 
