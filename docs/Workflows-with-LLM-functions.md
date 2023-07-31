@@ -16,7 +16,7 @@ aims to do in Raku's playgrounds.
 
 ### Dynamic duo
 
-Raku, with its unique approach to text manipulation, not surprisingly complements LLMs. 
+Raku, with its unique approach to text manipulation, not surprisingly complements LLMs nicely. 
 While Raku might not be everyone's favorite language and has certain intricacies that take some getting used to, 
 its strengths in handling text patterns are hard to ignore. ***Creating well-crafted pairings of Raku with LLMs 
 can broaden Raku's adoption and utilization.***
@@ -24,7 +24,7 @@ can broaden Raku's adoption and utilization.***
 "LLM::Functions" establishes a (functional programming) connection between Raku's capabilities and the vast potential of LLMs. 
 I would like to upgrade that promising pairing into a fusion of sorts, something that would called to be a "dynamic duo."
 
-In order to facilitate that we have to have:
+To enhance the pairing of Raku with LLMs, it's *also* essential to have:
 - LLM prompt repository with many well documented prompts; see [WRIr1]
 - Ready to use "power" tokens like `<local-number>`, [MS1]
 
@@ -512,7 +512,7 @@ my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a 
 
 Here is way to get a biography and discography of music artist from Wikipedia:
 
-```raku
+```raku, eval=FALSE
 my $url = 'https://en.wikipedia.org/wiki/Sinéad_O%27Connor';
 my $response = HTTP::Tiny.new.get: $url;            
 
@@ -520,7 +520,7 @@ die "Failed!\n" unless $response<success>;
 say "response status: $response<status> $response<reason>";
 
 my $text = $response<content>.decode;
-say "text size: $text.chars";
+say "text size: {$text.chars}";
 ```
 
 But now we have to convert the HTML code into plain text, *and* the text is too large
