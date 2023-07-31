@@ -33,24 +33,48 @@ can broaden Raku's adoption and utilization.***
 "LLM::Functions" establishes a (functional programming) connection between Raku's capabilities and the vast potential of LLMs. 
 Ideally that promising LLM-Raku pairing is further strengthened and enriched into something that some might call a "dynamic duo."
 
-To enhance the pairing of Raku with LLMs, it's *also* essential to have:
-- LLM prompt repository with many well documented prompts; see [WRIr1]
-- Ready to use "power" tokens like `<local-number>`, [MS1]
+**Remark:** For an example of a mature effort with the same mission (and naming, and design) see [SW1] and [WRIp1].
 
-### Tooling
+**Remark:** And yes, for Mathematica or Wolfram Language (WL) it can be also said:
+*Creating well-crafted pairings of WL with LLMs can broaden WL's adoption and utilization.*
+WL, though, is much better positioned for integrating with multi-modal LLMs because of WL's
+ability to create and manipulate symbolic representation of different types of objects 
+(audio, images, and video included), and WL's very advanced notebook technology.
+
+### Standard enhancements
+
+To enhance the pairing of Raku with LLMs, it is *also* essential to have:
+- LLM prompt repository with many well documented prompts
+- Polyglot parsing of dates, numbers, regular expressions, data formats, grammar specs, etc.  
+
+For an example of the former see the Wolfram Prompt Repository, [WRIr1].
+For examples of the latter see [AAp4], [MSp1, MSp2].
+
+**Remark:** I like the idea of having ready to apply "power" tokens like `<local-number>`
+provided by "Intl::Token::Number", [MSp1].
+
+**Remark:** For some reason the developer of 
+"Intl::Token::Number", [MSp1], and "Polyglot::Regexen", [MSp2], prefers to make 
+[Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) 
+[parsers](https://github.com/alabamenhu/PolyglotBrainfuck) and 
+travel to Canada to [talk about it](https://www.youtube.com/watch?v=LSnkFfE7vPg)
+than making those packages ready to be used by "LLM::Functions", [AAp1], and "Text::SubParsers", [AAp4].
+
+### Interactivity is needed
 
 Generally speaking, using LLM functions in Raku (or Mathematica, or Python, or R) requires 
 good tools for [Read Eval Print Loop (REPL)](https://en.wikipedia.org/wiki/Read–eval–print_loop).
 
 Notebooks are best for LLM utilization because notebooks offer an interactive environment where
 LLM whisperers, LLM tamers, neural net navigators, and bot wranglers can write code, run it, see the results, 
-and tweak the code—all in one place.
+and tweak the code -- all in one place.
 
-There are (at least) two notebook solutions for Raku right now: 
-1) ["Jupyter::Kernel"](https://raku.land/cpan:BDUGGAN/Jupyter::Kernel) with the [Jupyter framework](https://jupyter.org)
-2) ["Text::CodeProcessing"](https://raku.land/?q=Text%3A%3ACodeProcessing) and ["RakuMode" for Mathematica](https://resources.wolframcloud.com/PacletRepository/resources/AntonAntonov/RakuMode/).
+Raku currently has (at least) two notebook solutions: 
+1. ["Jupyter::Kernel"](https://raku.land/cpan:BDUGGAN/Jupyter::Kernel) with the [Jupyter framework](https://jupyter.org)
+2. ["Text::CodeProcessing"](https://raku.land/?q=Text%3A%3ACodeProcessing) 
+and ["RakuMode" for Mathematica](https://resources.wolframcloud.com/PacletRepository/resources/AntonAntonov/RakuMode/), [AA2].
 
-Second best LLM-REPL solutions are those like 
+Raku second best LLM-REPL solutions are those like 
 [Comma's REPL](https://commaide.com/features) and 
 [Emacs Raku Mode](https://github.com/Raku/raku-mode). 
 
@@ -183,6 +207,8 @@ To summarise:
 - If the overall results are not satisfactory, we loop back to the outlining workflow stage.
 - If additional LLM functions are made, we return to the pipeline creation stage.
 - Our (human) inability or unwillingness to program transformations has a few decision steps for delegation to LLMs.
+
+**Remark:** We leave as exercises to the reader to see how the workflows programmed below fit the flowchart above.
 
 ------
 
@@ -603,23 +629,34 @@ Using the function `deduce-type` from
 deduce-type($albRes);
 ```
 
-After some studying the result we process it with this code:
+Here are a few data type results based in multiple executions of `&fner`:
+
+```
+# Vector((Any), 24)
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Struct([name, year], [Str, Int]), 7)), Atom((Str))])
+```
+
+Based in our study of the result data type signatures, 
+in this workflow we process a result `&fner` with this code:
 
 ```perl6
-$albRes = $albRes.grep({ $_ ~~ Pair }).rotor(2)>>.Hash
+my $albRes2 = $albRes.grep({ $_ ~~ Pair }).rotor(2)>>.Hash; 
+if not so $albRes2 { $albRes2 = $albRes.grep(* ~~ Pair).Hash<albums> }
+
+say $albRes2;
 ```
 
 Here we tabulate the result:
 
 ```perl6
-to-pretty-table($albRes)
+to-pretty-table($albRes2)
 ```
 
 Here we make a Mermaid-JS timeline plot (after we have figured out the structure of LLM's function output):
 
 ```perl6, output.lang=mermaid, output.prompt=NONE
 my @timeline = ['timeline', "title Sinéad O'Connor's discography"];
-for |$albRes -> %record {
+for |$albRes2 -> %record {
     @timeline.append( "{%record<year>} : {%record<name>}");
 }
 @timeline.join("\n\t");
@@ -644,12 +681,29 @@ Most likely all of the listed workflow would use chat objects and engineered pro
 
 ## References
 
+### Articles
+
+[AA1] Anton Antonov,
+["Generating documents via templates and LLMs"](https://rakuforprediction.wordpress.com/2023/07/11/generating-documents-via-templates-and-llms/),
+(2023),
+[RakuForPrediction at WordPress](https://rakuforprediction.wordpress.com).
+
+[AA2] Anton Antonov,
+["Connecting Mathematica and Raku"](https://rakuforprediction.wordpress.com/2021/12/30/connecting-mathematica-and-raku/),
+(2021),
+[RakuForPrediction at WordPress](https://rakuforprediction.wordpress.com).
+
+[SW1] Stephen Wolfram,
+["The New World of LLM Functions: Integrating LLM Technology into the Wolfram Language"](https://writings.stephenwolfram.com/2023/05/the-new-world-of-llm-functions-integrating-llm-technology-into-the-wolfram-language/),
+(2023),
+[Stephen Wolfram Writings](https://writings.stephenwolfram.com).
+
 ### Repositories, sites
 
 [WRIr1] Wolfram Research, Inc.
 [Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
 
-### Packages
+### Packages, paclets
 
 [AAp1] Anton Antonov,
 [LLM::Functions Raku package](https://github.com/antononcube/Raku-LLM-Functions),
@@ -676,7 +730,17 @@ Most likely all of the listed workflow would use chat objects and engineered pro
 (2021),
 [GitHub/antononcube](https://github.com/antononcube).
 
-[MS1] Matthew Stuckwisch,
+[MSp1] Matthew Stuckwisch,
 [Intl::Token::Number Raku package](https://github.com/alabamenhu/IntlTokenNumber),
 (2021),
 [GitHub/alabamenhu](https://github.com/alabamenhu).
+
+[MSp2] Matthew Stuckwisch,
+[Polyglot::Regexen Raku package](https://github.com/alabamenhu/PolyglotRegexen),
+(2022),
+[GitHub/alabamenhu](https://github.com/alabamenhu).
+
+[WRIp1] Wolfram Research, Inc.,
+[LLMFunctions WL paclet](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/),
+(2023),
+[Wolfram Language Paclet Repositoru](https://resources.wolframcloud.com/PacletRepository/).
