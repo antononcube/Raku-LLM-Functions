@@ -2,23 +2,24 @@
 
 ## Introduction
 
-In this computational Markdown document we discuss and demonstrate the inclusion, integration of
+In this computational Markdown document we discuss and demonstrate the inclusion and integration of
 Large Language Model (LLM) functions into different types of Raku workflows.
 
-Since LLMs hallucinate results, it becomes necessary to manipulate either the inputs, the outputs, or both. 
+Since LLMs hallucinate results, it becomes necessary to manipulate their inputs, the outputs, or both. 
 Therefore, having a system for managing, coordinating, and streamlining LLM requests, 
 along with methods for incorporating these requests into the "playgrounds" of a certain programming language, 
 would be highly beneficial.
 
 This is what the package 
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions), [AAp1],
-aims to do in Raku's playgrounds. 
+aims to do in Raku and Raku's ecosystem. 
 
 ### Dynamic duo
 
 LLMs are celebrated for producing good to great results, but they have a few big issues. 
 The content they generate can be inconsistent, prone to hallucination, and sometimes biased, making it unreliable.
-The form, or stylistic structure, may also vary widely, with a lack of determinism and sensitivity to hyperparameters contributing to challenges in reproducibility. 
+The form, or stylistic structure, may also vary widely, with a lack of determinism and sensitivity 
+to hyperparameters contributing to challenges in reproducibility. 
 Moreover, customization and debugging can be complex due to these inconsistencies. 
 
 The lack of reliability and reproducibility in both content and form underscore
@@ -30,7 +31,7 @@ its strengths in handling text patterns are hard to ignore. ***Creating well-cra
 can broaden Raku's adoption and utilization.***
 
 "LLM::Functions" establishes a (functional programming) connection between Raku's capabilities and the vast potential of LLMs. 
-I would like to upgrade that promising pairing into a fusion of sorts, something that some might call a "dynamic duo."
+Ideally that promising LLM-Raku pairing is further strengthened and enriched into something that some might call a "dynamic duo."
 
 To enhance the pairing of Raku with LLMs, it's *also* essential to have:
 - LLM prompt repository with many well documented prompts; see [WRIr1]
@@ -42,7 +43,7 @@ Generally speaking, using LLM functions in Raku (or Mathematica, or Python, or R
 good tools for [Read Eval Print Loop (REPL)](https://en.wikipedia.org/wiki/Read–eval–print_loop).
 
 Notebooks are best for LLM utilization because notebooks offer an interactive environment where
-LLM whisperers, neural net navigators, bot wranglers, and similar can write code, run it, see the results, 
+LLM whisperers, LLM tamers, neural net navigators, and bot wranglers can write code, run it, see the results, 
 and tweak the code—all in one place.
 
 There are (at least) two notebook solutions for Raku right now: 
@@ -53,11 +54,13 @@ Second best LLM-REPL solutions are those like
 [Comma's REPL](https://commaide.com/features) and 
 [Emacs Raku Mode](https://github.com/Raku/raku-mode). 
 
-"Just" using scripts is an option, but since LLM has certain time lag and usage expenses, it is not a good one.
+"Just" using scripts is an option, but since LLM queries have certain time lag and usage expenses, it is not a good one:
+- We cannot see the intermediate results and adjust accordingly
+- Multiple (slow) executions would be needed to get desired results
 
-**Remark:** The very first version of this article was made "Text::CodeProcessing" via weaving.
+**Remark:** The very first version of this article was made "Text::CodeProcessing" via Markdown execution (or weaving.)
 Then Comma's REPL was used, for extending and refining the examples. "Jupyter::Kernel" was also used
-for a few of sections.
+for a few of the sections.
 
 
 ### Article structure
@@ -65,7 +68,7 @@ for a few of sections.
 Here are sections of the article:
 
 - **Flowchart**   
-  ... Visualizing the overall process used in all LLM workflow examples 
+  ... Visualizing the overall process used in all LLM workflow examples.
 - **Plot data**   
   ... Plotting LLM-retrieved data.
 - **Normalizing outputs**   
@@ -129,7 +132,7 @@ This flowchart outlines a systematic approach to developing and refining LLM fun
 with several decision points and iterations to ensure satisfactory results.
 
 ```mermaid
-graph LR
+graph TD
     A([Start]) --> HumanWorkflow[Outline a workflow] --> LLMFunc["Make LLM function(s)"]
     LLMFunc --> MakePipeline[Make pipeline]
     MakePipeline --> LLMEval["Evaluate LLM function(s)"]
@@ -140,7 +143,8 @@ graph LR
     KnowVerb --> |No| KnowRule{Can you<br>specify the change<br>as a set of training<br>rules?}
     KnowVerb --> |Yes| AddLLM["Make additional<br>LLM function(s)"]
     AddLLM --> MakePipeline
-    CanProgram --> |Yes| HumanMassageOutput[Program output transformations]
+    CanProgram --> |Yes| ApplySubParser["Apply suitable (sub-)parsers"]
+    ApplySubParser --> HumanMassageOutput[Program output transformations]
     HumanMassageOutput --> MakePipeline
     GoodLLM --> |Yes| OverallGood{Overall<br>satisfactory<br>results?}
     OverallGood --> |No| HumanWorkflow
@@ -166,7 +170,8 @@ Here is a corresponding description:
 - **Can you specify the change as a set of training rules?**: If not verbalizable, a decision point to check if the change can be specified as training rules.
   - *The human cannot program or verbalize the required changes, but can provide examples of those changes.*
 - **Make additional LLM function(s)**: If changes can be verbalized, make additional LLM function(s).
-- **Program output transformations**: If changes can be programmed, transform the outputs programmatically.
+- **Apply suitable (sub-)parsers**: If changes can be programmed, choose, or program, and apply suitable parser(s) or sub-parser(s) for LLM's outputs.
+- **Program output transformations**: Transform the outputs of the (sub-)parser(s) programmatically.
 - **Overall satisfactory results?**: A decision point to assess whether the results are overall satisfactory.
 - **Make LLM example function**: If changes can be specified as training rules, make an example function for the LLM.
 - **End**: The end of the process.
@@ -183,10 +188,10 @@ To summarise:
 
 **Workflow:** Consider a workflow with the following steps:
 
-1. Request an LLM to produce in JSON format a dictionary of certain numerical quantity during a certain year
+1. Request an LLM to produce in JSON format a dictionary of certain numerical quantity during a certain year.
 2. The corresponding LLM function converts the JSON text into Raku data structure.
-3. Print or summarize data in tabular form
-4. A plot is made with the obtained data structure.
+3. Print or summarize obtained data in tabular form
+4. A plot is made with the obtained data.
 
 Here is a general quantities finder LLM function:
 
@@ -410,6 +415,7 @@ do not agree with each other.
 **Workflow:** Assume that we want to:
 
 - Obtain a list of Stoichiometry equations according to some criteria
+- Evaluate the consistency of the equations
 - Find the molecular masses of the components for each equation
 - Tabulate the formulas and found component molecular masses
 
@@ -506,10 +512,11 @@ Here is a flow chart request:
 
 ## Named entity recognition
 
-**Workflow:** We want to download text from the Web, and extract the names of certain type of entities from it.
+**Workflow:** We want to download text from the Web, extract the names of certain type of entities from it,
+and visualize relationships between them.
 
 For example, we might want to extract all album names and their release dates from
-a biographical web page of a certain music artist.
+a biographical web page of a certain music artist, and make a timeline plot.
 
 
 ```raku
@@ -576,6 +583,7 @@ to-pretty-table($albRes)
 Here we make a Mermaid-JS timeline plot (after we have figured out the structure of LLM's function output):
 
 ```perl6, output.lang=mermaid, output.prompt=NONE
+my @timeline = ['timeline', "title Sinéad O'Connor's discography"];
 for |$albRes -> %record {
     @timeline.append( "{%record<year>} : {%record<name>}");
 }
