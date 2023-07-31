@@ -210,6 +210,8 @@ To summarise:
 
 **Remark:** We leave as exercises to the reader to see how the workflows programmed below fit the flowchart above.
 
+**Remark:** The mapping of the workflow code below onto the flowchart can be made using an LLM.
+
 ------
 
 ## Plot data
