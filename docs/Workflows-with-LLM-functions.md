@@ -3,30 +3,171 @@
 ## Introduction
 
 In this computational Markdown document we discuss and demonstrate the inclusion, integration of
-LLM functions into different types of Raku workflows.
+Large Language Model (LLM) functions into different types of Raku workflows.
+
+Since LLMs hallucinate results, it becomes necessary to manipulate either the inputs, the outputs, or both. 
+Therefore, having a system for managing, coordinating, and streamlining LLM requests, 
+along with methods for incorporating these requests into the "playgrounds" of a certain programming language, 
+would be highly beneficial.
+
+This is what the package 
+["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions), [AAp1],
+aims to do in Raku's playgrounds. 
+
+### Dynamic duo
+
+Raku, with its unique approach to text manipulation, not surprisingly complements LLMs. 
+While Raku might not be everyone's favorite language and has certain intricacies that take some getting used to, 
+its strengths in handling text patterns are hard to ignore. ***Creating well-crafted pairings of Raku with LLMs 
+can broaden Raku's adoption and utilization.***
+
+"LLM::Functions" establishes a (functional programming) connection between Raku's capabilities and the vast potential of LLMs. 
+I would like to upgrade that promising pairing into a fusion of sorts, something that would called to be a "dynamic duo."
+
+In order to facilitate that we have to have:
+- LLM prompt repository with many well documented prompts; see [WRIr1]
+- Ready to use "power" tokens like `<local-number>`, [MS1]
+
+### Tooling
+
+Generally speaking, using LLM functions in Raku (or Mathematica, or Python, or R) requires 
+good tools for [Read Eval Print Loop (REPL)](https://en.wikipedia.org/wiki/Read–eval–print_loop).
+
+Notebooks are best for LLM utilization because notebooks offer an interactive environment where
+LLM whisperers, neural net navigators, bot wranglers, and similar can write code, run it, see the results, 
+and tweak the code—all in one place.
+
+There are (at least) two notebook solutions for Raku right now: 
+1) ["Jupyter::Kernel"](https://raku.land/cpan:BDUGGAN/Jupyter::Kernel) with the [Jupyter framework](https://jupyter.org)
+2) ["Text::CodeProcessing"](https://raku.land/?q=Text%3A%3ACodeProcessing) and ["RakuMode" for Mathematica](https://resources.wolframcloud.com/PacletRepository/resources/AntonAntonov/RakuMode/).
+
+Second best LLM-REPL solutions are those like 
+[Comma's REPL](https://commaide.com/features) and 
+[Emacs Raku Mode](https://github.com/Raku/raku-mode). 
+
+"Just" using scripts is an option, but since LLM has certain time lag and usage expenses, it is not a good one.
+
+**Remark:** The very first version of this article was made "Text::CodeProcessing" via weaving.
+Then Comma's REPL was used, for extending and refining the examples. "Jupyter::Kernel" was also used
+for a few of sections.
+
+
+### Article structure
+
+Here are sections of the article:
+
+- **Flowchart**   
+  ... Visualizing the overall process used in all LLM workflow examples 
+- **Plot data**   
+  ... Plotting LLM-retrieved data.
+- **Normalizing outputs**   
+  ... Examples of how LLM-function outputs can be "normalized" using other LLM functions.
+- **Conversion to Raku objects**   
+  ... Conversion of LLM-outputs in Raku physical units objects.
+- **Chemical formulas**   
+  ... Retrieving chemical formulas and investigating them.
+- **Making (embedded) Mermaid diagrams**   
+  ... Straightforward application of LLM abilities and literate programming tools.
+- **Named entity recognition**  
+  ... How obtain music album names and release dates and tabulate or plot them.
+- **Other workflows**   
+  ... Outline of other workflows using LLM chat objects. (Also provided by "LLM::Functions".)
+
+### Packages and LLM access
 
 The following Raku packages used below:
 
-```perl6, output=NONE
+```perl6 , results=hide
 use LLM::Functions;
 use Text::SubParsers;
 
 use Data::Reshapers;
+use Data::TypeSystem;
 use Data::Generators;
 use Data::Summarizers;
 use Data::ExampleDatasets;
 
 use Text::Plot;
+use JavaScript::D3;
 
 use Physics::Unit;
 
 use Chemistry::Stoichiometry;
 
-use JSON::Fast
+use JSON::Fast;
+use HTTP::Tiny;
 ```
 
-**Remark:** The Markdown document in executed (or "weaved") with the CLI script of the package
+"Out of the box"
+["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
+["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
+["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
+Other LLM access packages can utilized via appropriate LLM configurations.
+
+The LLM functions below use the LLM authorization tokens that are kept
+in the OS environment. See [AAp2] and [AAp3] for details how to setup LLM access.
+
+The Markdown document is executed (or "weaved") with the CLI script of the package
 ["Text::CodeProcessing"](https://raku.land/zef:antononcube/Text::CodeProcessing), [AA5].
+"Text::CodeProcessing" has features that allow the weaved documents to have render-ready 
+Markdown cells, like, tables, Mermaid-JS diagrams, or JavaScript plots.
+
+
+----
+
+## Flowchart
+
+This flowchart outlines a systematic approach to developing and refining LLM functions, 
+with several decision points and iterations to ensure satisfactory results.
+
+```mermaid
+graph LR
+    A([Start]) --> HumanWorkflow[Outline a workflow] --> LLMFunc["Make LLM function(s)"]
+    LLMFunc --> MakePipeline[Make pipeline]
+    MakePipeline --> LLMEval["Evaluate LLM function(s)"]
+    LLMEval --> HumanAsses[Asses LLM's Outputs]
+    HumanAsses --> GoodLLM{Good or workable<br>results?}
+    GoodLLM --> |No| CanProgram{Can you<br>programmatically<br>change the<br>outputs?}
+    CanProgram --> |No| KnowVerb{Can you<br>verbalize<br>the required<br>change?}
+    KnowVerb --> |No| KnowRule{Can you<br>specify the change<br>as a set of training<br>rules?}
+    KnowVerb --> |Yes| AddLLM["Make additional<br>LLM function(s)"]
+    AddLLM --> MakePipeline
+    CanProgram --> |Yes| HumanMassageOutput[Program output transformations]
+    HumanMassageOutput --> MakePipeline
+    GoodLLM --> |Yes| OverallGood{Overall<br>satisfactory<br>results?}
+    OverallGood --> |No| HumanWorkflow
+    OverallGood --> |Yes| End
+    KnowRule --> |Yes| LLMExamFunc[Make LLM example function]
+    KnowRule --> |No| HumanWorkflow
+    LLMExamFunc --> MakePipeline
+```
+
+Here is a corresponding description:
+
+- **Start**: The beginning of the process.
+- **Outline a workflow**: The stage where a human outlines a general workflow for the process.
+- **Make LLM function(s)**: Creation of specific LLM function(s).
+- **Make pipeline**: Construction of a pipeline to integrate the LLM function(s).
+- **Evaluate LLM function(s)**: Evaluation of the created LLM function(s).
+- **Asses LLM's Outputs**: A human assesses the outputs from the LLM.
+- **Good or workable results?**: A decision point to check whether the results are good or workable.
+- **Can you programmatically change the outputs?**: If not satisfactory, a decision point to check if the outputs can be changed programmatically.
+  - *The human acts like a real programmer.*
+- **Can you verbalize the required change?**: If not programmable, a decision point to check if the changes can be verbalized.
+  - *The human programming is delegated to the LLM.*
+- **Can you specify the change as a set of training rules?**: If not verbalizable, a decision point to check if the change can be specified as training rules.
+  - *The human cannot program or verbalize the required changes, but can provide examples of those changes.*
+- **Make additional LLM function(s)**: If changes can be verbalized, make additional LLM function(s).
+- **Program output transformations**: If changes can be programmed, transform the outputs programmatically.
+- **Overall satisfactory results?**: A decision point to assess whether the results are overall satisfactory.
+- **Make LLM example function**: If changes can be specified as training rules, make an example function for the LLM.
+- **End**: The end of the process.
+
+To summarise:
+- The flowchart has a loop providing an iterative process for refining the results of LLM function(s) pipeline.
+- If the overall results are not satisfactory, it loops back to the outlining workflow stage.
+- If additional LLM functions are made, it returns to the pipeline creation stage.
+- The human inability or unwillingness to program transformations has a few decision steps for delegation to LLM .
 
 ------
 
@@ -34,14 +175,14 @@ use JSON::Fast
 
 **Workflow:** Consider a workflow with the following steps:
 
-1. Request a LLM to produce in JSON format a dictionary of certain numerical quantity during a certain year
+1. Request an LLM to produce in JSON format a dictionary of certain numerical quantity during a certain year
 2. The corresponding LLM function converts the JSON text into Raku data structure.
 3. Print or summarize data in tabular form
 4. A plot is made with the obtained data structure.
 
 Here is a general quantities finder LLM function:
 
-```perl6
+```perl6 
 my &qf3 = llm-function(
         { "What are the $^a of $^b in $^c? Give the result as name-number dictionary in JSON format." },
         llm-evaluator => llm-configuration('openai', temperature => 0.2),
@@ -52,61 +193,61 @@ my &qf3 = llm-function(
 
 Consider finding and plotting the GDP of top 10 largest countries:
 
-```perl6
+```perl6 
 my $gdp1 = &qf3('GDP', 'top 10 largest countries', '2022')
 ```
 
 Here is a corresponding table:
 
-```perl6
+```perl6 
 to-pretty-table($gdp1)
 ```
 
 Here is a plot attempt:
 
-```perl6
+```perl6 
 text-list-plot($gdp1.values)
 ```
 
 Here is another one based on the most frequent "non-compliant" output form:
 
-```perl6
+```perl6 
 text-list-plot($gdp1.values.map({ sub-parser(Numeric).subparse($_).first }))
 ```
 
 Here we the GDP for all countries and make the corresponding Pareto principle plot:
 
-```perl6, eval=FALSE
+```perl6 , eval=FALSE
 my $gdp2 = &qf3('GDP', 'top 30 countries', '2018')
 ```
 
 Here is a plot attempt:
 
-```perl6, eval=FALSE
+```perl6 , eval=FALSE
 text-pareto-principle-plot($gdp2.values)
 ```
 
 Here is another one based on the most frequent "non-compliant" output form:
 
-```perl6, eval=FALSE
+```perl6 , eval=FALSE
 text-pareto-principle-plot($gdp2.rotor(2)>>.[1])
 ```
 
 ### Gold medals
 
-```perl6
+```perl6 
 my $gmd = &qf3("counts of Olymipic gold medals", "countries", "the last decade");
 ```
 
 Here is a corresponding table:
 
-```perl6
+```perl6 
 to-pretty-table($gmd)
 ```
 
 Here is a plot attempt:
 
-```perl6
+```perl6 
 text-list-plot($gmd.values)
 ```
 
@@ -118,15 +259,15 @@ text-list-plot($gmd.values)
 For example:
 
 - Remove certain pesky symbols and strings from LLM results
-- Put a Raku (or Python, or JSON) dataset into a tabular data format suitable for immediate rendering
-- Change dataset into plotting language spec (say, from Raku to Mermaid)
+- Put a Raku (or JSON) dataset into a tabular data format suitable for immediate rendering
+- Convert a dataset into a plotting language spec
 
 ### Normalizing numerical outputs
 
 The following *LLM example* function "normalizes" outputs that that have numerical values with certain number
 localization or currency units:
 
-```perl6
+```perl6 
 my &num-norm = llm-example-function(['1,034' => '1_034', '13,003,553' => '13_003_553', '9,323,003,553' => '9_323_003_553',
                                      '43 thousand USD' => '23E3', '3.9 thousand' => '3.9E3',
                                      '23 million USD' => '23E6', '2.3 million' => '2.3E6',
@@ -137,7 +278,7 @@ This LLM function can be useful to transform outputs of other LLM functions (bef
 
 Here is an example of normalizing the top 10 countries GDP query output above:
 
-```perl6
+```perl6 
 &num-norm($gdp1.join(' '))
 ```
 
@@ -145,26 +286,26 @@ Here is an example of normalizing the top 10 countries GDP query output above:
 
 Here is an LLM function that transforms the plain text data above in GitHub Markdown table:
 
-```perl6
+```perl6 
 my &fgt = llm-function({ "Transform the plain-text table $_ into a GitHub table." })
 ```
 
 Here is an example application:
 
-```perl6, results=asis
+```perl6 , results=asis
 &fgt(to-pretty-table($gdp1))
 ```
 
 Let us define a function that translates the dataset by converting to JSON format first,
 and then converting into a GitHub Markdown table:
 
-```perl6
+```perl6 
 my &fjgt = llm-function({ "Transform the JSON data $_ into a GitHub table." })
 ```
 
 Here is an example application:
 
-```perl6, results=asis
+```perl6 , results=asis
 &fjgt(to-json($gdp1))
 ```
 
@@ -172,36 +313,36 @@ Here is an example application:
 
 Here we define a reformatting function that translates JSON data into Mermaid diagrams:
 
-```perl6
+```perl6 
 my &fjmmd = llm-function({ "Transform the JSON data $^a into a Mermaid $^b spec." })
 ```
 
 Here we convert the medals data into a pie chart:
 
-```perl6, output.prompt=NONE, output.lang=mermaid
+```perl6 , output.prompt=NONE, output.lang=mermaid
 &fjmmd(to-json($gmd), 'pie chart')
 ```
 
 Here is a more "data creative" example:
 
 1. First we get a dataset and cross-tabulate it
-2. Then we ask a LLM make the corresponding flow chart, class- or state diagram for it
+2. Then we ask an LLM make the corresponding flow chart, class- or state diagram for it
 
 Here is a cross-tabulation of two variables from the Titanic dataset:
 
-```perl6
+```perl6 
 my %ct = cross-tabulate(get-titanic-dataset(), 'passengerSex', 'passengerClass')
 ```
 
 Here we convert the contingency matrix into a flow chart:
 
-```perl6, output.prompt=NONE, output.lang=mermaid
+```perl6 , output.prompt=NONE, output.lang=mermaid
 &fjmmd(to-json(%ct), 'flow chart')
 ```
 
 Here we convert the contingency matrix into a state diagram :
 
-```perl6, output.prompt=NONE, output.lang=mermaid
+```perl6 , output.prompt=NONE, output.lang=mermaid
 &fjmmd(to-json(%ct), 'state diagram')
 ```
 
@@ -215,7 +356,7 @@ Here we convert the contingency matrix into a state diagram :
 The following LLM example function transforms different kinds of physical quantity specs into Raku code
 for the module ["Physics::Units"](https://raku.land/zef:librasteve/Physics::Unit):
 
-```perl6
+```perl6 
 my &pu = llm-example-function(
         ['11,042 m/s' => 'GetUnit("11_042 m/s")',
          '4,380,042 J' => 'GetUnit("4_380_042 J")',
@@ -225,25 +366,25 @@ my &pu = llm-example-function(
 
 Here is an example of speed query function:
 
-```perl6
+```perl6 
 my &fs = llm-function({ "What is the average speed of $^a in the units of $^b?" }, llm-evaluator => 'PaLM');
 ```
 
 Here is a concrete query:
 
-```perl6
+```perl6 
 my $rs1 = &fs('rocket leaving Earth', 'meters per second');
 ```
 
 Here we convert the LLM output into Raku code for making a unit object:
 
-```perl6
+```perl6 
 my $rs2 = &pu($rs1);
 ```
 
 Here we evaluate the Raku code (into an object):
 
-```perl6
+```perl6 
 use MONKEY-SEE-NO-EVAL;
 my  $uObj = EVAL($rs2);
 
@@ -266,7 +407,7 @@ do not agree with each other.
 
 Here we define LLM functions for retrieving chemical formulas with specified species:
 
-```perl6
+```perl6 
 my &cf = llm-function({ "Give a chemical formula that includes $^a." }, llm-evaluator => 'OpenAI');
 my &cfn = llm-function(
         { "Give $^a chemical stoichiometry formulas that includes $^b. Give the result as a JSON list." },
@@ -275,33 +416,49 @@ my &cfn = llm-function(
 
 Here is a query:
 
-```perl6
-my $chemRes1 = &cfn(3, 'sulfur');
+```perl6 
+my $chemRes = &cfn(3, 'sulfur');
 ```
 
-Here we define a regex that parse chemical components:
+Let us convince ourselves that we got a list of strings:
 
 ```perl6
+deduce-type($chemRes)
+```
+
+Let us see to we have consistent reactions the "right" equations by checking that 
+the molecular masses on Left Hand Sides (LHSs) and Right Hand Side (RHSs) are the same:
+
+```perl6
+to-pretty-table(transpose( %(formula => $chemRes.Array, balancing => molecular-mass($chemRes)>>.gist ) ))
+```
+
+**Remark:** If the column "balancing" shows two different numbers separated by "=>" that 
+means the LLM hallucinated inconsistent chemical reaction equation.
+
+Here we define a regex that parses chemical components:
+
+```perl6 
 sub chem-component(Str $x) {
-    with Chemistry::Stoichiometry::Grammar.parse($x, rule => 'molecule') { $_.Str => molecular-mass($_.Str) }
+    with Chemistry::Stoichiometry::Grammar.parse($x, rule => 'mult-molecule') { $_.Str => molecular-mass($_.Str) }
 }
 ```
 
 Here for each formula we extract the chemical components and find the corresponding molecular masses:
 
-```perl6
-my @chemData = $chemRes1.map({ [formula => $_, |sub-parser(&chem-component).subparse($_).grep({ $_ ~~ Pair })].Hash });
+```perl6 
+my @chemData = $chemRes.map({ [formula => $_, |sub-parser(&chem-component).subparse($_).grep({ $_ ~~ Pair })].Hash });
 ```
 
 Here we all unique column names (keys) in the obtained dataset:
 
-```perl6
+```perl6 
 my @colnames = @chemData>>.keys.flat.unique.sort
 ```
 
 Here we tabulate the result:
 
-```perl6
+```perl6 
 to-pretty-table(@chemData, align => 'l', field-names => @colnames)
 ```
 
@@ -313,33 +470,135 @@ to-pretty-table(@chemData, align => 'l', field-names => @colnames)
 [Mermaid-JS](https://mermaid.js.org)
 code for certain type of diagrams.
 
-Here is a LLM function for generating a Mermaid JS spec:
+Here is an LLM function for generating a Mermaid JS spec:
 
-```perl6
+```perl6 
 my &fmmd = llm-function({ "Generate the Mermaid-JS code of a $^a for $^b." })
 ```
 
 Here we request to get the code of pie chart for the continent sizes:
 
-```perl6, results=asis
+```perl6 , results=asis
 my $mmdRes = &fmmd("pie chart", "relative continent sizes")
 ```
 
 Here, "just in case", we normalize the numbers of the result and "dump" the code as Markdown code cell:
 
-```perl6, output.prompt=NONE, output.lang=mermaid
+```perl6 , output.prompt=NONE, output.lang=mermaid
 $mmdRes.subst(:g, '%', '').subst(:g, ',', '').subst("{'`' x 3}mermaid", '').subst("{'`' x 3}", '')
 ```
 
 Here is a flow chart request:
 
-```perl6, results=asis
+```perl6 , results=asis
 &fmmd("flow chart", "going to work in the morning avoiding traffic jams and reacting to weather")
 ```
 
 ------
 
+## Named entity recognition
+
+**Workflow:** We want to download text from the Web, and extract the names of certain type of entities from it.
+
+For example, we might want to extract all album names and their release dates from
+a biographical web page of a certain music artist.
+
+
+```raku
+my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a JSON format"},                     
+                        llm-evaluator => 'PaLM', 
+                        form => sub-parser('JSON'))
+```
+
+Here is way to get a biography and discography of music artist from Wikipedia:
+
+```raku
+my $url = 'https://en.wikipedia.org/wiki/Sinéad_O%27Connor';
+my $response = HTTP::Tiny.new.get: $url;            
+
+die "Failed!\n" unless $response<success>;
+say "response status: $response<status> $response<reason>";
+
+my $text = $response<content>.decode;
+say "text size: $text.chars";
+```
+
+But now we have to convert the HTML code into plain text, *and* the text is too large
+to process at once with LLMs. (Currently LLMs have ≈ 4096 ± 2048 tokens limits.)
+
+**Remark:** A more completely worked out workflow would have included 
+the breaking up of the text into suitably sized chunks, and combining the LLM processed
+processed results.
+
+Instead, I am going to ask an LLM to produce artist's bio and discography and then 
+we going to pretend we got it from some repository or encyclopedia.
+
+Here we get the text:
+
+```raku
+my $text = llm-function(llm-evaluator => llm-configuration('PaLM', max-tokens=> 500))("What is Sinéad O'Connor's bio and discography?")
+```
+
+Here we Named Entity Recognition (NER) via the LLM function defined above:
+
+```perl6
+my $albRes = &fner('album names and years', $text);
+```
+
+LLMs can produce NER data in several different structures. 
+Using the function `deduce-type` from 
+["Data::TypeSystem"](https://raku.land/zef:antononcube/Data::TypeSystem):
+
+```perl6
+deduce-type($albRes);
+```
+
+After some studying the result we process it with this code:
+
+```perl6
+$albRes = $albRes.grep({ $_ ~~ Pair }).rotor(2)>>.Hash
+```
+
+Here we tabulate the result:
+
+```perl6
+to-pretty-table($albRes)
+```
+
+Here we make a Mermaid-JS timeline plot (after we have figured out the structure of LLM's function output):
+
+```perl6, output.lang=mermaid, output.prompt=NONE
+for |$albRes -> %record {
+    @timeline.append( "{%record<year>} : {%record<name>}");
+}
+@timeline.join("\n\t");
+```
+
+------
+
+## Other workflows
+
+In the future other workflows are going to be described:
+
+- Interactive building of grammars
+- Using LLM-based code writing assistants
+- Test suite generation via Gherkin specifications
+  - Here is a [teaser](https://github.com/antononcube/Raku-LLM-Functions/blob/main/docs/Convert-tests-into-Gherkin-specs_woven.md).
+- (Reliable) code generation from help pages
+
+Most likely all of the listed workflow would use chat objects and engineered prompts.
+
+
+------
+
 ## References
+
+### Repositories, sites
+
+[WRIr1] Wolfram Research, Inc.
+[Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
+
+### Packages
 
 [AAp1] Anton Antonov,
 [LLM::Functions Raku package](https://github.com/antononcube/Raku-LLM-Functions),
@@ -365,3 +624,8 @@ Here is a flow chart request:
 [Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
 (2021),
 [GitHub/antononcube](https://github.com/antononcube).
+
+[MS1] Matthew Stuckwisch,
+[Intl::Token::Number Raku package](https://github.com/alabamenhu/IntlTokenNumber),
+(2021),
+[GitHub/alabamenhu](https://github.com/alabamenhu).
