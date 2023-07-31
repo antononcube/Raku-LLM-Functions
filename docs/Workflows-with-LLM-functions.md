@@ -745,4 +745,4 @@ Most likely all of the listed workflow would use chat objects and engineered pro
 [WRIp1] Wolfram Research, Inc.,
 [LLMFunctions WL paclet](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/),
 (2023),
-[Wolfram Language Paclet Repositoru](https://resources.wolframcloud.com/PacletRepository/).
+[Wolfram Language Paclet Repository](https://resources.wolframcloud.com/PacletRepository/).
