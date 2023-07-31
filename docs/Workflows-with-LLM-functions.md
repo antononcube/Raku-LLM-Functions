@@ -16,13 +16,21 @@ aims to do in Raku's playgrounds.
 
 ### Dynamic duo
 
+LLMs are celebrated for producing good to great results, but they have a few big issues. 
+The content they generate can be inconsistent, prone to hallucination, and sometimes biased, making it unreliable.
+The form, or stylistic structure, may also vary widely, with a lack of determinism and sensitivity to hyperparameters contributing to challenges in reproducibility. 
+Moreover, customization and debugging can be complex due to these inconsistencies. 
+
+The lack of reliability and reproducibility in both content and form underscore
+the need for streamlining, managing, and transforming LLM inquiries and results.
+
 Raku, with its unique approach to text manipulation, not surprisingly complements LLMs nicely. 
 While Raku might not be everyone's favorite language and has certain intricacies that take some getting used to, 
 its strengths in handling text patterns are hard to ignore. ***Creating well-crafted pairings of Raku with LLMs 
 can broaden Raku's adoption and utilization.***
 
 "LLM::Functions" establishes a (functional programming) connection between Raku's capabilities and the vast potential of LLMs. 
-I would like to upgrade that promising pairing into a fusion of sorts, something that would called to be a "dynamic duo."
+I would like to upgrade that promising pairing into a fusion of sorts, something that some might call a "dynamic duo."
 
 To enhance the pairing of Raku with LLMs, it's *also* essential to have:
 - LLM prompt repository with many well documented prompts; see [WRIr1]

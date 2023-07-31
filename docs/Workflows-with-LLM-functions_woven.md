@@ -16,13 +16,21 @@ aims to do in Raku's playgrounds.
 
 ### Dynamic duo
 
+LLMs are celebrated for producing good to great results, but they have a few big issues. 
+The content they generate can be inconsistent, prone to hallucination, and sometimes biased, making it unreliable.
+The form, or stylistic structure, may also vary widely, with a lack of determinism and sensitivity to hyperparameters contributing to challenges in reproducibility. 
+Moreover, customization and debugging can be complex due to these inconsistencies. 
+
+The lack of reliability and reproducibility in both content and form underscore
+the need for streamlining, managing, and transforming LLM inquiries and results.
+
 Raku, with its unique approach to text manipulation, not surprisingly complements LLMs nicely. 
 While Raku might not be everyone's favorite language and has certain intricacies that take some getting used to, 
 its strengths in handling text patterns are hard to ignore. ***Creating well-crafted pairings of Raku with LLMs 
 can broaden Raku's adoption and utilization.***
 
-"LLM::Functions" establishes a (functional programming) connection between Raku's capabilities and the vast potential of LLMs. 
-I would like to upgrade that promising pairing into a fusion of sorts, something that would called to be a "dynamic duo."
+"LLM::Functions" establishes a (functional programming) connection between Raku's capabilities and the vast potential of LLMs.
+I would like to upgrade that promising pairing into a fusion of sorts, something that some might call a "dynamic duo."
 
 To enhance the pairing of Raku with LLMs, it's *also* essential to have:
 - LLM prompt repository with many well documented prompts; see [WRIr1]
@@ -189,7 +197,7 @@ my &qf3 = llm-function(
         form => sub-parser('JSON'));
 ```
 ```
-# -> **@args, *%args { #`(Block|5905081696136) ... }
+# -> **@args, *%args { #`(Block|5912497791792) ... }
 ```
 
 ### Countries GDP
@@ -200,7 +208,7 @@ Consider finding and plotting the GDP of top 10 largest countries:
 my $gdp1 = &qf3('GDP', 'top 10 largest countries', '2022')
 ```
 ```
-# {Brazil => 2.5 trillion USD, China => 17.3 trillion USD, France => 2.7 trillion USD, Germany => 4.3 trillion USD, India => 7.7 trillion USD, Italy => 2.1 trillion USD, Japan => 5.3 trillion USD, Russia => 2.2 trillion USD, United Kingdom => 3.2 trillion USD, United States => 21.3 trillion USD}
+# {Brazil => 2.7 trillion USD, China => 19.2 trillion USD, France => 2.9 trillion USD, Germany => 4.3 trillion USD, India => 9.2 trillion USD, Japan => 5.3 trillion USD, Mexico => 2.2 trillion USD, Russia => 2.3 trillion USD, United Kingdom => 3.2 trillion USD, United States => 25.8 trillion USD}
 ```
 
 Here is a corresponding table:
@@ -212,16 +220,16 @@ to-pretty-table($gdp1)
 # +-------------------+----------------+
 # |       Value       |      Key       |
 # +-------------------+----------------+
-# | 21.3 trillion USD | United States  |
-# | 17.3 trillion USD |     China      |
-# |  2.5 trillion USD |     Brazil     |
-# |  4.3 trillion USD |    Germany     |
-# |  2.1 trillion USD |     Italy      |
-# |  7.7 trillion USD |     India      |
-# |  2.2 trillion USD |     Russia     |
-# |  2.7 trillion USD |     France     |
+# |  9.2 trillion USD |     India      |
+# |  2.9 trillion USD |     France     |
+# | 25.8 trillion USD | United States  |
+# | 19.2 trillion USD |     China      |
 # |  5.3 trillion USD |     Japan      |
+# |  2.3 trillion USD |     Russia     |
+# |  2.2 trillion USD |     Mexico     |
 # |  3.2 trillion USD | United Kingdom |
+# |  4.3 trillion USD |    Germany     |
+# |  2.7 trillion USD |     Brazil     |
 # +-------------------+----------------+
 ```
 
@@ -243,18 +251,18 @@ text-list-plot($gdp1.values.map({ sub-parser(Numeric).subparse($_).first }))
 ```
 # +---+----------+-----------+----------+-----------+--------+       
 # |                                                          |       
-# +   *                                                      +  20.00
+# +              *                                           +  25.00
 # |                                                          |       
-# |        *                                                 |       
+# +                                                          +  20.00
+# |                    *                                     |       
+# |                                                          |       
 # +                                                          +  15.00
 # |                                                          |       
+# +   *                                                      +  10.00
 # |                                                          |       
-# +                                                          +  10.00
-# |                               *                          |       
-# |                                                          |       
-# +                    *                            *        +   5.00
-# |              *           *          *     *          *   |       
-# |                                                          |       
+# +                          *                      *        +   5.00
+# |        *                      *     *     *          *   |       
+# +                                                          +   0.00
 # +---+----------+-----------+----------+-----------+--------+       
 #     0.00       2.00        4.00       6.00        8.00
 ```
@@ -283,7 +291,7 @@ text-pareto-principle-plot($gdp2.rotor(2)>>.[1])
 my $gmd = &qf3("counts of Olymipic gold medals", "countries", "the last decade");
 ```
 ```
-# {Australia => 14, China => 38, France => 13, Germany => 17, Great Britain => 27, Italy => 8, Japan => 12, Russia => 19, South Korea => 9, United States => 48}
+# {Australia => 33, China => 70, France => 32, Germany => 41, Great Britain => 48, Italy => 24, Japan => 28, Russia => 44, South Korea => 25, United States => 121}
 ```
 
 Here is a corresponding table:
@@ -292,20 +300,20 @@ Here is a corresponding table:
 to-pretty-table($gmd)
 ```
 ```
-# +---------------+-------+
-# |      Key      | Value |
-# +---------------+-------+
-# |     Italy     |   8   |
-# | United States |   48  |
-# |     China     |   38  |
-# | Great Britain |   27  |
-# |     Russia    |   19  |
-# |     France    |   13  |
-# |     Japan     |   12  |
-# |  South Korea  |   9   |
-# |    Germany    |   17  |
-# |   Australia   |   14  |
-# +---------------+-------+
+# +-------+---------------+
+# | Value |      Key      |
+# +-------+---------------+
+# |   48  | Great Britain |
+# |   33  |   Australia   |
+# |   41  |    Germany    |
+# |  121  | United States |
+# |   44  |     Russia    |
+# |   24  |     Italy     |
+# |   28  |     Japan     |
+# |   25  |  South Korea  |
+# |   32  |     France    |
+# |   70  |     China     |
+# +-------+---------------+
 ```
 
 Here is a plot attempt:
@@ -314,21 +322,21 @@ Here is a plot attempt:
 text-list-plot($gmd.values)
 ```
 ```
-# +---+----------+-----------+----------+-----------+--------+       
-# +                                                          +  50.00
-# |        *                                                 |       
-# |                                                          |       
-# +              *                                           +  40.00
-# |                                                          |       
-# +                                                          +  30.00
-# |                    *                                     |       
-# |                                                          |       
-# +                          *                               +  20.00
-# |                                                 *        |       
-# |                               *     *                *   |       
-# +   *                                       *              +  10.00
-# |                                                          |       
-# +---+----------+-----------+----------+-----------+--------+       
+# +---+----------+-----------+----------+-----------+--------+        
+# |                                                          |        
+# +                    *                                     +  120.00
+# |                                                          |        
+# +                                                          +  100.00
+# |                                                          |        
+# +                                                          +   80.00
+# |                                                      *   |        
+# +                                                          +   60.00
+# |                                                          |        
+# |   *                      *                               |        
+# +        *     *                                           +   40.00
+# |                               *     *     *     *        |        
+# +                                                          +   20.00
+# +---+----------+-----------+----------+-----------+--------+        
 #     0.00       2.00        4.00       6.00        8.00
 ```
 
@@ -355,7 +363,7 @@ my &num-norm = llm-example-function(['1,034' => '1_034', '13,003,553' => '13_003
                                      '3.2343 trillion USD' => '3.2343E12', '0.3 trillion' => '0.3E12']);
 ```
 ```
-# -> **@args, *%args { #`(Block|5905066206056) ... }
+# -> **@args, *%args { #`(Block|5912496131536) ... }
 ```
 
 This LLM function can be useful to transform outputs of other LLM functions (before utilizing those outputs further.)
@@ -366,7 +374,7 @@ Here is an example of normalizing the top 10 countries GDP query output above:
 &num-norm($gdp1.join(' '))
 ```
 ```
-# United States	21.3E12 USD China	17.3E12 USD Brazil	2.5E12 USD Germany	4.3E12 USD Italy	2.1E12 USD India	7.7E12 USD Russia	2.2E12 USD France	2.7E12 USD Japan	5.3E12 USD United Kingdom	3.2E12 USD
+# India	9.2E12 USD France	2.9E12 USD United States	25.8E12 USD China	19.2E12 USD Japan	5.3E12 USD Russia	2.3E12 USD Mexico	2.2E12 USD United Kingdom	3.2E12 USD Germany	4.3E12 USD Brazil	2.7E12 USD
 ```
 
 ### Dataset into tabular format
@@ -377,7 +385,7 @@ Here is an LLM function that transforms the plain text data above in GitHub Mark
 my &fgt = llm-function({ "Transform the plain-text table $_ into a GitHub table." })
 ```
 ```
-# -> **@args, *%args { #`(Block|5905066246944) ... }
+# -> **@args, *%args { #`(Block|5912496152088) ... }
 ```
 
 Here is an example application:
@@ -385,18 +393,18 @@ Here is an example application:
 ```perl6 , results=asis
 &fgt(to-pretty-table($gdp1))
 ```
-| Key           | Value              |
-|---------------|--------------------|
-| United States | 21.3 trillion USD  |
-| China         | 17.3 trillion USD  |
-| Brazil        | 2.5 trillion USD   |
-| Germany       | 4.3 trillion USD   |
-| Italy         | 2.1 trillion USD   |
-| India         | 7.7 trillion USD   |
-| Russia        | 2.2 trillion USD   |
-| France        | 2.7 trillion USD   |
-| Japan         | 5.3 trillion USD   |
-| United Kingdom| 3.2 trillion USD   |
+| Value       | Key        |
+| ----------- | ---------- |
+| 9.2trillion USD | India |
+| 2.9trillion USD | France |
+| 25.8trillion USD | United States |
+| 19.2trillion USD | China |
+| 5.3trillion USD | Japan |
+| 2.3trillion USD | Russia |
+| 2.2trillion USD | Mexico |
+| 3.2trillion USD | United Kingdom |
+| 4.3trillion USD | Germany |
+| 2.7trillion USD | Brazil |
 
 
 Let us define a function that translates the dataset by converting to JSON format first,
@@ -406,7 +414,7 @@ and then converting into a GitHub Markdown table:
 my &fjgt = llm-function({ "Transform the JSON data $_ into a GitHub table." })
 ```
 ```
-# -> **@args, *%args { #`(Block|5905066223800) ... }
+# -> **@args, *%args { #`(Block|5912496169256) ... }
 ```
 
 Here is an example application:
@@ -414,18 +422,18 @@ Here is an example application:
 ```perl6 , results=asis
 &fjgt(to-json($gdp1))
 ```
-Country | GDP
---- | ---
-United States | 21.3 trillion USD
-China | 17.3 trillion USD
-Brazil | 2.5 trillion USD
-Germany | 4.3 trillion USD
-Italy | 2.1 trillion USD
-India | 7.7 trillion USD
-Russia | 2.2 trillion USD
-France | 2.7 trillion USD
-Japan | 5.3 trillion USD
-United Kingdom | 3.2 trillion USD
+Country | GDP 
+-------|------
+India | 9.2 trillion USD 
+France | 2.9 trillion USD 
+United States | 25.8 trillion USD 
+China | 19.2 trillion USD 
+Japan | 5.3 trillion USD 
+Russia | 2.3 trillion USD 
+Mexico | 2.2 trillion USD 
+United Kingdom | 3.2 trillion USD 
+Germany | 4.3 trillion USD 
+Brazil | 2.7 trillion USD
 
 
 ### Dataset into diagrams
@@ -436,7 +444,7 @@ Here we define a reformatting function that translates JSON data into Mermaid di
 my &fjmmd = llm-function({ "Transform the JSON data $^a into a Mermaid $^b spec." })
 ```
 ```
-# -> **@args, *%args { #`(Block|5905066266272) ... }
+# -> **@args, *%args { #`(Block|5912496191896) ... }
 ```
 
 Here we convert the medals data into a pie chart:
@@ -446,16 +454,16 @@ Here we convert the medals data into a pie chart:
 ```
 ```mermaid
 pie
-    title Italy: 8
-    United States: 48
-    China: 38
-    Great Britain: 27
-    Russia: 19
-    France: 13
-    Japan: 12
-    South Korea: 9
-    Germany: 17
-    Australia: 14
+    "Great Britain" : 48
+    "Australia" : 33
+    "Germany": 41
+    "United States" : 121
+    "Russia" : 44
+    "Italy" : 24
+    "Japan" : 28
+    "South Korea" : 25
+    "France" : 32
+    "China" : 70
 ```
 
 Here is a more "data creative" example:
@@ -478,11 +486,12 @@ Here we convert the contingency matrix into a flow chart:
 &fjmmd(to-json(%ct), 'flow chart')
 ```
 ```mermaid
-graph LR
-  Male1st((179))-->Male2nd((171))
-  Male2nd-->Male3rd((493))
-  Female2nd((106))-->Female1st((144))
-  Female1st-->Female3rd((216))
+graph TD
+female1(Female: 1st)-->Female144
+female2(Female: 2nd)-->Female106
+male1(Male: 1st)-->Male179
+male2(Male: 2nd)-->Male171
+male3(Male: 3rd)-->Male493
 ```
 
 Here we convert the contingency matrix into a state diagram :
@@ -491,19 +500,17 @@ Here we convert the contingency matrix into a state diagram :
 &fjmmd(to-json(%ct), 'state diagram')
 ```
 ```mermaid
+```
 stateDiagram
-
-state Male {
-  First: 179
-  Second: 171
-  Third: 493
-}
-
-state Female {
-  First: 144
-  Second: 106
-  Third: 216
-}
+    female[Female]
+    male[Male]
+    female --> 1st: 144
+    female --> 2nd: 106
+    female --> 3rd: 216
+    male --> 1st: 179
+    male --> 2nd: 171
+    male --> 3rd: 493
+```
 ```
 
 ------
@@ -524,7 +531,7 @@ my &pu = llm-example-function(
         llm-evaluator => 'PaLM');
 ```
 ```
-# -> **@args, *%args { #`(Block|5905085098096) ... }
+# -> **@args, *%args { #`(Block|5912286504064) ... }
 ```
 
 Here is an example of speed query function:
@@ -533,7 +540,7 @@ Here is an example of speed query function:
 my &fs = llm-function({ "What is the average speed of $^a in the units of $^b?" }, llm-evaluator => 'PaLM');
 ```
 ```
-# -> **@args, *%args { #`(Block|5905085098528) ... }
+# -> **@args, *%args { #`(Block|5912286504496) ... }
 ```
 
 Here is a concrete query:
@@ -542,7 +549,7 @@ Here is a concrete query:
 my $rs1 = &fs('rocket leaving Earth', 'meters per second');
 ```
 ```
-# 11,000 m/s
+# 11,200 m/s
 ```
 
 Here we convert the LLM output into Raku code for making a unit object:
@@ -551,7 +558,7 @@ Here we convert the LLM output into Raku code for making a unit object:
 my $rs2 = &pu($rs1);
 ```
 ```
-# GetUnit("11_000 m/s")
+# GetUnit("11_200 m/s")
 ```
 
 Here we evaluate the Raku code (into an object):
@@ -563,8 +570,8 @@ my  $uObj = EVAL($rs2);
 $uObj.raku;
 ```
 ```
-# Unit.new( factor => 11000, offset => 0, defn => '11_000 m/s', type => Speed,
-#   dims => [1,0,-1,0,0,0,0,0], dmix => ("s"=>-1,"m"=>1).MixHash, names => ['11_000 m/s'] );
+# Unit.new( factor => 11200, offset => 0, defn => '11_200 m/s', type => Speed,
+#   dims => [1,0,-1,0,0,0,0,0], dmix => ("s"=>-1,"m"=>1).MixHash, names => ['11_200 m/s'] );
 ```
 
 Of course, the steps above can be combined into one function.
@@ -590,7 +597,7 @@ my &cfn = llm-function(
         llm-evaluator => 'OpenAI', form => sub-parser('JSON'));
 ```
 ```
-# -> **@args, *%args { #`(Block|5905086158400) ... }
+# -> **@args, *%args { #`(Block|5912465262064) ... }
 ```
 
 Here is a query:
@@ -599,7 +606,7 @@ Here is a query:
 my $chemRes = &cfn(3, 'sulfur');
 ```
 ```
-# [2S + 3O2 → 2SO3 P4S3 + 6H2O → 4H3PO3 + 3H2S 2S2O3 → S4O6 + S]
+# [2 S + 3 O2 → 2 SO3 2 S + 6 H2O → 2 SO2 + 4 H2 S + 2 O2 → SO3]
 ```
 
 Let us convince ourselves that we got a list of strings:
@@ -618,13 +625,13 @@ the molecular masses on Left Hand Sides (LHSs) and Right Hand Side (RHSs) are th
 to-pretty-table(transpose( %(formula => $chemRes.Array, balancing => molecular-mass($chemRes)>>.gist ) ))
 ```
 ```
-# +-----------------------------+-------------------------------------+
-# |           formula           |              balancing              |
-# +-----------------------------+-------------------------------------+
-# |       2S + 3O2 → 2SO3       |          160.114 => 160.114         |
-# | P4S3 + 6H2O → 4H3PO3 + 3H2S | 328.16504799200004 => 430.207047992 |
-# |       2S2O3 → S4O6 + S      |          224.234 => 256.294         |
-# +-----------------------------+-------------------------------------+
+# +-----------------------------+----------------------------+
+# |          balancing          |          formula           |
+# +-----------------------------+----------------------------+
+# |      160.114 => 160.114     |     2 S + 3 O2 → 2 SO3     |
+# |       172.21 => 136.18      | 2 S + 6 H2O → 2 SO2 + 4 H2 |
+# | 96.05600000000001 => 80.057 |       S + 2 O2 → SO3       |
+# +-----------------------------+----------------------------+
 ```
 
 **Remark:** If the column "balancing" shows two different numbers separated by "=>" that 
@@ -647,7 +654,7 @@ Here for each formula we extract the chemical components and find the correspond
 my @chemData = $chemRes.map({ [formula => $_, |sub-parser(&chem-component).subparse($_).grep({ $_ ~~ Pair })].Hash });
 ```
 ```
-# [{2S => 64.12, 2SO3 => 160.114, 3O2 => 95.994, formula => 2S + 3O2 → 2SO3} {3H2S => 102.22800000000001, 4H3PO3 => 327.979047992, 6H2O => 108.09, P4S3 => 220.075047992, formula => P4S3 + 6H2O → 4H3PO3 + 3H2S} { S => 32.06,  S4O6 => 224.234, 2S2O3 => 224.234, formula => 2S2O3 → S4O6 + S}]
+# [{2 S => 64.12, 2 SO3 => 160.114, 3 O2 => 95.994, formula => 2 S + 3 O2 → 2 SO3} {2 S => 64.12, 2 SO2 => 128.116, 4 H2 => 8.064, 6 H2O => 108.09, formula => 2 S + 6 H2O → 2 SO2 + 4 H2} { SO3 => 80.057, 2 O2 => 63.996, S => 32.06, formula => S + 2 O2 → SO3}]
 ```
 
 Here we all unique column names (keys) in the obtained dataset:
@@ -656,7 +663,7 @@ Here we all unique column names (keys) in the obtained dataset:
 my @colnames = @chemData>>.keys.flat.unique.sort
 ```
 ```
-# [ S  S4O6 2S 2S2O3 2SO3 3H2S 3O2 4H3PO3 6H2O P4S3 formula]
+# [ SO3 2 O2 2 S 2 SO2 2 SO3 3 O2 4 H2 6 H2O S formula]
 ```
 
 Here we tabulate the result:
@@ -665,13 +672,13 @@ Here we tabulate the result:
 to-pretty-table(@chemData, align => 'l', field-names => @colnames)
 ```
 ```
-# +-----------+------------+-----------+------------+------------+------------+-----------+------------+------------+------------+-----------------------------+
-# |  S        |  S4O6      | 2S        | 2S2O3      | 2SO3       | 3H2S       | 3O2       | 4H3PO3     | 6H2O       | P4S3       | formula                     |
-# +-----------+------------+-----------+------------+------------+------------+-----------+------------+------------+------------+-----------------------------+
-# |           |            | 64.120000 |            | 160.114000 |            | 95.994000 |            |            |            | 2S + 3O2 → 2SO3             |
-# |           |            |           |            |            | 102.228000 |           | 327.979048 | 108.090000 | 220.075048 | P4S3 + 6H2O → 4H3PO3 + 3H2S |
-# | 32.060000 | 224.234000 |           | 224.234000 |            |            |           |            |            |            | 2S2O3 → S4O6 + S            |
-# +-----------+------------+-----------+------------+------------+------------+-----------+------------+------------+------------+-----------------------------+
+# +-----------+-----------+-----------+------------+------------+-----------+----------+------------+-----------+----------------------------+
+# |  SO3      | 2 O2      | 2 S       | 2 SO2      | 2 SO3      | 3 O2      | 4 H2     | 6 H2O      | S         | formula                    |
+# +-----------+-----------+-----------+------------+------------+-----------+----------+------------+-----------+----------------------------+
+# |           |           | 64.120000 |            | 160.114000 | 95.994000 |          |            |           | 2 S + 3 O2 → 2 SO3         |
+# |           |           | 64.120000 | 128.116000 |            |           | 8.064000 | 108.090000 |           | 2 S + 6 H2O → 2 SO2 + 4 H2 |
+# | 80.057000 | 63.996000 |           |            |            |           |          |            | 32.060000 | S + 2 O2 → SO3             |
+# +-----------+-----------+-----------+------------+------------+-----------+----------+------------+-----------+----------------------------+
 ```
 
 ------
@@ -688,7 +695,7 @@ Here is an LLM function for generating a Mermaid JS spec:
 my &fmmd = llm-function({ "Generate the Mermaid-JS code of a $^a for $^b." })
 ```
 ```
-# -> **@args, *%args { #`(Block|5905086240104) ... }
+# -> **@args, *%args { #`(Block|5912466953720) ... }
 ```
 
 Here we request to get the code of pie chart for the continent sizes:
@@ -696,16 +703,13 @@ Here we request to get the code of pie chart for the continent sizes:
 ```perl6 , results=asis
 my $mmdRes = &fmmd("pie chart", "relative continent sizes")
 ```
-```mermaid
-pie 
-  title Relative continent sizes
-  Europe : 55 
-  Asia : 35 
-  Africa : 25 
-  North America : 20 
-  South America : 15
-  Australia : 8
-```
+pie
+    "Africa" : 21.2,
+    "Asia" : 34.7,
+    "Europe" : 11.9,
+    "North America": 9.7,
+    "Oceania": 0.3,
+    "South America": 22.2
 
 
 Here, "just in case", we normalize the numbers of the result and "dump" the code as Markdown code cell:
@@ -714,14 +718,13 @@ Here, "just in case", we normalize the numbers of the result and "dump" the code
 $mmdRes.subst(:g, '%', '').subst(:g, ',', '').subst("{'`' x 3}mermaid", '').subst("{'`' x 3}", '')
 ```
 ```mermaid
-pie 
-  title Relative continent sizes
-  Europe : 55 
-  Asia : 35 
-  Africa : 25 
-  North America : 20 
-  South America : 15
-  Australia : 8
+pie
+    "Africa" : 21.2
+    "Asia" : 34.7
+    "Europe" : 11.9
+    "North America": 9.7
+    "Oceania": 0.3
+    "South America": 22.2
 ```
 
 Here is a flow chart request:
@@ -730,16 +733,20 @@ Here is a flow chart request:
 &fmmd("flow chart", "going to work in the morning avoiding traffic jams and reacting to weather")
 ```
 ```mermaid
-graph TD
-A[Check Weather] --> B[Check Traffic]
-B --> C[Leave House]
-C --> D[Drive to Work]
-D --> E[Arrive at Work]
-A -->|Rain|F[Take Umbrella]
-F --> G[Leave House]
-G --> D
-A -->|Snow|H[Wear Winter Clothes]
-H --> G
+  graph TD;
+  Weather-->|Rain| Umbrella
+  Weather-->|Snow| Take Snow Tires
+  Weather-->|Sunny| No Special Precautions
+  No Special Precautions-->Leave on Time
+  Take Snow Tires-->Leave Early
+  Umbrella-->Leave Early
+  Leave Early-->Check Traffic
+  Leave on Time-->Check Traffic
+  Check Traffic-->|Traffic Jam| Find Alternate Route
+  Check Traffic-->|No Jam| Drive Normal Route
+  Find Alternate Route-->Drive Alternate Route
+  Drive Alternate Route-->Arrive at Work
+  Drive Normal Route-->Arrive at Work
 ```
 
 
@@ -759,7 +766,7 @@ my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a 
                         form => sub-parser('JSON'))
 ```
 ```
-# -> **@args, *%args { #`(Block|5905086271992) ... }
+# -> **@args, *%args { #`(Block|5912466991944) ... }
 ```
 
 Here is way to get a biography and discography of music artist from Wikipedia:
@@ -800,7 +807,7 @@ Here we Named Entity Recognition (NER) via the LLM function defined above:
 my $albRes = &fner('album names and years', $text);
 ```
 ```
-# [```json album_names => [other] years => [other] ```]
+# [```json albums => [{name => The Dark Side of the Moon, year => 1973} {name => Wish You Were Here, year => 1975} {name => Animals, year => 1977} {name => The Wall, year => 1979} {name => A Momentary Lapse of Reason, year => 1987} {name => The Division Bell, year => 1994} {name => The Endless River, year => 2014}] ```]
 ```
 
 LLMs can produce NER data in several different structures. 
@@ -811,7 +818,7 @@ Using the function `deduce-type` from
 deduce-type($albRes);
 ```
 ```
-# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Atom((Str)), 1)), Pair(Atom((Str)), Vector(Atom((Str)), 1)), Atom((Str))])
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Struct([name, year], [Str, Int]), 7)), Atom((Str))])
 ```
 
 After some studying the result we process it with this code:
@@ -820,7 +827,7 @@ After some studying the result we process it with this code:
 $albRes = $albRes.grep({ $_ ~~ Pair }).rotor(2)>>.Hash
 ```
 ```
-# ({album_names => [other], years => [other]})
+# ()
 ```
 
 Here we tabulate the result:
@@ -829,11 +836,10 @@ Here we tabulate the result:
 to-pretty-table($albRes)
 ```
 ```
-# +-------+-------------+
-# | years | album_names |
-# +-------+-------------+
-# | other |    other    |
-# +-------+-------------+
+# +---+
+# | 0 |
+# +---+
+# +---+
 ```
 
 Here we make a Mermaid-JS timeline plot (after we have figured out the structure of LLM's function output):
