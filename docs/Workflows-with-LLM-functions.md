@@ -105,6 +105,8 @@ Here are sections of the article:
   ... Straightforward application of LLM abilities and literate programming tools.
 - **Named entity recognition**  
   ... How obtain music album names and release dates and tabulate or plot them.
+- **Statistics of output data types**   
+  ... Illustration why programmers need streamlining solutions for LLMs.
 - **Other workflows**   
   ... Outline of other workflows using LLM chat objects. (Also provided by "LLM::Functions".)
 
@@ -670,6 +672,19 @@ for |$albRes2 -> %record {
 }
 @timeline.join("\n\t");
 ```
+
+------
+
+## Statistics of output data types
+
+**Workflow:** We want to see and evaluate the distribution of data types given by LLM-functions:
+1. Make a pipeline LLM-functions
+2. Create a list of random inputs "expected" by the pipeline
+   - Or use the same input multiple times.
+3. Deduce the data type of each output
+4. Compute descriptive statistics
+
+*TBF...*
 
 ------
 
