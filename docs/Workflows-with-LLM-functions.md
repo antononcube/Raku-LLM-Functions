@@ -167,8 +167,12 @@ graph TD
     GoodLLM --> |No| CanProgram{Can you<br>programmatically<br>change the<br>outputs?}
     CanProgram --> |No| KnowVerb{Can you<br>verbalize<br>the required<br>change?}
     KnowVerb --> |No| KnowRule{Can you<br>specify the change<br>as a set of training<br>rules?}
-    KnowVerb --> |Yes| AddLLM["Make additional<br>LLM function(s)"]
+    KnowVerb --> |Yes| ShouldAddLLM{"Is it better to<br>make additional<br>LLM function(s)?"}
+    ShouldAddLLM --> |Yes| AddLLM["Make additional<br>LLM function(s)"]
     AddLLM --> MakePipeline
+    ShouldAddLLM --> |No| ChangePrompt["Change prompt(s)<br>of LLM function(s)"]
+    ChangePrompt --> ChangeOutputDescr["Change output description(s)<br>of LLM function(s)"]
+    ChangeOutputDescr --> LLMFunc
     CanProgram --> |Yes| ApplySubParser["Apply suitable (sub-)parsers"]
     ApplySubParser --> HumanMassageOutput[Program output transformations]
     HumanMassageOutput --> MakePipeline
@@ -195,7 +199,10 @@ Here is a corresponding description:
   - *The human programming is delegated to the LLM.*
 - **Can you specify the change as a set of training rules?**: If not verbalizable, a decision point to check if the change can be specified as training rules.
   - *The human cannot program or verbalize the required changes, but can provide examples of those changes.*
-- **Make additional LLM function(s)**: If changes can be verbalized, make additional LLM function(s).
+- **Is it better to make additional LLM function(s)?**: If changes can be verbalized, a decision point to check whether it is better to make additional LLM function(s), or it is better to change prompts or output descriptions. 
+- **Make additional LLM function(s)**: Make additional LLM function(s) (since it is considered to be the better option.)  
+- **Change prompts of LLM function(s)**: Change prompts of already created LLM function(s).
+- **Change output description(s) of LLM function(s)**: Change output description(s) of already created LLM function(s).
 - **Apply suitable (sub-)parsers**: If changes can be programmed, choose, or program, and apply suitable parser(s) or sub-parser(s) for LLM's outputs.
 - **Program output transformations**: Transform the outputs of the (sub-)parser(s) programmatically.
 - **Overall satisfactory results?**: A decision point to assess whether the results are overall satisfactory.
