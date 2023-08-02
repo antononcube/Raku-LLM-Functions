@@ -105,8 +105,14 @@ Here are sections of the article:
   ... Straightforward application of LLM abilities and literate programming tools.
 - **Named entity recognition**  
   ... How obtain music album names and release dates and tabulate or plot them.
+- **Statistics of output data types**   
+  ... Illustration why programmers need streamlining solutions for LLMs.
 - **Other workflows**   
   ... Outline of other workflows using LLM chat objects. (Also provided by "LLM::Functions".)
+
+**Remark:** Most of the sections have a sub-section titled "Exercise questions". 
+The reader is the secondary target audience for those. The primary target are LLMs to respond them.
+(Another article is going to discuss the staging and evaluating of those LLM answers.) 
 
 ### Packages and LLM access
 
@@ -167,8 +173,12 @@ graph TD
     GoodLLM --> |No| CanProgram{Can you<br>programmatically<br>change the<br>outputs?}
     CanProgram --> |No| KnowVerb{Can you<br>verbalize<br>the required<br>change?}
     KnowVerb --> |No| KnowRule{Can you<br>specify the change<br>as a set of training<br>rules?}
-    KnowVerb --> |Yes| AddLLM["Make additional<br>LLM function(s)"]
+    KnowVerb --> |Yes| ShouldAddLLM{"Is it better to<br>make additional<br>LLM function(s)?"}
+    ShouldAddLLM --> |Yes| AddLLM["Make additional<br>LLM function(s)"]
     AddLLM --> MakePipeline
+    ShouldAddLLM --> |No| ChangePrompt["Change prompt(s)<br>of LLM function(s)"]
+    ChangePrompt --> ChangeOutputDescr["Change output description(s)<br>of LLM function(s)"]
+    ChangeOutputDescr --> LLMFunc
     CanProgram --> |Yes| ApplySubParser["Apply suitable (sub-)parsers"]
     ApplySubParser --> HumanMassageOutput[Program output transformations]
     HumanMassageOutput --> MakePipeline
@@ -195,7 +205,10 @@ Here is a corresponding description:
   - *The human programming is delegated to the LLM.*
 - **Can you specify the change as a set of training rules?**: If not verbalizable, a decision point to check if the change can be specified as training rules.
   - *The human cannot program or verbalize the required changes, but can provide examples of those changes.*
-- **Make additional LLM function(s)**: If changes can be verbalized, make additional LLM function(s).
+- **Is it better to make additional LLM function(s)?**: If changes can be verbalized, a decision point to check whether it is better to make additional LLM function(s), or it is better to change prompts or output descriptions. 
+- **Make additional LLM function(s)**: Make additional LLM function(s) (since it is considered to be the better option.)  
+- **Change prompts of LLM function(s)**: Change prompts of already created LLM function(s).
+- **Change output description(s) of LLM function(s)**: Change output description(s) of already created LLM function(s).
 - **Apply suitable (sub-)parsers**: If changes can be programmed, choose, or program, and apply suitable parser(s) or sub-parser(s) for LLM's outputs.
 - **Program output transformations**: Transform the outputs of the (sub-)parser(s) programmatically.
 - **Overall satisfactory results?**: A decision point to assess whether the results are overall satisfactory.
@@ -210,7 +223,7 @@ To summarise:
 
 **Remark:** We leave as exercises to the reader to see how the workflows programmed below fit the flowchart above.
 
-**Remark:** The mapping of the workflow code below onto the flowchart can be made using an LLM.
+**Remark:** The mapping of the workflow code below onto the flowchart can be made using an LLM. 
 
 ------
 
@@ -232,7 +245,7 @@ my &qf3 = llm-function(
         form => sub-parser('JSON'));
 ```
 ```
-# -> **@args, *%args { #`(Block|2509470823080) ... }
+# -> **@args, *%args { #`(Block|2385281116944) ... }
 ```
 
 ### Countries GDP
@@ -243,7 +256,7 @@ Consider finding and plotting the GDP of top 10 largest countries:
 my $gdp1 = &qf3('GDP', 'top 10 largest countries', '2022')
 ```
 ```
-# {Brazil => 2.6 trillion USD, China => 18.2 trillion USD, France => 2.9 trillion USD, Germany => 4.2 trillion USD, India => 7.7 trillion USD, Italy => 2.2 trillion USD, Japan => 5.3 trillion USD, Russia => 2.3 trillion USD, United Kingdom => 3.2 trillion USD, United States => 25.9 trillion USD}
+# {Brazil => 2.5 trillion USD, China => 20.2 trillion USD, France => 2.7 trillion USD, Germany => 3.8 trillion USD, India => 7.2 trillion USD, Italy => 2.2 trillion USD, Japan => 5.3 trillion USD, Russia => 2.3 trillion USD, United Kingdom => 3.0 trillion USD, United States => 25.3 trillion USD}
 ```
 
 Here is a corresponding table:
@@ -252,20 +265,20 @@ Here is a corresponding table:
 to-pretty-table($gdp1)
 ```
 ```
-# +----------------+-------------------+
-# |      Key       |       Value       |
-# +----------------+-------------------+
-# |     China      | 18.2 trillion USD |
-# |     Italy      |  2.2 trillion USD |
-# |    Germany     |  4.2 trillion USD |
-# |     Brazil     |  2.6 trillion USD |
-# |     France     |  2.9 trillion USD |
-# |     India      |  7.7 trillion USD |
-# | United States  | 25.9 trillion USD |
-# | United Kingdom |  3.2 trillion USD |
-# |     Russia     |  2.3 trillion USD |
-# |     Japan      |  5.3 trillion USD |
-# +----------------+-------------------+
+# +-------------------+----------------+
+# |       Value       |      Key       |
+# +-------------------+----------------+
+# |  2.2 trillion USD |     Italy      |
+# |  2.3 trillion USD |     Russia     |
+# |  5.3 trillion USD |     Japan      |
+# |  3.8 trillion USD |    Germany     |
+# |  7.2 trillion USD |     India      |
+# |  3.0 trillion USD | United Kingdom |
+# | 25.3 trillion USD | United States  |
+# |  2.5 trillion USD |     Brazil     |
+# |  2.7 trillion USD |     France     |
+# | 20.2 trillion USD |     China      |
+# +-------------------+----------------+
 ```
 
 Here is a plot attempt:
@@ -288,15 +301,15 @@ text-list-plot($gdp1.values.map({ sub-parser(Numeric).subparse($_).first }))
 # |                                                          |       
 # +                                     *                    +  25.00
 # |                                                          |       
-# +                                                          +  20.00
-# |   *                                                      |       
+# +                                                      *   +  20.00
 # |                                                          |       
 # +                                                          +  15.00
 # |                                                          |       
+# |                                                          |       
 # +                                                          +  10.00
-# |                               *                          |       
-# +                                                      *   +   5.00
-# |        *     *     *     *                *     *        |       
+# |                          *                               |       
+# +              *                                           +   5.00
+# |   *    *           *          *           *     *        |       
 # +                                                          +   0.00
 # +---+----------+-----------+----------+-----------+--------+       
 #     0.00       2.00        4.00       6.00        8.00
@@ -326,7 +339,7 @@ text-pareto-principle-plot($gdp2.rotor(2)>>.[1])
 my $gmd = &qf3("counts of Olymipic gold medals", "countries", "the last decade");
 ```
 ```
-# {Australia => 33, China => 70, France => 25, Germany => 41, Great Britain => 48, Italy => 21, Japan => 28, Russia => 46, South Korea => 24, United States => 101}
+# {Australia => 33, China => 70, France => 28, Germany => 38, Great Britain => 50, Italy => 19, Japan => 28, Russia => 45, South Korea => 24, United States => 109}
 ```
 
 Here is a corresponding table:
@@ -338,16 +351,16 @@ to-pretty-table($gmd)
 # +-------+---------------+
 # | Value |      Key      |
 # +-------+---------------+
-# |   46  |     Russia    |
-# |   25  |     France    |
-# |   41  |    Germany    |
-# |   70  |     China     |
-# |   48  | Great Britain |
+# |   45  |     Russia    |
 # |   24  |  South Korea  |
-# |   21  |     Italy     |
 # |   33  |   Australia   |
+# |   28  |     France    |
+# |   38  |    Germany    |
+# |   19  |     Italy     |
+# |   70  |     China     |
+# |   50  | Great Britain |
 # |   28  |     Japan     |
-# |  101  | United States |
+# |  109  | United States |
 # +-------+---------------+
 ```
 
@@ -359,27 +372,32 @@ text-list-plot($gmd.values)
 ```
 # +---+----------+-----------+----------+-----------+--------+        
 # |                                                          |        
-# +                                                      *   +  100.00
+# |                                                      *   |        
+# +                                                          +  100.00
 # |                                                          |        
 # +                                                          +   80.00
-# |                                                          |        
-# |                    *                                     |        
+# |                                     *                    |        
 # +                                                          +   60.00
 # |                                                          |        
-# |   *                      *                               |        
-# +              *                                           +   40.00
-# |                                           *              |        
-# |        *                      *     *           *        |        
-# +                                                          +   20.00
+# |   *                                       *              |        
+# +                          *                               +   40.00
+# |              *     *                            *        |        
+# +        *                      *                          +   20.00
+# |                                                          |        
 # +---+----------+-----------+----------+-----------+--------+        
 #     0.00       2.00        4.00       6.00        8.00
 ```
 
+### Exercise questions
+
+- How does the code in this section maps on the the flowchart in the section "General structure of LLM-based workflows"?
+- Come up with other arguments for the three slots of `&qf3` and execute workflow. 
+
 -------
 
-## Normalizing outputs
+## Refining and adapting outputs
 
-**Workflow:** We want to transform text, so it can be in certain expected or ready process format.
+**Workflow:** We want to transform text, so it can be in a certain expected or ready to process format.
 For example:
 
 - Remove certain pesky symbols and strings from LLM results
@@ -398,7 +416,7 @@ my &num-norm = llm-example-function(['1,034' => '1_034', '13,003,553' => '13_003
                                      '3.2343 trillion USD' => '3.2343E12', '0.3 trillion' => '0.3E12']);
 ```
 ```
-# -> **@args, *%args { #`(Block|2509512308000) ... }
+# -> **@args, *%args { #`(Block|2385306775984) ... }
 ```
 
 This LLM function can be useful to transform outputs of other LLM functions (before utilizing those outputs further.)
@@ -409,7 +427,7 @@ Here is an example of normalizing the top 10 countries GDP query output above:
 &num-norm($gdp1.join(' '))
 ```
 ```
-# China	18.2E12 USD Italy	2.2E12 USD Germany	4.2E12 USD Brazil	2.6E12 USD France	2.9E12 USD India	7.7E12 USD United States	25.9E12 USD United Kingdom	3.2E12 USD Russia	2.3E12 USD Japan	5.3E12 USD
+# Italy: 2.2E12 USD, Russia: 2.3E12 USD, Japan: 5.3E12 USD, Germany: 3.8E12 USD, India: 7.2E12 USD, United Kingdom: 3.0E12 USD, United States: 25.3E12 USD, Brazil: 2.5E12 USD, France: 2.7E12 USD, China: 20.2E12 USD
 ```
 
 ### Dataset into tabular format
@@ -420,7 +438,7 @@ Here is an LLM function that transforms the plain text data above in GitHub Mark
 my &fgt = llm-function({ "Transform the plain-text table $_ into a GitHub table." })
 ```
 ```
-# -> **@args, *%args { #`(Block|2509512328552) ... }
+# -> **@args, *%args { #`(Block|2385306787432) ... }
 ```
 
 Here is an example application:
@@ -428,18 +446,18 @@ Here is an example application:
 ```perl6 , results=asis
 &fgt(to-pretty-table($gdp1))
 ```
-| Value        | Key        |
-| ------------ | ---------- |
-| 18.2 trillion USD | China |
-| 2.2 trillion USD | Italy |
-| 4.2 trillion USD | Germany |
-| 2.6 trillion USD | Brazil |
-| 2.9 trillion USD | France |
-| 7.7 trillion USD | India |
-| 25.9 trillion USD | United States |
-| 3.2 trillion USD | United Kingdom |
-| 2.3 trillion USD | Russia |
-| 5.3 trillion USD | Japan |
+| Key           | Value              |
+|---------------|--------------------|
+| Italy         | 2.2 trillion USD   |
+| Russia        | 2.3 trillion USD   |
+| Japan         | 5.3 trillion USD   |
+| Germany       | 3.8 trillion USD   |
+| India         | 7.2 trillion USD   |
+| United Kingdom| 3.0 trillion USD   |
+| United States | 25.3 trillion USD  |
+| Brazil        | 2.5 trillion USD   |
+| France        | 2.7 trillion USD   |
+| China         | 20.2 trillion USD  |
 
 
 Let us define a function that translates the dataset by converting to JSON format first,
@@ -449,7 +467,7 @@ and then converting into a GitHub Markdown table:
 my &fjgt = llm-function({ "Transform the JSON data $_ into a GitHub table." })
 ```
 ```
-# -> **@args, *%args { #`(Block|2509512346368) ... }
+# -> **@args, *%args { #`(Block|2385306833000) ... }
 ```
 
 Here is an example application:
@@ -457,18 +475,18 @@ Here is an example application:
 ```perl6 , results=asis
 &fjgt(to-json($gdp1))
 ```
-Country | GDP (in trillion USD)
---- | ---
-China | 18.2
-Italy | 2.2
-Germany | 4.2
-Brazil | 2.6
-France | 2.9
-India | 7.7
-United States | 25.9
-United Kingdom | 3.2
-Russia | 2.3
-Japan | 5.3
+| Country | GDP (in USD) |
+| ------ | ------------ |
+| Italy | 2.2 trillion USD |
+| Russia | 2.3 trillion USD |
+| Japan | 5.3 trillion USD |
+| Germany | 3.8 trillion USD |
+| India | 7.2 trillion USD |
+| United Kingdom | 3.0 trillion USD |
+| United States | 25.3 trillion USD |
+| Brazil | 2.5 trillion USD |
+| France | 2.7 trillion USD |
+| China | 20.2 trillion USD |
 
 
 ### Dataset into diagrams
@@ -479,7 +497,7 @@ Here we define a reformatting function that translates JSON data into Mermaid di
 my &fjmmd = llm-function({ "Transform the JSON data $^a into a Mermaid $^b spec." })
 ```
 ```
-# -> **@args, *%args { #`(Block|2509512368360) ... }
+# -> **@args, *%args { #`(Block|2385306833720) ... }
 ```
 
 Here we convert the medals data into a pie chart:
@@ -489,16 +507,17 @@ Here we convert the medals data into a pie chart:
 ```
 ```mermaid
 pie
-  "Russia": 46
-  "France": 25
-  "Germany": 41
-  "China": 70
-  "Great Britain": 48
-  "South Korea": 24
-  "Italy": 21
-  "Australia": 33
-  "Japan": 28
-  "United States": 101
+  title Countries Population
+  "Russia" : 45
+  "South Korea" : 24
+  "Australia" : 33
+  "France" : 28
+  "Germany" : 38
+  "Italy" : 19
+  "China" : 70
+  "Great Britain" : 50
+  "Japan" : 28
+  "United States" : 109
 ```
 
 Here is a more "data creative" example:
@@ -522,10 +541,19 @@ Here we convert the contingency matrix into a flow chart:
 ```
 ```mermaid
 graph LR
-Male["Male"]-->|"1st: 179"|ThirdPlace["Third Place: 493"]
-Male-->|"2nd: 171"|SecondPlace["Second Place: 106"]
-Female["Female"]-->|"1st: 144"|FirstPlace["First Place: 144"]
-Female-->|"3rd: 216"|ThirdPlace
+    female["Female"] --> third["3rd"]
+    female["Female"] --> second["2nd"]
+    female["Female"] --> first["1st"]
+    male["Male"] --> third["3rd"]
+    male["Male"] --> second["2nd"]
+    male["Male"] --> first["1st"]
+
+    third["3rd"] --> f216[Female 216]
+    second["2nd"] --> f106[Female 106]
+    first["1st"] --> f144[Female 144]
+    third["3rd"] --> m493[Male 493]
+    second["2nd"] --> m171[Male 171]
+    first["1st"] --> m179[Male 179]
 ```
 
 Here we convert the contingency matrix into a state diagram :
@@ -534,20 +562,22 @@ Here we convert the contingency matrix into a state diagram :
 &fjmmd(to-json(%ct), 'state diagram')
 ```
 ```mermaid
-graph LR;
-Male --> First[First];
-Male --> Second[Second];
-Male --> Third[Third];
-Female --> First[First];
-Female --> Second[Second];
-Female --> Third[Third];
-First --> Male[Male (179)];
-First --> Female[Female (144)];
-Second --> Male[Male (171)];
-Second --> Female[Female (106)];
-Third --> Male[Male (493)];
-Third --> Female[Female (216)];
+stateDiagram
+    state Female
+    state Male
+    Female --> 3rd : 216
+    Female --> 2nd : 106
+    Female --> 1st : 144
+    Male --> 3rd : 493
+    Male --> 1st : 179
+    Male --> 2nd : 171
 ```
+
+### Exercise questions
+
+- To which parts of the flowchart above the workflow in this section corresponds to?
+- What is preferable: one LLM-function with complicated prompt an argument specs, 
+  or several LLM-functions with simpler structure prompts and arguments? 
 
 ------
 
@@ -567,7 +597,7 @@ my &pu = llm-example-function(
         llm-evaluator => 'PaLM');
 ```
 ```
-# -> **@args, *%args { #`(Block|2509504129512) ... }
+# -> **@args, *%args { #`(Block|2385301876608) ... }
 ```
 
 Here is an example of speed query function:
@@ -576,7 +606,7 @@ Here is an example of speed query function:
 my &fs = llm-function({ "What is the average speed of $^a in the units of $^b?" }, llm-evaluator => 'PaLM');
 ```
 ```
-# -> **@args, *%args { #`(Block|2509504129944) ... }
+# -> **@args, *%args { #`(Block|2385301877040) ... }
 ```
 
 Here is a concrete query:
@@ -614,6 +644,11 @@ Of course, the steps above can be combined into one function.
 In general, though, care should be taken to handle or prevent situations in which function inputs and outputs
 do not agree with each other.
 
+### Exercise questions
+
+- Write one Raku function that combines the LLM-functions above?
+- What kind of computations involve the discussed unit objects?
+
 ------
 
 ## Chemical formulas
@@ -633,7 +668,7 @@ my &cfn = llm-function(
         llm-evaluator => 'OpenAI', form => sub-parser('JSON'));
 ```
 ```
-# -> **@args, *%args { #`(Block|2509504279136) ... }
+# -> **@args, *%args { #`(Block|2385298711776) ... }
 ```
 
 Here is a query:
@@ -642,7 +677,7 @@ Here is a query:
 my $chemRes1 = &cfn(3, 'sulfur');
 ```
 ```
-# [S + O2 → SO2 Na2S + O2 → Na2SO3 2S + 3O2 → 2SO3]
+# [2S + 3O2 → 2SO3 CaSO4 + 2HCl → CaCl2 + SO2 + H2O 2Na2S + 3Cl2 → 2NaCl + S8]
 ```
 
 Let us convince ourselves that we got a list of strings:
@@ -661,13 +696,13 @@ the molecular masses on Left Hand Sides (LHSs) and Right Hand Side (RHSs) are th
 to-pretty-table(transpose( %(formula => $chemRes1.Array, balancing => molecular-mass($chemRes1)>>.gist ) ))
 ```
 ```
-# +------------------------------------------+--------------------+
-# |                balancing                 |      formula       |
-# +------------------------------------------+--------------------+
-# |             64.058 => 64.058             |    S + O2 → SO2    |
-# | 110.03753856000002 => 126.03653856000001 | Na2S + O2 → Na2SO3 |
-# |            160.114 => 160.114            |  2S + 3O2 → 2SO3   |
-# +------------------------------------------+--------------------+
+# +------------------------------------+----------------------------------+
+# |             balancing              |             formula              |
+# +------------------------------------+----------------------------------+
+# |         160.114 => 160.114         |         2S + 3O2 → 2SO3          |
+# |         209.05 => 193.051          | CaSO4 + 2HCl → CaCl2 + SO2 + H2O |
+# | 368.77907712 => 373.35953856000003 |    2Na2S + 3Cl2 → 2NaCl + S8     |
+# +------------------------------------+----------------------------------+
 ```
 
 **Remark:** If the column "balancing" shows two different numbers separated by "=>" that 
@@ -695,7 +730,7 @@ Here for each formula we extract the chemical components and find the correspond
 my @chemData = $chemRes1.map({ [formula => $_, |sub-parser(&chem-component).subparse($_).grep({ $_ ~~ Pair })].Hash });
 ```
 ```
-# [{O2 => 31.998, S => 32.06, SO2 => 64.058, formula => S + O2 → SO2} {Na2S => 78.03953856000001, Na2SO3 => 126.03653856000001, O2 => 31.998, formula => Na2S + O2 → Na2SO3} {O2 => 95.994, S => 64.12, SO3 => 160.114, formula => 2S + 3O2 → 2SO3}]
+# [{O2 => 95.994, S => 64.12, SO3 => 160.114, formula => 2S + 3O2 → 2SO3} {CaCl2 => 110.97800000000001, CaSO4 => 136.13400000000001, H2O => 18.015, HCl => 72.91600000000001, SO2 => 64.058, formula => CaSO4 + 2HCl → CaCl2 + SO2 + H2O} {Cl2 => 212.70000000000002, Na2S => 156.07907712000002, NaCl => 116.87953856000001, S8 => 256.48, formula => 2Na2S + 3Cl2 → 2NaCl + S8}]
 ```
 
 Here we all unique column names (keys) in the obtained dataset:
@@ -704,7 +739,7 @@ Here we all unique column names (keys) in the obtained dataset:
 my @colnames = @chemData>>.keys.flat.unique.sort
 ```
 ```
-# [Na2S Na2SO3 O2 S SO2 SO3 formula]
+# [CaCl2 CaSO4 Cl2 H2O HCl Na2S NaCl O2 S S8 SO2 SO3 formula]
 ```
 
 Here we tabulate the result:
@@ -713,13 +748,13 @@ Here we tabulate the result:
 to-pretty-table(@chemData, align => 'l', field-names => @colnames)
 ```
 ```
-# +-----------+------------+-----------+-----------+-----------+------------+--------------------+
-# | Na2S      | Na2SO3     | O2        | S         | SO2       | SO3        | formula            |
-# +-----------+------------+-----------+-----------+-----------+------------+--------------------+
-# |           |            | 31.998000 | 32.060000 | 64.058000 |            | S + O2 → SO2       |
-# | 78.039539 | 126.036539 | 31.998000 |           |           |            | Na2S + O2 → Na2SO3 |
-# |           |            | 95.994000 | 64.120000 |           | 160.114000 | 2S + 3O2 → 2SO3    |
-# +-----------+------------+-----------+-----------+-----------+------------+--------------------+
+# +------------+------------+------------+-----------+-----------+------------+------------+-----------+-----------+------------+-----------+------------+----------------------------------+
+# | CaCl2      | CaSO4      | Cl2        | H2O       | HCl       | Na2S       | NaCl       | O2        | S         | S8         | SO2       | SO3        | formula                          |
+# +------------+------------+------------+-----------+-----------+------------+------------+-----------+-----------+------------+-----------+------------+----------------------------------+
+# |            |            |            |           |           |            |            | 95.994000 | 64.120000 |            |           | 160.114000 | 2S + 3O2 → 2SO3                  |
+# | 110.978000 | 136.134000 |            | 18.015000 | 72.916000 |            |            |           |           |            | 64.058000 |            | CaSO4 + 2HCl → CaCl2 + SO2 + H2O |
+# |            |            | 212.700000 |           |           | 156.079077 | 116.879539 |           |           | 256.480000 |           |            | 2Na2S + 3Cl2 → 2NaCl + S8        |
+# +------------+------------+------------+-----------+-----------+------------+------------+-----------+-----------+------------+-----------+------------+----------------------------------+
 ```
 
 ### Alternative workflow and solution
@@ -739,7 +774,7 @@ my &cfnp = llm-function(
         llm-evaluator => 'OpenAI', form => sub-parser(&chem-component));
 ```
 ```
-# -> **@args, *%args { #`(Block|2509504364904) ... }
+# -> **@args, *%args { #`(Block|2385298803880) ... }
 ```
 
 Here is an invocation:
@@ -750,10 +785,10 @@ my $chemRes2 = &cfnp(4, 'sulfur and hydrogen');
 ```
 # [
 # 
-# 1.  S => 32.06  +  H2 => 2.016  →  H2S => 34.076 
-# 2.  H2S => 68.152  →  S2 => 64.12  +  H2 => 4.032 
-# 3.  H2 => 4.032  +  O2 => 31.998  →  H2O => 36.03  +  S => 32.06 
-# 4.  H2 => 8.064  +  S2O3 => 112.117  →  H2O => 54.045  +  S => 96.18]
+# 1.  H2S => 34.076  +  O2 => 31.998  →  SO2 => 64.058  +  H2O => 18.015 
+# 2.  S => 32.06  +  H2 => 4.032  →  H2S => 34.076 
+# 3.  S8 => 256.48  +  H2 => 16.128  →  H2S => 272.608 
+# 4.  SO2 => 128.116  +  H2O => 36.03  →  S => 32.06  +  H2O => 72.06]
 ```
 
 Here we filter result's elements:
@@ -762,8 +797,13 @@ Here we filter result's elements:
 $chemRes2.grep(* ~~ Pair)
 ```
 ```
-# (S => 32.06 H2 => 2.016 H2S => 34.076 H2S => 68.152 S2 => 64.12 H2 => 4.032 H2 => 4.032 O2 => 31.998 H2O => 36.03 S => 32.06 H2 => 8.064 S2O3 => 112.117 H2O => 54.045 S => 96.18)
+# (H2S => 34.076 O2 => 31.998 SO2 => 64.058 H2O => 18.015 S => 32.06 H2 => 4.032 H2S => 34.076 S8 => 256.48 H2 => 16.128 H2S => 272.608 SO2 => 128.116 H2O => 36.03 S => 32.06 H2O => 72.06)
 ```
+
+### Exercise questions
+
+- What is a good approach to evaluate the ability of LLMs to respect the conservation of mass law?
+- Is it better for that evaluation to use predominantly Raku code or mostly LLM-functions?
 
 ------
 
@@ -779,7 +819,7 @@ Here is an LLM function for generating a Mermaid JS spec:
 my &fmmd = llm-function({ "Generate the Mermaid-JS code of a $^a for $^b." })
 ```
 ```
-# -> **@args, *%args { #`(Block|2509504402736) ... }
+# -> **@args, *%args { #`(Block|2385298841744) ... }
 ```
 
 Here we request to get the code of pie chart for the continent sizes:
@@ -787,14 +827,15 @@ Here we request to get the code of pie chart for the continent sizes:
 ```perl6 , results=asis
 my $mmdRes = &fmmd("pie chart", "relative continent sizes")
 ```
-pie 
-    "Asia" : 42.9,
-    "Africa" : 20.4,
-    "Europe" : 10.2,
-    "North America" : 9.5,
-    "South America" : 6.9,
-    "Oceania" : 0.8,
-    "Antarctica" : 0.2
+```mermaid
+pie
+    "Africa" : 40
+    "Asia" : 20
+    "North America" : 15
+    "South America" : 10
+    "Europe" : 10
+    "Australia" : 5
+```
 
 
 Here, "just in case", we normalize the numbers of the result and "dump" the code as Markdown code cell:
@@ -803,14 +844,13 @@ Here, "just in case", we normalize the numbers of the result and "dump" the code
 $mmdRes.subst(:g, '%', '').subst(:g, ',', '').subst("{'`' x 3}mermaid", '').subst("{'`' x 3}", '')
 ```
 ```mermaid
-pie 
-    "Asia" : 42.9
-    "Africa" : 20.4
-    "Europe" : 10.2
-    "North America" : 9.5
-    "South America" : 6.9
-    "Oceania" : 0.8
-    "Antarctica" : 0.2
+pie
+    "Africa" : 40
+    "Asia" : 20
+    "North America" : 15
+    "South America" : 10
+    "Europe" : 10
+    "Australia" : 5
 ```
 
 Here is a flow chart request:
@@ -819,13 +859,18 @@ Here is a flow chart request:
 &fmmd("flow chart", "going to work in the morning avoiding traffic jams and reacting to weather")
 ```
 ```mermaid
-  graph TD
-  A[Check Weather] --> B(Check Traffic?)
-  B --> |Yes| C[Take Alternate Route]
-  B --> |No| D[Head to Work]
-  C --> D
-  D --> E[Arrive]
+graph TD
+A[Check Traffic] --> B[Check Weather]
+B --> C{Choose route}
+C -- Yes --> D[Leave Early]
+C -- No --> E[Leave On Time]
+E --> F[Avoid Traffic Jams]
+```
 
+
+### Exercise questions
+
+- What changes of the code in this section should be made in order to produce Plant-UML specs?
 
 ------
 
@@ -844,7 +889,7 @@ my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a 
                         form => sub-parser('JSON'))
 ```
 ```
-# -> **@args, *%args { #`(Block|2509504422712) ... }
+# -> **@args, *%args { #`(Block|2385298848944) ... }
 ```
 
 Here is way to get a biography and discography of music artist from Wikipedia:
@@ -876,7 +921,30 @@ Here we get the text:
 my $text = llm-function(llm-evaluator => llm-configuration('PaLM', max-tokens=> 500))("What is Sinéad O'Connor's bio and discography?")
 ```
 ```
-# {filters => [{reason => OTHER}]}
+# Sinéad O'Connor (born Sinéad Marie Bernadette O'Connor on 8 December 1966) is an Irish singer-songwriter. She rose to fame in the late 1980s with her debut album The Lion and the Cobra, which was certified platinum in the United States and the United Kingdom. Her second album, I Do Not Want What I Haven't Got, was an international success, reaching number one in the UK and selling over 10 million copies worldwide.
+# 
+# O'Connor has released 10 studio albums, four live albums, and four compilation albums. Her most recent studio album, I'm Not Bossy, I'm the Boss, was released in 2014.
+# 
+# O'Connor has won two Grammy Awards, two MTV Video Music Awards, and an Ivor Novello Award. She has also been nominated for an Academy Award and a Golden Globe Award.
+# 
+# In addition to her music career, O'Connor has been an outspoken advocate for human rights and social justice. She has been involved in a number of controversies, including her public criticism of the Catholic Church and her performance of Bob Marley's "War" at the 1992 Grammy Awards.
+# 
+# O'Connor has been diagnosed with bipolar disorder and has spoken openly about her struggles with mental illness. She has also been involved in a number of legal disputes, including a custody battle with her former husband, Jake Reynolds.
+# 
+# Despite her personal struggles, O'Connor remains a popular and influential singer-songwriter. She continues to tour and release new music, and she remains a powerful voice for social justice.
+# 
+# **Discography**
+# 
+# * The Lion and the Cobra (1987)
+# * I Do Not Want What I Haven't Got (1990)
+# * Am I Not Your Girl? (1992)
+# * Universal Mother (1994)
+# * Faith and Courage (2000)
+# * Sean-Nós Nua (2002)
+# * Throw Down Your Arms (2005)
+# * Theology (2007)
+# * How About I Be Me (And You Be You)? (2012)
+# * I'm Not Bossy, I'm the Boss (2014)
 ```
 
 Here we Named Entity Recognition (NER) via the LLM function defined above:
@@ -885,10 +953,9 @@ Here we Named Entity Recognition (NER) via the LLM function defined above:
 my $albRes = &fner('album names and years', $text);
 ```
 ```
-# [```
-# { albums : [ year => 1975 name => A Night at the Opera name => Sheer Heart Attack year => 1974 name => A Day at the Races year => 1976 name => News of the World year => 1977 year => 1978 name => Jazz year => 1980 name => The Game year => 1980 name => Flash Gordon year => 1982 name => Hot Space year => 1984 name => The Works year => 1986 name => A Kind of Magic ,
-#     {
-#       "name]
+# [```json
+# { albums : [ name => The Lion and the Cobra year => 1987 year => 1990 name => I Do Not Want What I Haven't Got name => Am I Not Your Girl? year => 1992 name => Universal Mother year => 1994 year => 2000 name => Faith and Courage name => Sean-Nós Nua year => 2002 year => 2005 name => Throw Down Your Arms year => 2007 name => Theology year => 2012 name => How About I Be Me (And You Be You)? ,
+#     { name : "I'm Not Boss]
 ```
 
 LLMs can produce NER data in several different structures. 
@@ -905,7 +972,7 @@ deduce-type($albRes);
 Here are a few data type results based in multiple executions of `&fner`:
 
 ```
-# Vector(Struct([name, year], [Str, Int]), 9)
+# Vector((Any), 24)
 # Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Struct([name, year], [Str, Int]), 7)), Atom((Str))])
 ```
 
@@ -915,9 +982,11 @@ in this workflow we process a result `&fner` with this code:
 ```perl6
 my $albRes2 = $albRes.grep({ $_ ~~ Pair }).rotor(2)>>.Hash; 
 if not so $albRes2 { $albRes2 = $albRes.grep(* ~~ Pair).Hash<albums> }
+
+say $albRes2;
 ```
 ```
-# ()
+# ({name => The Lion and the Cobra, year => 1987} {name => I Do Not Want What I Haven't Got, year => 1990} {name => Am I Not Your Girl?, year => 1992} {name => Universal Mother, year => 1994} {name => Faith and Courage, year => 2000} {name => Sean-Nós Nua, year => 2002} {name => Throw Down Your Arms, year => 2005} {name => Theology, year => 2007} {name => How About I Be Me (And You Be You)?, year => 2012})
 ```
 
 Here we tabulate the result:
@@ -926,20 +995,19 @@ Here we tabulate the result:
 to-pretty-table($albRes2)
 ```
 ```
-# +----------------------+------+
-# |         name         | year |
-# +----------------------+------+
-# | A Night at the Opera | 1975 |
-# |  Sheer Heart Attack  | 1974 |
-# |  A Day at the Races  | 1976 |
-# |  News of the World   | 1977 |
-# |         Jazz         | 1978 |
-# |       The Game       | 1980 |
-# |     Flash Gordon     | 1980 |
-# |      Hot Space       | 1982 |
-# |      The Works       | 1984 |
-# |   A Kind of Magic    | 1986 |
-# +----------------------+------+
+# +-------------------------------------+------+
+# |                 name                | year |
+# +-------------------------------------+------+
+# |        The Lion and the Cobra       | 1987 |
+# |   I Do Not Want What I Haven't Got  | 1990 |
+# |         Am I Not Your Girl?         | 1992 |
+# |           Universal Mother          | 1994 |
+# |          Faith and Courage          | 2000 |
+# |             Sean-Nós Nua            | 2002 |
+# |         Throw Down Your Arms        | 2005 |
+# |               Theology              | 2007 |
+# | How About I Be Me (And You Be You)? | 2012 |
+# +-------------------------------------+------+
 ```
 
 Here we make a Mermaid-JS timeline plot (after we have figured out the structure of LLM's function output):
@@ -954,17 +1022,172 @@ for |$albRes2 -> %record {
 ```mermaid
 timeline
 	title Sinéad O'Connor's discography
-	1975 : A Night at the Opera
-	1974 : Sheer Heart Attack
-	1976 : A Day at the Races
-	1977 : News of the World
-	1978 : Jazz
-	1980 : The Game
-	1980 : Flash Gordon
-	1982 : Hot Space
-	1984 : The Works
-	1986 : A Kind of Magic
+	1987 : The Lion and the Cobra
+	1990 : I Do Not Want What I Haven't Got
+	1992 : Am I Not Your Girl?
+	1994 : Universal Mother
+	2000 : Faith and Courage
+	2002 : Sean-Nós Nua
+	2005 : Throw Down Your Arms
+	2007 : Theology
+	2012 : How About I Be Me (And You Be You)?
 ```
+
+### Exercise questions
+
+- How the LLM-functions above should be changed in order to produce timeline plots of different wars?
+- How the Raku code should be changed to produce timeline plots with Python? (Instead of Mermaid-JS.) 
+
+------
+
+## Statistics of output data types
+
+**Workflow:** We want to see and evaluate the distribution of data types given by LLM-functions:
+1. Make a pipeline LLM-functions
+2. Create a list of random inputs "expected" by the pipeline
+   - Or use the same input multiple times.
+3. Deduce the data type of each output
+4. Compute descriptive statistics
+
+**Remark:** These kind of statistical workflows can be slow and expensive.
+(With the current line-up of LLM services.)
+
+Let us reuse the workflow from the previous section and enhance it with 
+data type outputs finding. More precisely we:
+1. Generate random music artist names (using a LLM query)
+2. Retrieve short biography and discography for each music artist
+3. Extract album-and-release-date data for each artist (with NER-by-LLM)
+4. Deduce the type for each output, using several different type representations
+
+The data types are investigated with the functions `deduce-type` and `record-types` of 
+["Data::TypeSystem"](https://raku.land/zef:antononcube/Data::TypeSystem), [AAp6],
+and `tally` and `records-summary` of
+["Data::Summarizers"](https://raku.land/zef:antononcube/Data::Summarizers), [AAp7].
+
+Here we define a data retrieval function:
+
+```perl6
+my &fdb = llm-function({"What is the short biography and discography of the artist $_?"}, llm-evaluator => llm-configuration('PaLM', max-tokens=> 500));
+```
+```
+# -> **@args, *%args { #`(Block|2385306464360) ... }
+```
+
+Here we define (again) the NER function:
+
+```perl6
+my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a JSON format"},                     
+                        llm-evaluator => 'PaLM', 
+                        form => sub-parser('JSON'))
+```
+```
+# -> **@args, *%args { #`(Block|2385306464792) ... }
+```
+
+Here we find 10 random music artists:
+
+```perl6
+my @artistNames = |llm-function()("Give 10 random music artist names in a list in JSON format.", 
+                                  llm-evalutor=>'PaLM', 
+                                  form => sub-parser('JSON'))
+```
+```
+# [Eminem Taylor Swift Drake Ed Sheeran Adele Post Malone The Weeknd Lady Gaga Ariana Grande Billie Eilish]
+```
+
+Here is a loop the generates the biographies and does NER over them:
+
+```perl6
+my @dbRes = do for @artistNames -> $a {
+    #say '=' x 6, " $a " , '=' x 6; 
+    my $text = &fdb($a);
+    #say $text;
+    #say '-' x 12;
+    my $recs = &fner('album names and release dates', $text);    
+    #say $recs;
+    $recs
+}
+```
+```
+# [[```json albums => [{name => Infinite, release_date => 1996} {name => The Slim Shady LP, release_date => 1999} {name => The Marshall Mathers LP, release_date => 2000} {name => The Eminem Show, release_date => 2002} {name => Encore, release_date => 2004} {name => Relapse, release_date => 2009} {name => Recovery, release_date => 2010} {name => The Marshall Mathers LP 2, release_date => 2013}] ```] [```json
+# { albums : [ release_date => 2006-10-24 name => Taylor Swift release_date => 2008-11-11 name => Fearless release_date => 2010-10-25 name => Speak Now release_date => 2012-10-22 name => Red name => 1989 release_date => 2014-10-27 name => Reputation release_date => 2017-11-10 release_date => 2019-08-23 name => Lover release_date => 2020-07-24 name => Folklore ,] [```json albums => [{name => Thank Me Later, release_date => 2010} {name => Take Care, release_date => 2011} {name => Nothing Was the Same, release_date => 2013} {name => Views, release_date => 2016} {name => Scorpion, release_date => 2018}] ```] [```json albums => [{name => +, release_date => 2011} {name => ×, release_date => 2014} {name => ÷, release_date => 2017} {name => =, release_date => 2022}] ```] [```json albums => [{name => 19, release_date => 2008} {name => 21, release_date => 2011} {name => 25, release_date => 2015} {name => 30, release_date => 2021}] ```] [```json albums => [{name => Stoney, release_date => 2016} {name => Beerbongs & Bentleys, release_date => 2018} {name => Hollywood's Bleeding, release_date => 2019} {name => Twelve Carat Toothache, release_date => 2022}] ```] [```json albums => [{name => House of Balloons, release_date => 2011} {name => Thursday, release_date => 2011} {name => Echoes of Silence, release_date => 2011} {name => Kiss Land, release_date => 2013} {name => Beauty Behind the Madness, release_date => 2015} {name => Starboy, release_date => 2016} {name => After Hours, release_date => 2020}] ```] [```json albums => [{name => The Fame, release_date => 2008} {name => The Fame Monster, release_date => 2009} {name => Born This Way, release_date => 2011} {name => Artpop, release_date => 2013} {name => Cheek to Cheek (with Tony Bennett), release_date => 2014} {name => Joanne, release_date => 2016} {name => A Star Is Born (Original Motion Picture Soundtrack) (with Bradley Cooper), release_date => 2018} {name => Chromatica, release_date => 2020}] ```] [```json albums => [{name => Yours Truly, release_date => 2013} {name => My Everything, release_date => 2014} {name => Dangerous Woman, release_date => 2016} {name => Sweetener, release_date => 2018} {name => Thank U, Next, release_date => 2019}] ```] [```json albums => [{name => Don't Smile at Me, release_date => 2017} {name => When We All Fall Asleep, Where Do We Go?, release_date => 2019} {name => Happier Than Ever, release_date => 2021}] ```]]
+```
+
+Here we call `deduce-type` to LLM output:
+
+```perl6
+.say for @dbRes.map({ deduce-type($_) })
+```
+```
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 8)), Atom((Str))])
+# Vector((Any), 20)
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 5)), Atom((Str))])
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 4)), Atom((Str))])
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 4)), Atom((Str))])
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 4)), Atom((Str))])
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 7)), Atom((Str))])
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 8)), Atom((Str))])
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 5)), Atom((Str))])
+# Tuple([Atom((Str)), Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 3)), Atom((Str))])
+```
+
+Here we redo the type deduction using the adverb `:tally`:
+
+```perl6
+.say for @dbRes.map({ deduce-type($_):tally })
+```
+```
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 8)) => 1], 3)
+# Tuple([Atom((Str)) => 4, Pair(Atom((Str)), Atom((Str))) => 16], 20)
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 5)) => 1], 3)
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 4)) => 1], 3)
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 4)) => 1], 3)
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 4)) => 1], 3)
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 7)) => 1], 3)
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 8)) => 1], 3)
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 5)) => 1], 3)
+# Tuple([Atom((Str)) => 2, Pair(Atom((Str)), Vector(Assoc(Atom((Str)), Atom((Str)), 2), 3)) => 1], 3)
+```
+
+We see that the LLM outputs produce lists of `Pair` objects:
+
+```perl6
+.say for @dbRes.map({record-types($_)})
+```
+```
+# ((Str) (Pair) (Str))
+# ((Str) (Str) (Str) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Pair) (Str))
+# ((Str) (Pair) (Str))
+# ((Str) (Pair) (Str))
+# ((Str) (Pair) (Str))
+# ((Str) (Pair) (Str))
+# ((Str) (Pair) (Str))
+# ((Str) (Pair) (Str))
+# ((Str) (Pair) (Str))
+# ((Str) (Pair) (Str))
+```
+
+Another tallying call:
+
+```perl6
+.say for @dbRes.map({record-types($_).map(*.^name).&tally})
+```
+```
+# {Pair => 1, Str => 2}
+# {Pair => 16, Str => 4}
+# {Pair => 1, Str => 2}
+# {Pair => 1, Str => 2}
+# {Pair => 1, Str => 2}
+# {Pair => 1, Str => 2}
+# {Pair => 1, Str => 2}
+# {Pair => 1, Str => 2}
+# {Pair => 1, Str => 2}
+# {Pair => 1, Str => 2}
+````
+
+The statistics show that most likely the output we get from the execution of the LLM-functions pipeline
+is a list of a few strings and 4-12 `Pair` objects. Hence, we might decide to use the transformation
+`.grep({ $_ ~~ Pair }).rotor(2)` (as in the previous section.)
 
 ------
 
@@ -1032,6 +1255,16 @@ Most likely all of the listed workflow would use chat objects and engineered pro
 [AAp5] Anton Antonov,
 [Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
 (2021),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp6] Anton Antonov,
+[Data::TypeSystem Raku package](https://github.com/antononcube/Raku-Data-TypeSystem),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp7] Anton Antonov,
+[Data::Summarizers Raku package](https://github.com/antononcube/Raku-Data-Summarizers),
+(2021-2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [MSp1] Matthew Stuckwisch,

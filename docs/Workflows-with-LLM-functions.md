@@ -110,6 +110,10 @@ Here are sections of the article:
 - **Other workflows**   
   ... Outline of other workflows using LLM chat objects. (Also provided by "LLM::Functions".)
 
+**Remark:** Most of the sections have a sub-section titled "Exercise questions". 
+The reader is the secondary target audience for those. The primary target are LLMs to respond them.
+(Another article is going to discuss the staging and evaluating of those LLM answers.) 
+
 ### Packages and LLM access
 
 The following Raku packages used below:
@@ -303,11 +307,16 @@ Here is a plot attempt:
 text-list-plot($gmd.values)
 ```
 
+### Exercise questions
+
+- How does the code in this section maps on the the flowchart in the section "General structure of LLM-based workflows"?
+- Come up with other arguments for the three slots of `&qf3` and execute workflow. 
+
 -------
 
-## Normalizing outputs
+## Refining and adapting outputs
 
-**Workflow:** We want to transform text, so it can be in certain expected or ready process format.
+**Workflow:** We want to transform text, so it can be in a certain expected or ready to process format.
 For example:
 
 - Remove certain pesky symbols and strings from LLM results
@@ -398,6 +407,12 @@ Here we convert the contingency matrix into a state diagram :
 &fjmmd(to-json(%ct), 'state diagram')
 ```
 
+### Exercise questions
+
+- To which parts of the flowchart above the workflow in this section corresponds to?
+- What is preferable: one LLM-function with complicated prompt an argument specs, 
+  or several LLM-functions with simpler structure prompts and arguments? 
+
 ------
 
 ## Conversion to Raku objects
@@ -446,6 +461,11 @@ $uObj.raku;
 Of course, the steps above can be combined into one function.
 In general, though, care should be taken to handle or prevent situations in which function inputs and outputs
 do not agree with each other.
+
+### Exercise questions
+
+- Write one Raku function that combines the LLM-functions above?
+- What kind of computations involve the discussed unit objects?
 
 ------
 
@@ -548,6 +568,11 @@ Here we filter result's elements:
 $chemRes2.grep(* ~~ Pair)
 ```
 
+### Exercise questions
+
+- What is a good approach to evaluate the ability of LLMs to respect the conservation of mass law?
+- Is it better for that evaluation to use predominantly Raku code or mostly LLM-functions?
+
 ------
 
 ## Making (embedded) Mermaid diagrams
@@ -579,6 +604,10 @@ Here is a flow chart request:
 ```perl6 , results=asis
 &fmmd("flow chart", "going to work in the morning avoiding traffic jams and reacting to weather")
 ```
+
+### Exercise questions
+
+- What changes of the code in this section should be made in order to produce Plant-UML specs?
 
 ------
 
@@ -673,6 +702,11 @@ for |$albRes2 -> %record {
 @timeline.join("\n\t");
 ```
 
+### Exercise questions
+
+- How the LLM-functions above should be changed in order to produce timeline plots of different wars?
+- How the Raku code should be changed to produce timeline plots with Python? (Instead of Mermaid-JS.) 
+
 ------
 
 ## Statistics of output data types
@@ -684,7 +718,84 @@ for |$albRes2 -> %record {
 3. Deduce the data type of each output
 4. Compute descriptive statistics
 
-*TBF...*
+**Remark:** These kind of statistical workflows can be slow and expensive.
+(With the current line-up of LLM services.)
+
+Let us reuse the workflow from the previous section and enhance it with 
+data type outputs finding. More precisely we:
+1. Generate random music artist names (using a LLM query)
+2. Retrieve short biography and discography for each music artist
+3. Extract album-and-release-date data for each artist (with NER-by-LLM)
+4. Deduce the type for each output, using several different type representations
+
+The data types are investigated with the functions `deduce-type` and `record-types` of 
+["Data::TypeSystem"](https://raku.land/zef:antononcube/Data::TypeSystem), [AAp6],
+and `tally` and `records-summary` of
+["Data::Summarizers"](https://raku.land/zef:antononcube/Data::Summarizers), [AAp7].
+
+Here we define a data retrieval function:
+
+```perl6
+my &fdb = llm-function({"What is the short biography and discography of the artist $_?"}, llm-evaluator => llm-configuration('PaLM', max-tokens=> 500));
+```
+
+Here we define (again) the NER function:
+
+```perl6
+my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a JSON format"},                     
+                        llm-evaluator => 'PaLM', 
+                        form => sub-parser('JSON'))
+```
+
+Here we find 10 random music artists:
+
+```perl6
+my @artistNames = |llm-function()("Give 10 random music artist names in a list in JSON format.", 
+                                  llm-evalutor=>'PaLM', 
+                                  form => sub-parser('JSON'))
+```
+
+Here is a loop the generates the biographies and does NER over them:
+
+```perl6
+my @dbRes = do for @artistNames -> $a {
+    #say '=' x 6, " $a " , '=' x 6; 
+    my $text = &fdb($a);
+    #say $text;
+    #say '-' x 12;
+    my $recs = &fner('album names and release dates', $text);    
+    #say $recs;
+    $recs
+}
+```
+
+Here we call `deduce-type` to LLM output:
+
+```perl6
+.say for @dbRes.map({ deduce-type($_) })
+```
+
+Here we redo the type deduction using the adverb `:tally`:
+
+```perl6
+.say for @dbRes.map({ deduce-type($_):tally })
+```
+
+We see that the LLM outputs produce lists of `Pair` objects:
+
+```perl6
+.say for @dbRes.map({record-types($_)})
+```
+
+Another tallying call:
+
+```perl6
+.say for @dbRes.map({record-types($_).map(*.^name).&tally})
+````
+
+The statistics show that most likely the output we get from the execution of the LLM-functions pipeline
+is a list of a few strings and 4-12 `Pair` objects. Hence, we might decide to use the transformation
+`.grep({ $_ ~~ Pair }).rotor(2)` (as in the previous section.)
 
 ------
 
@@ -752,6 +863,16 @@ Most likely all of the listed workflow would use chat objects and engineered pro
 [AAp5] Anton Antonov,
 [Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
 (2021),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp6] Anton Antonov,
+[Data::TypeSystem Raku package](https://github.com/antononcube/Raku-Data-TypeSystem),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp7] Anton Antonov,
+[Data::Summarizers Raku package](https://github.com/antononcube/Raku-Data-Summarizers),
+(2021-2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [MSp1] Matthew Stuckwisch,
