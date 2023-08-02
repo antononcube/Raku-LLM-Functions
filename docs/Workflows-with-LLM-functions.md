@@ -82,7 +82,7 @@ Raku second best LLM-REPL solutions are those like
 - We cannot see the intermediate results and adjust accordingly
 - Multiple (slow) executions would be needed to get desired results
 
-**Remark:** The very first version of this article was made "Text::CodeProcessing" via Markdown execution (or weaving.)
+**Remark:** The very first version of this article was made with "Text::CodeProcessing" via Markdown execution (or weaving.)
 Then Comma's REPL was used, for extending and refining the examples. "Jupyter::Kernel" was also used
 for a few of the sections.
 
@@ -104,14 +104,14 @@ Here are sections of the article:
 - **Making (embedded) Mermaid diagrams**   
   ... Straightforward application of LLM abilities and literate programming tools.
 - **Named entity recognition**  
-  ... How obtain music album names and release dates and tabulate or plot them.
+  ... How to obtain music album names and release dates and tabulate or plot them.
 - **Statistics of output data types**   
   ... Illustration why programmers need streamlining solutions for LLMs.
 - **Other workflows**   
   ... Outline of other workflows using LLM chat objects. (Also provided by "LLM::Functions".)
 
 **Remark:** Most of the sections have a sub-section titled "Exercise questions". 
-The reader is the secondary target audience for those. The primary target are LLMs to respond them.
+The reader is the secondary target audience for those. The primary target are LLMs to respond to them.
 (Another article is going to discuss the staging and evaluating of those LLM answers.) 
 
 ### Packages and LLM access
@@ -148,9 +148,9 @@ Other LLM access packages can utilized via appropriate LLM configurations.
 The LLM functions below use the LLM authorization tokens that are kept
 in the OS environment. See [AAp2] and [AAp3] for details how to setup LLM access.
 
-The Markdown document is executed (or "weaved") with the CLI script of the package
+The Markdown document is executed (or "woven") with the CLI script of the package
 ["Text::CodeProcessing"](https://raku.land/zef:antononcube/Text::CodeProcessing), [AA5].
-"Text::CodeProcessing" has features that allow the weaved documents to have render-ready 
+"Text::CodeProcessing" has features that allow the woven documents to have render-ready 
 Markdown cells, like, tables, Mermaid-JS diagrams, or JavaScript plots.
 
 
@@ -219,11 +219,12 @@ To summarise:
 - We work within an iterative process for refining the results of LLM function(s) pipeline.
 - If the overall results are not satisfactory, we loop back to the outlining workflow stage.
 - If additional LLM functions are made, we return to the pipeline creation stage.
+- If prompts or output descriptions are changed, we return the LLM function(s) creation stage. 
 - Our (human) inability or unwillingness to program transformations has a few decision steps for delegation to LLMs.
 
 **Remark:** We leave as exercises to the reader to see how the workflows programmed below fit the flowchart above.
 
-**Remark:** The mapping of the workflow code below onto the flowchart can be made using an LLM. 
+**Remark:** The mapping of the workflow code below onto the flowchart can be made using LLMs. 
 
 ------
 
@@ -231,9 +232,9 @@ To summarise:
 
 **Workflow:** Consider a workflow with the following steps:
 
-1. Request an LLM to produce in JSON format a dictionary of certain numerical quantity during a certain year.
+1. Request an LLM to produce in JSON format a dictionary of a certain numerical quantity during a certain year.
 2. The corresponding LLM function converts the JSON text into Raku data structure.
-3. Print or summarize obtained data in tabular form
+3. Print or summarize obtained data in tabular form.
 4. A plot is made with the obtained data.
 
 Here is a general quantities finder LLM function:
@@ -271,7 +272,7 @@ Here is another one based on the most frequent "non-compliant" output form:
 text-list-plot($gdp1.values.map({ sub-parser(Numeric).subparse($_).first }))
 ```
 
-Here we the GDP for all countries and make the corresponding Pareto principle plot:
+Here we obtain the GDP for all countries and make the corresponding Pareto principle plot:
 
 ```perl6 , eval=FALSE
 my $gdp2 = &qf3('GDP', 'top 30 countries', '2018')
@@ -291,6 +292,8 @@ text-pareto-principle-plot($gdp2.rotor(2)>>.[1])
 
 ### Gold medals
 
+Here we retrieve data for gold Olympic medal counts:
+
 ```perl6 
 my $gmd = &qf3("counts of Olymipic gold medals", "countries", "the last decade");
 ```
@@ -309,14 +312,14 @@ text-list-plot($gmd.values)
 
 ### Exercise questions
 
-- How does the code in this section maps on the the flowchart in the section "General structure of LLM-based workflows"?
-- Come up with other arguments for the three slots of `&qf3` and execute workflow. 
+- How does the code in this section maps on the flowchart in the section "General structure of LLM-based workflows"?
+- Come up with other argument values for the three slots of `&qf3` and execute the workflow. 
 
 -------
 
 ## Refining and adapting outputs
 
-**Workflow:** We want to transform text, so it can be in a certain expected or ready to process format.
+**Workflow:** We want to transform text into a specific format that is both expected and ready for immediate processing.
 For example:
 
 - Remove certain pesky symbols and strings from LLM results
@@ -325,7 +328,7 @@ For example:
 
 ### Normalizing numerical outputs
 
-The following *LLM example* function "normalizes" outputs that that have numerical values with certain number
+The following *LLM example* function "normalizes" outputs that have numerical values with certain number
 localization or currency units:
 
 ```perl6 
@@ -345,7 +348,7 @@ Here is an example of normalizing the top 10 countries GDP query output above:
 
 ### Dataset into tabular format
 
-Here is an LLM function that transforms the plain text data above in GitHub Markdown table:
+Here is an LLM function that transforms the plain text data above into a GitHub Markdown table:
 
 ```perl6 
 my &fgt = llm-function({ "Transform the plain-text table $_ into a GitHub table." })
@@ -378,7 +381,7 @@ Here we define a reformatting function that translates JSON data into Mermaid di
 my &fjmmd = llm-function({ "Transform the JSON data $^a into a Mermaid $^b spec." })
 ```
 
-Here we convert the medals data into a pie chart:
+Here we convert the gold medals data into a pie chart:
 
 ```perl6 , output.prompt=NONE, output.lang=mermaid
 &fjmmd(to-json($gmd), 'pie chart')
@@ -387,9 +390,9 @@ Here we convert the medals data into a pie chart:
 Here is a more "data creative" example:
 
 1. First we get a dataset and cross-tabulate it
-2. Then we ask an LLM make the corresponding flow chart, class- or state diagram for it
+2. Then we ask an LLM make the corresponding flow chart, or class-, or state diagram for it
 
-Here is a cross-tabulation of two variables from the Titanic dataset:
+Here is a cross-tabulation of the Titanic dataset (over the sex and class variables):
 
 ```perl6 
 my %ct = cross-tabulate(get-titanic-dataset(), 'passengerSex', 'passengerClass')
@@ -410,8 +413,8 @@ Here we convert the contingency matrix into a state diagram :
 ### Exercise questions
 
 - To which parts of the flowchart above the workflow in this section corresponds to?
-- What is preferable: one LLM-function with complicated prompt an argument specs, 
-  or several LLM-functions with simpler structure prompts and arguments? 
+- What is preferable: one LLM-function with complicated prompt and argument specs, 
+  or several LLM-functions with simply structured prompts and arguments? 
 
 ------
 
@@ -421,7 +424,7 @@ Here we convert the contingency matrix into a state diagram :
 (For further scientific computations with them.)
 
 The following LLM example function transforms different kinds of physical quantity specs into Raku code
-for the module ["Physics::Units"](https://raku.land/zef:librasteve/Physics::Unit):
+for the module ["Physics::Units"](https://raku.land/zef:librasteve/Physics::Unit), [SR1]:
 
 ```perl6 
 my &pu = llm-example-function(
@@ -464,7 +467,7 @@ do not agree with each other.
 
 ### Exercise questions
 
-- Write one Raku function that combines the LLM-functions above?
+- Can you write a Raku function that combines the LLM-functions mentioned above?
 - What kind of computations involve the discussed unit objects?
 
 ------
@@ -498,7 +501,7 @@ Let us convince ourselves that we got a list of strings:
 deduce-type($chemRes1)
 ```
 
-Let us see to we have consistent reactions the "right" equations by checking that 
+Let us see do we have consistent reaction equations by checking that 
 the molecular masses on Left Hand Sides (LHSs) and Right Hand Side (RHSs) are the same:
 
 ```perl6
@@ -506,7 +509,7 @@ to-pretty-table(transpose( %(formula => $chemRes1.Array, balancing => molecular-
 ```
 
 **Remark:** If the column "balancing" shows two different numbers separated by "=>" that 
-means the LLM hallucinated inconsistent chemical reaction equation.
+means the LLM hallucinated an inconsistent chemical reaction equation.
 (Because the LLM does not know, or disregarded for some reason, the 
 [law of conservation of mass](https://en.wikipedia.org/wiki/Conservation_of_mass).) 
 
@@ -527,7 +530,7 @@ Here for each formula we extract the chemical components and find the correspond
 my @chemData = $chemRes1.map({ [formula => $_, |sub-parser(&chem-component).subparse($_).grep({ $_ ~~ Pair })].Hash });
 ```
 
-Here we all unique column names (keys) in the obtained dataset:
+Here we find all unique column names (keys) in the obtained dataset:
 
 ```perl6 
 my @colnames = @chemData>>.keys.flat.unique.sort
@@ -577,9 +580,9 @@ $chemRes2.grep(* ~~ Pair)
 
 ## Making (embedded) Mermaid diagrams
 
-**Workflow:** We want to get a "quick start"
+**Workflow:** We want to quickly initiate
 [Mermaid-JS](https://mermaid.js.org)
-code for certain type of diagrams.
+code for specific types of diagrams.
 
 Here is an LLM function for generating a Mermaid JS spec:
 
@@ -613,7 +616,7 @@ Here is a flow chart request:
 
 ## Named entity recognition
 
-**Workflow:** We want to download text from the Web, extract the names of certain type of entities from it,
+**Workflow:** We want to download text from the Web, extract the names of certain types of entities from it,
 and visualize relationships between them.
 
 For example, we might want to extract all album names and their release dates from
@@ -626,7 +629,7 @@ my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a 
                         form => sub-parser('JSON'))
 ```
 
-Here is way to get a biography and discography of music artist from Wikipedia:
+Here is a way to get a biography and discography text data of a music artist from Wikipedia:
 
 ```raku, eval=FALSE
 my $url = 'https://en.wikipedia.org/wiki/Sinéad_O%27Connor';
@@ -640,13 +643,12 @@ say "text size: {$text.chars}";
 ```
 
 But now we have to convert the HTML code into plain text, *and* the text is too large
-to process at once with LLMs. (Currently LLMs have ≈ 4096 ± 2048 tokens limits.)
+to process all at once with LLMs. (Currently LLMs have ≈ 4096 ± 2048 input tokens limits.)
 
 **Remark:** A more completely worked out workflow would have included 
-the breaking up of the text into suitably sized chunks, and combining the LLM processed
-processed results.
+the breaking up of the text into suitably sized chunks, and combining the LLM processed results.
 
-Instead, I am going to ask an LLM to produce artist's bio and discography and then 
+Instead, we are going to ask an LLM to produce artist's bio and discography and then 
 we going to pretend we got it from some repository or encyclopedia.
 
 Here we get the text:
@@ -655,7 +657,7 @@ Here we get the text:
 my $text = llm-function(llm-evaluator => llm-configuration('PaLM', max-tokens=> 500))("What is Sinéad O'Connor's bio and discography?")
 ```
 
-Here we Named Entity Recognition (NER) via the LLM function defined above:
+Here we do Named Entity Recognition (NER) via the LLM function defined above:
 
 ```perl6
 my $albRes = &fner('album names and years', $text);
@@ -663,13 +665,15 @@ my $albRes = &fner('album names and years', $text);
 
 LLMs can produce NER data in several different structures. 
 Using the function `deduce-type` from 
-["Data::TypeSystem"](https://raku.land/zef:antononcube/Data::TypeSystem):
+["Data::TypeSystem"](https://raku.land/zef:antononcube/Data::TypeSystem), [AAp6],
+can help required post-processing:
 
 ```perl6
 deduce-type($albRes);
 ```
 
-Here are a few data type results based in multiple executions of `&fner`:
+Here are a few data type results based in multiple executions of `&fner` 
+(more comprehensive study is given in the next section):
 
 ```
 # Vector((Any), 24)
@@ -677,7 +681,7 @@ Here are a few data type results based in multiple executions of `&fner`:
 ```
 
 Based in our study of the result data type signatures, 
-in this workflow we process a result `&fner` with this code:
+in this workflow we process result of `&fner` with this code:
 
 ```perl6
 my $albRes2 = $albRes.grep({ $_ ~~ Pair }).rotor(2)>>.Hash; 
@@ -704,15 +708,15 @@ for |$albRes2 -> %record {
 
 ### Exercise questions
 
-- How the LLM-functions above should be changed in order to produce timeline plots of different wars?
-- How the Raku code should be changed to produce timeline plots with Python? (Instead of Mermaid-JS.) 
+- How the LLM-functions pipeline above should be changed in order to produce timeline plots of different wars?
+- How the Raku code should be changed in order to produce timeline plots with Python? (Instead of Mermaid-JS.) 
 
 ------
 
 ## Statistics of output data types
 
-**Workflow:** We want to see and evaluate the distribution of data types given by LLM-functions:
-1. Make a pipeline LLM-functions
+**Workflow:** We want to see and evaluate the distribution of data types of LLM-function results:
+1. Make a pipeline of LLM-functions
 2. Create a list of random inputs "expected" by the pipeline
    - Or use the same input multiple times.
 3. Deduce the data type of each output
@@ -723,7 +727,7 @@ for |$albRes2 -> %record {
 
 Let us reuse the workflow from the previous section and enhance it with 
 data type outputs finding. More precisely we:
-1. Generate random music artist names (using a LLM query)
+1. Generate random music artist names (using an LLM query)
 2. Retrieve short biography and discography for each music artist
 3. Extract album-and-release-date data for each artist (with NER-by-LLM)
 4. Deduce the type for each output, using several different type representations
@@ -755,7 +759,7 @@ my @artistNames = |llm-function()("Give 10 random music artist names in a list i
                                   form => sub-parser('JSON'))
 ```
 
-Here is a loop the generates the biographies and does NER over them:
+Here is a loop that generates the biographies and does NER over them:
 
 ```perl6
 my @dbRes = do for @artistNames -> $a {
@@ -769,7 +773,7 @@ my @dbRes = do for @artistNames -> $a {
 }
 ```
 
-Here we call `deduce-type` to LLM output:
+Here we call `deduce-type` on each LLM output:
 
 ```perl6
 .say for @dbRes.map({ deduce-type($_) })
@@ -781,7 +785,7 @@ Here we redo the type deduction using the adverb `:tally`:
 .say for @dbRes.map({ deduce-type($_):tally })
 ```
 
-We see that the LLM outputs produce lists of `Pair` objects:
+We see that the LLM outputs produce lists of `Pair` objects "surrounded" by strings:
 
 ```perl6
 .say for @dbRes.map({record-types($_)})
@@ -884,6 +888,11 @@ Most likely all of the listed workflow would use chat objects and engineered pro
 [Polyglot::Regexen Raku package](https://github.com/alabamenhu/PolyglotRegexen),
 (2022),
 [GitHub/alabamenhu](https://github.com/alabamenhu).
+
+[SR1] Steve Roe,
+[Physics::Unit Raku package](https://github.com/librasteve/raku-Physics-Unit),
+(2020-2023),
+[GitHub/librasteve](https://github.com/librasteve).
 
 [WRIp1] Wolfram Research, Inc.,
 [LLMFunctions WL paclet](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/),
