@@ -287,7 +287,7 @@ text-pareto-principle-plot($gdp2.values)
 Here is another one based on the most frequent "non-compliant" output form:
 
 ```perl6 , eval=FALSE
-text-pareto-principle-plot($gdp2.rotor(2)>>.[1])
+text-pareto-principle-plot($gdp2.grep(* ~~ Numeric).List)
 ```
 
 ### Gold medals
@@ -754,8 +754,7 @@ my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a 
 Here we find 10 random music artists:
 
 ```perl6
-my @artistNames = |llm-function()("Give 10 random music artist names in a list in JSON format.", 
-                                  llm-evalutor=>'PaLM', 
+my @artistNames = |llm-function(llm-evalautor=>'PaLM')("Give 10 random music artist names in a list in JSON format.",
                                   form => sub-parser('JSON'))
 ```
 
