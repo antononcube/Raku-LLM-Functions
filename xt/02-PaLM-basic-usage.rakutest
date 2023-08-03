@@ -18,7 +18,7 @@ my $prompt2 = "Make a recipe for the given phrase.";
 ok llm-function($prompt2, llm-evaluator => llm-configuration('palm'))("greek salad");
 
 ## 3
-isa-ok llm-function($prompt2, llm-evaluator => 'palm')("greek salad"),
+isa-ok llm-function($prompt2, e => 'palm')("greek salad"),
         Str,
         'greek salad';
 
