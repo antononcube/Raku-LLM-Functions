@@ -199,14 +199,14 @@ our proto llm-function(|) is export {*}
 
 # No positional args
 multi sub llm-function(:$form = 'Str',
-                       :$llm-evaluator is copy = Whatever) {
+                       :e(:$llm-evaluator) is copy = Whatever) {
     return llm-function('', :$llm-evaluator);
 }
 
 # Using a string
 multi sub llm-function(Str $prompt,
                        :form(:$formatron) = 'Str',
-                       :$llm-evaluator is copy = Whatever) {
+                       :e(:$llm-evaluator) is copy = Whatever) {
 
     $llm-evaluator = llm-evaluator($llm-evaluator);
 
@@ -219,7 +219,7 @@ multi sub llm-function(Str $prompt,
 # Using a function
 multi sub llm-function(&queryFunc,
                        :form(:$formatron) = 'Str',
-                       :$llm-evaluator is copy = Whatever) {
+                       :e(:$llm-evaluator) is copy = Whatever) {
 
     $llm-evaluator = llm-evaluator($llm-evaluator);
     $llm-evaluator.formatron = $formatron;
@@ -265,7 +265,7 @@ multi sub llm-example-function(%training, *%args) {
 multi sub llm-example-function(@pairs,
                                :$hint is copy = Whatever,
                                :form(:$formatron) = 'Str',
-                               :$llm-evaluator is copy = Whatever) {
+                               :e(:$llm-evaluator) is copy = Whatever) {
 
     if @pairs.all ~~ Pair {
         my $pre = @pairs.map({ "Input: { $_.key.Str } \n Output: { $_.value.Str } \n" }).join("\n");
