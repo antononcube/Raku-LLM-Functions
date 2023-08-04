@@ -134,8 +134,14 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
 #===========================================================
 # Get LLM evaluator
 #===========================================================
+#| LLM evaluator creation.
+proto sub llm-evaluator(|) is export {*}
 
-sub llm-evaluator($llm-evaluator is copy, *%args) is export {
+multi sub llm-evaluator(*%args) {
+    return llm-evaluator(Whatever, |%args);
+}
+
+multi sub llm-evaluator($llm-evaluator is copy, *%args) {
 
     my @attrConf = LLM::Functions::Configuration.^attribute_table.values>>.name.map({ $_.substr(2)});
 
@@ -175,10 +181,15 @@ sub llm-evaluator($llm-evaluator is copy, *%args) is export {
             }
         }
 
-        when LLM::Functions::Evaluator {
+        when $_ ~~ LLM::Functions::Evaluator {
             my $res = $_.clone;
-            with %argsEvlr<conf> { $res.conf = %argsEvlr<conf>; }
-            with %argsEvlr<formatron> { $res.conf = %argsEvlr<formatron>; }
+            my $conf = Whatever;
+            with %argsEvlr<conf> { $conf = %argsEvlr<conf>; }
+            if %argsConf {
+                $conf = llm-configuration($conf, |%argsConf);
+            }
+            with %argsEvlr<formatron> { $res.formatron = %argsEvlr<formatron>; }
+            $res
         }
     }
 
