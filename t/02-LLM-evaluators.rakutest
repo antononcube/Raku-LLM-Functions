@@ -42,5 +42,33 @@ is-deeply
         llm-evaluator('PaLM', formatron => Numeric, api-user-id => 'u8'),
         LLM::Functions::Evaluator.new(conf => llm-configuration('PaLM', api-user-id => 'u8'), formatron => Numeric);
 
+## 9
+is-deeply
+        llm-evaluator('PaLM', api-user-id => 'u9'),
+        llm-evaluator(llm-evaluator('PaLM', api-user-id => 'u9'));
+
+## 10
+is-deeply
+        llm-evaluator('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
+        llm-evaluator(
+                Whatever,
+                conf => llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                formatron => 'JSON');
+
+## 11
+is-deeply
+        llm-evaluator('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
+        llm-evaluator(
+                conf => llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                formatron => 'JSON');
+
+## 12
+is-deeply
+        llm-evaluator('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
+        llm-evaluator(
+                llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                formatron => 'JSON');
+
+
 
 done-testing;
