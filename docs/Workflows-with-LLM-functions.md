@@ -165,29 +165,32 @@ This flowchart outlines such a systematic approach:
 
 ```mermaid
 graph TD
-    A([Start]) --> HumanWorkflow[Outline a workflow] --> LLMFunc["Make LLM function(s)"]
-    LLMFunc --> MakePipeline[Make pipeline]
+    A([Start]) --> HumanWorkflow[Outline a workflow] --> MakeLLMFuncs["Make LLM function(s)"]
+    MakeLLMFuncs --> MakePipeline[Make pipeline]
     MakePipeline --> LLMEval["Evaluate LLM function(s)"]
     LLMEval --> HumanAsses[Asses LLM's Outputs]
-    HumanAsses --> GoodLLM{Good or workable<br>results?}
-    GoodLLM --> |No| CanProgram{Can you<br>programmatically<br>change the<br>outputs?}
-    CanProgram --> |No| KnowVerb{Can you<br>verbalize<br>the required<br>change?}
+    HumanAsses --> GoodLLMQ{Good or workable<br>results?}
+    GoodLLMQ --> |No| CanProgramQ{Can you<br>programmatically<br>change the<br>outputs?}
+    CanProgramQ --> |No| KnowVerb{Can you<br>verbalize<br>the required<br>change?}
     KnowVerb --> |No| KnowRule{Can you<br>specify the change<br>as a set of training<br>rules?}
-    KnowVerb --> |Yes| ShouldAddLLM{"Is it better to<br>make additional<br>LLM function(s)?"}
-    ShouldAddLLM --> |Yes| AddLLM["Make additional<br>LLM function(s)"]
+    KnowVerb --> |Yes| ShouldAddLLMQ{"Is it better to<br>make additional<br>LLM function(s)?"}
+    ShouldAddLLMQ --> |Yes| AddLLM["Make additional<br>LLM function(s)"]
     AddLLM --> MakePipeline
-    ShouldAddLLM --> |No| ChangePrompt["Change prompt(s)<br>of LLM function(s)"]
+    ShouldAddLLMQ --> |No| ChangePrompt["Change prompt(s)<br>of LLM function(s)"]
     ChangePrompt --> ChangeOutputDescr["Change output description(s)<br>of LLM function(s)"]
-    ChangeOutputDescr --> LLMFunc
-    CanProgram --> |Yes| ApplySubParser["Apply suitable (sub-)parsers"]
+    ChangeOutputDescr --> MakeLLMFuncs
+    CanProgramQ --> |Yes| ApplySubParser["Apply suitable (sub-)parsers"]
     ApplySubParser --> HumanMassageOutput[Program output transformations]
     HumanMassageOutput --> MakePipeline
-    GoodLLM --> |Yes| OverallGood{Overall<br>satisfactory<br>results?}
-    OverallGood --> |No| HumanWorkflow
-    OverallGood --> |Yes| End
+    GoodLLMQ --> |Yes| OverallGood{"Overall<br>satisfactory<br>(robust enough)<br>results?"}
+    OverallGood --> |Yes| End([End])
+    OverallGood --> |No| DifferentModelQ{"Willing and able<br>to apply<br>different model(s) or<br>model parameters?"}
+    DifferentModelQ --> |No| HumanWorkflow
+    DifferentModelQ --> |Yes| ChangeModel[Change model<br>or model parameters]
+    ChangeModel --> MakeLLMFuncs
     KnowRule --> |Yes| LLMExamFunc[Make LLM example function]
     KnowRule --> |No| HumanWorkflow
-    LLMExamFunc --> MakePipeline
+    LLMExamFunc --> MakePipeline 
 ```
 
 Here is a corresponding description:
@@ -211,7 +214,12 @@ Here is a corresponding description:
 - **Change output description(s) of LLM function(s)**: Change output description(s) of already created LLM function(s).
 - **Apply suitable (sub-)parsers**: If changes can be programmed, choose, or program, and apply suitable parser(s) or sub-parser(s) for LLM's outputs.
 - **Program output transformations**: Transform the outputs of the (sub-)parser(s) programmatically.
-- **Overall satisfactory results?**: A decision point to assess whether the results are overall satisfactory.
+- **Overall satisfactory (robust enough) results?**: A decision point to assess whether the results are overall satisfactory.
+  - *This should include evaluation or estimate how robust and reproducible the results are.*
+- **Willing and able to apply different model(s) or model parameters?**: A decision point should the LLM functions pipeline should evaluated or tested with different LLM model or model parameters.
+  - *In view of robustness and reproducibility, systematic change of LLM models and LLM functions pipeline inputs should be considered.* 
+- **Change model or model parameters**: If willing to change models or model parameters then do so.
+  - *Different models can have different adherence to prompt specs, evaluation speeds, and evaluation prices.*
 - **Make LLM example function**: If changes can be specified as training rules, make an example function for the LLM.
 - **End**: The end of the process.
 
