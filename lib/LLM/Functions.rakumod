@@ -183,10 +183,11 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
 
         when $_ ~~ LLM::Functions::Evaluator {
             my $res = $_.clone;
-            my $conf = Whatever;
-            with %argsEvlr<conf> { $conf = %argsEvlr<conf>; }
+            my $conf = $_.conf;
+            with %argsEvlr<conf> { $conf = llm-configuration($conf, |%argsEvlr<conf>.Hash); }
             if %argsConf {
                 $conf = llm-configuration($conf, |%argsConf);
+                $res.conf = $conf;
             }
             with %argsEvlr<formatron> { $res.formatron = %argsEvlr<formatron>; }
             $res
