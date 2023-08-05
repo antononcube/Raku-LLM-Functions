@@ -762,7 +762,7 @@ my &fner = llm-function({"Extract $^a from the text: $^b . Give the result in a 
 Here we find 10 random music artists:
 
 ```perl6
-my @artistNames = |llm-function(llm-evalautor=>'PaLM')("Give 10 random music artist names in a list in JSON format.",
+my @artistNames = |llm-function(llm-evaluator=>'PaLM')("Give 10 random music artist names in a list in JSON format.",
                                   form => sub-parser('JSON'))
 ```
 
