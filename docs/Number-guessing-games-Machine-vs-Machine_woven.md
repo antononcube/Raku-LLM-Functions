@@ -53,6 +53,8 @@ Machine vs Man and Man vs Machine. Here is a table outlining a comprehensive pla
 |----------------|----------------|--------------|--------------|-----------------------|
 | Man            | Machine        | Man          | ChatGPT/PaLM | ✓ Cute!               |
 | Machine        | Man            | ChatGPT/PaLM | Man          | ✓ Machine often lies! |
+| Machine        | Machine        | ChatGPT      | ChatGPT      | ✓ Meh                 |
+| Machine        | Machine        | PaLM         | PaLM         | ✓ Boring              |
 | Machine        | Machine        | ChatGPT      | PaLM         | ✓ Boring guesser...   |
 | Machine        | Machine        | PaLM         | ChatGPT      | ✓ Shown here          |
 
