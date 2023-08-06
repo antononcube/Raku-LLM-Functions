@@ -77,5 +77,14 @@ is-deeply
                 llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
                 formatron => 'JSON');
 
+## 14
+is-deeply
+        llm-evaluator(
+                llm-evaluator(Whatever),
+                conf => llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                formatron => 'JSON'),
+        llm-evaluator(
+                llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                formatron => 'JSON');
 
 done-testing;
