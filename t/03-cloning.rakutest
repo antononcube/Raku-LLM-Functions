@@ -24,8 +24,19 @@ my $evaluator1 = LLM::Functions::Evaluator.new(conf => llm-configuration('palm')
 my $evaluator2 = $evaluator1.clone;
 
 $evaluator2.conf.prompts = ['new', "prompt"];
-
 is-deeply $evaluator1.conf.prompts, [];
+
+## 3
+my $prompt3 = ['You are the best potatoes marked trader.', 'And live in EU.'];
+my $evaluator3 = llm-evaluator($evaluator1, prompts => $prompt3, temperature => 1.2534);
+
+is-deeply $evaluator3.conf.prompts, $prompt3;
+
+## 4
+is $evaluator3.conf.temperature, 1.2534;
+
+## 5
+is $evaluator3.conf.stop-tokens ~~ Positional && $evaluator3.conf.stop-tokens.all ~~ Str:D, True;
 
 
 done-testing;
