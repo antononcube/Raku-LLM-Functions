@@ -109,7 +109,7 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
     # Create object
     my $newConf = LLM::Functions::Configuration.new(|%newConf);
 
-    # I do not why I should be doing those assignments.
+    # I do not why I should be doing the following assignments.
     # At this point if, say, 'prompts' is in %args then
     # $newConf has it containerized in an array, e.g. [$(...),]
     # Maybe these explanations for Perl apply : https://www.perlmonks.org/?node_id=347308
@@ -197,6 +197,8 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
             with %argsEvlr<formatron> {
                 $res.formatron = %argsEvlr<formatron>;
             }
+            # Should we assign to the evaluator field here?
+            # $res.conf.evaluator is Whatever by default.
             #$res.conf.evaluator = $res;
 
             $res
