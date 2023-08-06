@@ -18,6 +18,14 @@ use LLM::Functions::Evaluator;
 unit module LLM::Functions;
 
 #===========================================================
+# Utility
+#===========================================================
+
+multi reallyflat(+@list) {
+    gather @list.deepmap: *.take
+}
+
+#===========================================================
 # LLM configuration
 #===========================================================
 
@@ -113,17 +121,24 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
     # At this point if, say, 'prompts' is in %args then
     # $newConf has it containerized in an array, e.g. [$(...),]
     # Maybe these explanations for Perl apply : https://www.perlmonks.org/?node_id=347308
+    # BTW, just using .flat does not work:  .&reallyflat must be used.
 
     if %args<prompts>:exists {
-        $newConf.prompts = %args<prompts>.flat;
+        $newConf.prompts = %args<prompts>.&reallyflat;
+    } else {
+        $newConf.prompts = $newConf.prompts.&reallyflat;
     }
 
     if %args<tools>:exists {
-        $newConf.tools = %args<tools>.flat;
+        $newConf.tools = %args<tools>.&reallyflat;
+    } else {
+        $newConf.tools = $newConf.tools.&reallyflat;
     }
 
     if %args<stop-tokens>:exists {
-        $newConf.stop-tokens = %args<stop-tokens>.flat;
+        $newConf.stop-tokens = %args<stop-tokens>.&reallyflat;
+    } else {
+        $newConf.stop-tokens = |$newConf.stop-tokens.&reallyflat;
     }
 
     # Result
