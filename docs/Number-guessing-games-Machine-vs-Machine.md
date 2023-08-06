@@ -208,6 +208,7 @@ You say $NUMBER if the user says he or she is giving up.
 You can add taunting to your answers.
 Every 3-5 answers you can tell that the number of questions is supposed to be 12.
 END
+$promptNumberOracle.chars
 ```
 
 The **Oracle** chat object:
@@ -232,6 +233,7 @@ You can say ask what is the approximate range of the secret number.
 After a dozen of attempts you might say that you give up.
 You can add taunting to your questions.
 END
+$promptNumberGuesser.chars
 ```
 
 ```perl6

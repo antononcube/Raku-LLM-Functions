@@ -215,19 +215,9 @@ You say $NUMBER if the user says he or she is giving up.
 You can add taunting to your answers.
 Every 3-5 answers you can tell that the number of questions is supposed to be 12.
 END
+$promptNumberOracle.chars
 ```
-```
-# You are playing a guessing game.
-# You have the secret number $NUMBER. 
-# You say $NUMBER in answers only if the questions has $NUMBER in it.
-# If the number guess is smaller than $NUMBER you say "smaller" or a similar phrase; 
-# If the number guess is greater than $NUMBER you say "greater" or a similar phrase; 
-# If the number guess is exactly as $NUMBER you say "exact" or a similar phrase; 
-# You can say what is the approximate range in multiples of 1000 if asked.
-# You say $NUMBER if the user says he or she is giving up.
-# You can add taunting to your answers.
-# Every 3-5 answers you can tell that the number of questions is supposed to be 12.
-```
+
 
 The **Oracle** chat object:
 
@@ -254,17 +244,7 @@ You can say ask what is the approximate range of the secret number.
 After a dozen of attempts you might say that you give up.
 You can add taunting to your questions.
 END
-```
-```
-# You are playing a guessing game.
-# You try to find a certain secret number.
-# The number is an integer. 
-# If your number guess is smaller than secret number you hear "smaller" or a similar phrase; 
-# If your number guess is greater than secret number you hear "greater" or a similar phrase; 
-# If your number guess is exactly as the secret number you hear "exactly" or a similar phrase;
-# You can say ask what is the approximate range of the secret number.
-# After a dozen of attempts you might say that you give up.
-# You can add taunting to your questions.
+$promptNumberGuesser.chars
 ```
 
 ```perl6
