@@ -115,15 +115,15 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
     # Maybe these explanations for Perl apply : https://www.perlmonks.org/?node_id=347308
 
     if %args<prompts>:exists {
-        $newConf.prompts = %args<prompts>;
+        $newConf.prompts = %args<prompts>.flat;
     }
 
     if %args<tools>:exists {
-        $newConf.tools = %args<tools>;
+        $newConf.tools = %args<tools>.flat;
     }
 
     if %args<stop-tokens>:exists {
-        $newConf.stop-tokens = %args<stop-tokens>;
+        $newConf.stop-tokens = %args<stop-tokens>.flat;
     }
 
     # Result
@@ -183,13 +183,22 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
 
         when $_ ~~ LLM::Functions::Evaluator {
             my $res = $_.clone;
-            my $conf = $_.conf;
-            with %argsEvlr<conf> { $conf = llm-configuration($conf, |%argsEvlr<conf>.Hash); }
+            my $conf = $_.conf.clone;
+
+            with %argsEvlr<conf> {
+                $conf = llm-configuration($conf, |%argsEvlr<conf>.Hash);
+            }
+
             if %argsConf {
                 $conf = llm-configuration($conf, |%argsConf);
-                $res.conf = $conf;
             }
-            with %argsEvlr<formatron> { $res.formatron = %argsEvlr<formatron>; }
+            $res.conf = $conf;
+
+            with %argsEvlr<formatron> {
+                $res.formatron = %argsEvlr<formatron>;
+            }
+            #$res.conf.evaluator = $res;
+
             $res
         }
     }
