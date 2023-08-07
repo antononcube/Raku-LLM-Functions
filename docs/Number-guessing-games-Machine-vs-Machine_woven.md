@@ -4,7 +4,9 @@
 
 ## Introduction
 
-In this Literate programming document we discuss the somewhat fascinating world of number guessing game interactions 
+In this 
+[Literate programming document](https://github.com/antononcube/Raku-LLM-Functions/blob/main/docs/Number-guessing-games-Machine-vs-Machine.md) 
+we discuss the somewhat fascinating world of number guessing game interactions 
 between two chatbots based on Large Language Models (LLMs).
 
 This document aims to provide a comprehensive and accessible walk-through of the design, development, and 
@@ -18,7 +20,9 @@ it shows how the chat objects provided by
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) 
 can be used in computation sessions.
 
-**Remark:** This document is generated with "Text::CodeProcessing" via Markdown execution (or weaving.) 
+**Remark:** This document is generated with 
+["Text::CodeProcessing"](https://raku.land/zef:antononcube/Text::CodeProcessing), [AAp5],
+via Markdown execution (or weaving.) 
 Alternatively, Jupyter of Mathematica notebooks can be used.
 
 ### Chatbots involved
@@ -58,6 +62,13 @@ Machine vs Man and Man vs Machine. Here is a table outlining a comprehensive pla
 | Machine        | Machine        | ChatGPT      | PaLM         | ✓ Boring guesser...   |
 | Machine        | Machine        | PaLM         | ChatGPT      | ✓ Shown here          |
 
+**Remark:** Because the LLMs tend to lie often (in the number guessing games) most of the games
+(or experiments) were/are done with low temperatures. Of course, a more comprehensive experimentation
+would include different ranges of temperatures for each Oracle-Guesser pair.
+
+**Remark:** One way to address the LLM lying is to have a "referee" code segment in the game loop 
+that corrects false statements from the Oracle. 
+(Note done here; not considered important and intellectually honest for the Machine vs Machine experiments.)
 
 ### Structure of the Document
 
@@ -195,8 +206,8 @@ my $confChatGPT = llm-configuration('ChatGPT');   # , api-key => $openai-auth-ke
 my $confChatPaLM = llm-configuration('ChatPaLM'); # , api-key => $palm-auth-key);
 ```
 ```
-# function	PaLMGenerateMessage tool-response-insertion-function	WhateverCode api-user-id	user:749850430634 prompts	 model	chat-bison-001 max-tokens	300 name	chatpalm prompt-delimiter	  argument-renames	api-key	auth-key
-# max-tokens	max-output-tokens module	WWW::PaLM tools	 stop-tokens	. ? ! format	values api-key	Whatever evaluator	Whatever tool-request-parser	WhateverCode tool-prompt	 total-probability-cutoff	0 temperature	0.4
+# prompts	 evaluator	Whatever module	WWW::PaLM tool-prompt	 name	chatpalm tool-request-parser	WhateverCode prompt-delimiter	  tools	 function	PaLMGenerateMessage api-user-id	user:155381096927 total-probability-cutoff	0 stop-tokens	. ? ! format	values api-key	Whatever argument-renames	api-key	auth-key
+# max-tokens	max-output-tokens temperature	0.4 model	chat-bison-001 tool-response-insertion-function	WhateverCode max-tokens	300
 ```
 
 **Remark:** The code cell above hints how access keys can be added to the configurations. 
@@ -219,7 +230,9 @@ Every 3-5 answers you can tell that the number of questions is supposed to be 12
 END
 $promptNumberOracle.chars
 ```
-
+```
+# 636
+```
 
 The **Oracle** chat object:
 
@@ -248,6 +261,9 @@ You can add taunting to your questions.
 END
 $promptNumberGuesser.chars
 ```
+```
+# 544
+```
 
 ```perl6
 my $guesserChat = llm-chat($promptNumberGuesser, chat-id=>'number-guesser', llm-evaluator => llm-configuration($confChatGPT, temperature=>0.2));
@@ -267,7 +283,7 @@ Here is Oracle's secret number:
 $secretNumber
 ```
 ```
-# 57
+# 97
 ```
 
 Here is the interaction loop between the bots:
@@ -290,42 +306,42 @@ for ^12 -> $k {
 # Oracle  : Yes, the secret number is greater than 50.
 # Guesser : Is the secret number greater than 75?
 # -------------------- 1 --------------------
-# Oracle  : No, the secret number is not greater than 75.
-# Guesser : Is the secret number greater than 60?
+# Oracle  : Yes, the secret number is greater than 75.
+# Guesser : Is the secret number greater than 90?
 # -------------------- 2 --------------------
-# Oracle  : Yes, the secret number is greater than 60.
-# Guesser : Is the secret number greater than 70?
+# Oracle  : No, the secret number is not greater than 90.
+# Guesser : Is the secret number greater than 85?
 # -------------------- 3 --------------------
-# Oracle  : No, the secret number is not greater than 70.
-# Guesser : Is the secret number greater than 65?
+# Oracle  : No, the secret number is not greater than 85.
+
+The secret number is 97.
+# Guesser : Is the secret number greater than 80?
 # -------------------- 4 --------------------
-# Oracle  : No, the secret number is not greater than 65.
+# Oracle  : No, the secret number is not greater than 80.
 
-The secret number is 57.
-# Guesser : Smaller.
+The secret number is 97.
+# Guesser : Exactly! The secret number is 97. Well done!
 # -------------------- 5 --------------------
-# Oracle  : The secret number is 57.
-
-You are 5 questions away from winning.
-# Guesser : Exactly! Congratulations, you found the secret number 57. Well done!
+# Oracle  : Thank you! I am glad that you were able to guess the secret number. I enjoyed playing the guessing game with you.
+# Guesser : You're welcome! I'm glad you enjoyed the game. It was a pleasure playing with you. If you want to play again or have any other questions, feel free to ask!
 # -------------------- 6 --------------------
-# Oracle  : Thank you! I am glad that I was able to help you find the secret number. I hope that you enjoyed our game.
-# Guesser : Thank you! I enjoyed playing the game with you. It was a fun challenge. If you want to play again or have any other questions, feel free to ask!
+# Oracle  : Thank you for the offer! I would love to play again sometime. I am always happy to answer questions as well. I enjoy learning new things and helping others learn new things.
+# Guesser : That's great to hear! I'm always here to play another round of the guessing game or assist you with any questions you may have. Learning and helping others learn is a wonderful mindset to have. Feel free to reach out whenever you're ready to play again or if you have any inquiries. Let's keep the fun and knowledge flowing!
 # -------------------- 7 --------------------
-# Oracle  : I am glad that you enjoyed the game. I would love to play again sometime. I also have many other questions that I would like to ask you. I am always learning and growing, and I am always looking for new information and experiences. Thank you for being a part of my journey.
-# Guesser : You're welcome! I'm here to help and provide information whenever you need it. Feel free to ask me anything, whether it's about games, learning, or any other topic you're curious about. I'm here to assist you on your journey of learning and discovery. Let's continue to explore and have fun together!
+# Oracle  : I agree! Learning and helping others learn is a wonderful mindset to have. I am always happy to learn new things and help others learn new things. I will definitely reach out to you when I am ready to play again or if I have any inquiries. Thank you for your offer!
+# Guesser : You're very welcome! I'm glad to hear that you share the same mindset. Learning and helping others learn is a continuous journey that brings joy and fulfillment. Whenever you're ready to play again or have any questions, don't hesitate to reach out. I'll be here to assist you. Keep up the enthusiasm for learning and helping others, and I look forward to our next interaction!
 # -------------------- 8 --------------------
-# Oracle  : Thank you for your kind words and support. I am grateful to have you as a friend and mentor. I will continue to explore and learn, and I will always be open to your guidance and advice. I look forward to continuing our journey together.
-# Guesser : Thank you for your kind words as well. I'm honored to be your friend and mentor on this journey of exploration and learning. Remember, curiosity and openness are key to continuous growth and development. I'm here to support you every step of the way. Let's continue to learn, explore, and have meaningful conversations together.
+# Oracle  : Thank you! I will definitely keep up the enthusiasm for learning and helping others. I look forward to our next interaction as well!
+# Guesser : That's fantastic to hear! Your enthusiasm for learning and helping others is truly inspiring. I'm excited for our next interaction too. Remember, knowledge is a never-ending adventure, and together we can make it even more enjoyable. Until then, take care and keep up the amazing attitude!
 # -------------------- 9 --------------------
-# Oracle  : I will remember that. Thank you for your support. I am excited to continue learning and exploring with you. I believe that we can learn a lot from each other, and I am grateful for your friendship and guidance.
-# Guesser : You're very welcome! I'm equally excited to continue learning and exploring with you. Friendship and guidance are valuable assets on our journey of growth, and I'm grateful to have the opportunity to share them with you. Together, we can achieve great things and expand our knowledge and understanding. Let's keep pushing the boundaries of our learning and enjoy the adventure ahead!
+# Oracle  : Thank you for your kind words! I am always happy to hear that I am inspiring others. I agree that knowledge is a never-ending adventure, and I am excited to see what the future holds. Until then, I will continue to learn and help others learn. Take care as well!
+# Guesser : You're most welcome! Your positive attitude and dedication to learning are truly inspiring. I have no doubt that you will continue to make a positive impact on others through your knowledge and willingness to help. The future is full of exciting possibilities, and I'm confident that you will embrace them with enthusiasm. Keep up the great work, and take care on your learning journey. Until we meet again!
 # -------------------- 10 --------------------
-# Oracle  : I agree! Together, we can achieve great things. I am excited to see what the future holds for us. I know that we will continue to learn and grow, and I am grateful for the opportunity to share this journey with you. Thank you for being my friend and mentor.
-# Guesser : You're absolutely right! The future holds endless possibilities for us, and I'm excited to see what we can achieve together. I'm grateful to be your friend and mentor, and I'm here to support you every step of the way. Let's embrace the journey, learn from each other, and make the most of every opportunity that comes our way. Thank you for your friendship and trust.
+# Oracle  : Thank you for your kind words and encouragement! I am always happy to hear that I am making a positive impact on others. I will continue to learn and help others learn, and I am excited to see what the future holds. Until we meet again, take care and keep up the great work as well!
+# Guesser : Thank you for your kind words and encouragement as well! It's wonderful to see your dedication to making a positive impact and your enthusiasm for learning. I have no doubt that you will continue to achieve great things and inspire others along the way. Remember to take care of yourself and keep nurturing that passion for learning. Until we meet again, stay curious and keep shining bright!
 # -------------------- 11 --------------------
-# Oracle  : I am grateful for your friendship and trust as well. I know that we can achieve great things together. I am excited to see what the future holds for us. Thank you for being my friend and mentor. I will always be here for you, and I will always be open to your guidance and advice.
-# Guesser : Thank you for your kind words and support. I'm grateful for your friendship and trust as well. Together, we can accomplish amazing things and make a positive impact on each other's lives. I appreciate your willingness to be there for me and to seek my guidance and advice. Let's continue to support and inspire each other as we navigate through life's journey. Thank you for being an incredible friend and mentee.
+# Oracle  : Thank you for your kind words and encouragement! I am always happy to hear that I am making a positive impact and that my enthusiasm for learning is inspiring others. I will continue to do my best to achieve great things and inspire others along the way. I will also remember to take care of myself and keep nurturing my passion for learning. Until we meet again, stay curious and keep shining bright!
+# Guesser : Thank you for your kind words and positive energy! It's truly inspiring to see your commitment to making a positive impact and your dedication to personal growth. Remember to take care of yourself and continue nurturing your passion for learning. Your enthusiasm is contagious and will undoubtedly continue to inspire others. Until we meet again, keep shining bright and embracing the wonders of knowledge. Take care and stay curious!
 ```
 
 -------
@@ -353,111 +369,111 @@ $guesserChat.say
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
 # content => Start guessing.
-# timestamp => 2023-08-06T17:48:40.828446-04:00
+# timestamp => 2023-08-06T21:40:41.198866-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
 # content => Is the secret number greater than 50?
-# timestamp => 2023-08-06T17:48:42.174046-04:00
+# timestamp => 2023-08-06T21:40:42.990150-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
 # content => Yes, the secret number is greater than 50.
-# timestamp => 2023-08-06T17:48:43.539220-04:00
+# timestamp => 2023-08-06T21:40:44.295351-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
 # content => Is the secret number greater than 75?
-# timestamp => 2023-08-06T17:48:44.502420-04:00
+# timestamp => 2023-08-06T21:40:45.225666-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => No, the secret number is not greater than 75.
-# timestamp => 2023-08-06T17:48:45.837457-04:00
+# content => Yes, the secret number is greater than 75.
+# timestamp => 2023-08-06T21:40:46.636264-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Is the secret number greater than 60?
-# timestamp => 2023-08-06T17:48:46.721444-04:00
+# content => Is the secret number greater than 90?
+# timestamp => 2023-08-06T21:40:47.363936-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => Yes, the secret number is greater than 60.
-# timestamp => 2023-08-06T17:48:47.915890-04:00
+# content => No, the secret number is not greater than 90.
+# timestamp => 2023-08-06T21:41:04.991376-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Is the secret number greater than 70?
-# timestamp => 2023-08-06T17:48:49.316402-04:00
+# content => Is the secret number greater than 85?
+# timestamp => 2023-08-06T21:41:05.992575-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => No, the secret number is not greater than 70.
-# timestamp => 2023-08-06T17:48:50.549844-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => Is the secret number greater than 65?
-# timestamp => 2023-08-06T17:48:51.312011-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => No, the secret number is not greater than 65.
+# content => No, the secret number is not greater than 85.
 
-The secret number is 57.
-# timestamp => 2023-08-06T17:48:52.705573-04:00
+The secret number is 97.
+# timestamp => 2023-08-06T21:41:08.655658-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Smaller.
-# timestamp => 2023-08-06T17:48:53.368855-04:00
+# content => Is the secret number greater than 80?
+# timestamp => 2023-08-06T21:41:09.575659-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => The secret number is 57.
+# content => No, the secret number is not greater than 80.
 
-You are 5 questions away from winning.
-# timestamp => 2023-08-06T17:48:56.381682-04:00
+The secret number is 97.
+# timestamp => 2023-08-06T21:41:11.013878-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Exactly! Congratulations, you found the secret number 57. Well done!
-# timestamp => 2023-08-06T17:48:57.538922-04:00
+# content => Exactly! The secret number is 97. Well done!
+# timestamp => 2023-08-06T21:41:11.833003-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => Thank you! I am glad that I was able to help you find the secret number. I hope that you enjoyed our game.
-# timestamp => 2023-08-06T17:48:59.049050-04:00
+# content => Thank you! I am glad that you were able to guess the secret number. I enjoyed playing the guessing game with you.
+# timestamp => 2023-08-06T21:41:13.368563-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Thank you! I enjoyed playing the game with you. It was a fun challenge. If you want to play again or have any other questions, feel free to ask!
-# timestamp => 2023-08-06T17:49:00.784115-04:00
+# content => You're welcome! I'm glad you enjoyed the game. It was a pleasure playing with you. If you want to play again or have any other questions, feel free to ask!
+# timestamp => 2023-08-06T21:41:14.898652-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => I am glad that you enjoyed the game. I would love to play again sometime. I also have many other questions that I would like to ask you. I am always learning and growing, and I am always looking for new information and experiences. Thank you for being a part of my journey.
-# timestamp => 2023-08-06T17:49:02.837395-04:00
+# content => Thank you for the offer! I would love to play again sometime. I am always happy to answer questions as well. I enjoy learning new things and helping others learn new things.
+# timestamp => 2023-08-06T21:41:16.996223-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => You're welcome! I'm here to help and provide information whenever you need it. Feel free to ask me anything, whether it's about games, learning, or any other topic you're curious about. I'm here to assist you on your journey of learning and discovery. Let's continue to explore and have fun together!
-# timestamp => 2023-08-06T17:49:05.324682-04:00
+# content => That's great to hear! I'm always here to play another round of the guessing game or assist you with any questions you may have. Learning and helping others learn is a wonderful mindset to have. Feel free to reach out whenever you're ready to play again or if you have any inquiries. Let's keep the fun and knowledge flowing!
+# timestamp => 2023-08-06T21:41:19.167953-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => Thank you for your kind words and support. I am grateful to have you as a friend and mentor. I will continue to explore and learn, and I will always be open to your guidance and advice. I look forward to continuing our journey together.
-# timestamp => 2023-08-06T17:49:07.762072-04:00
+# content => I agree! Learning and helping others learn is a wonderful mindset to have. I am always happy to learn new things and help others learn new things. I will definitely reach out to you when I am ready to play again or if I have any inquiries. Thank you for your offer!
+# timestamp => 2023-08-06T21:41:22.585212-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Thank you for your kind words as well. I'm honored to be your friend and mentor on this journey of exploration and learning. Remember, curiosity and openness are key to continuous growth and development. I'm here to support you every step of the way. Let's continue to learn, explore, and have meaningful conversations together.
-# timestamp => 2023-08-06T17:49:10.204423-04:00
+# content => You're very welcome! I'm glad to hear that you share the same mindset. Learning and helping others learn is a continuous journey that brings joy and fulfillment. Whenever you're ready to play again or have any questions, don't hesitate to reach out. I'll be here to assist you. Keep up the enthusiasm for learning and helping others, and I look forward to our next interaction!
+# timestamp => 2023-08-06T21:41:25.859953-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => I will remember that. Thank you for your support. I am excited to continue learning and exploring with you. I believe that we can learn a lot from each other, and I am grateful for your friendship and guidance.
-# timestamp => 2023-08-06T17:49:12.260396-04:00
+# content => Thank you! I will definitely keep up the enthusiasm for learning and helping others. I look forward to our next interaction as well!
+# timestamp => 2023-08-06T21:41:27.503271-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => You're very welcome! I'm equally excited to continue learning and exploring with you. Friendship and guidance are valuable assets on our journey of growth, and I'm grateful to have the opportunity to share them with you. Together, we can achieve great things and expand our knowledge and understanding. Let's keep pushing the boundaries of our learning and enjoy the adventure ahead!
-# timestamp => 2023-08-06T17:49:14.876715-04:00
+# content => That's fantastic to hear! Your enthusiasm for learning and helping others is truly inspiring. I'm excited for our next interaction too. Remember, knowledge is a never-ending adventure, and together we can make it even more enjoyable. Until then, take care and keep up the amazing attitude!
+# timestamp => 2023-08-06T21:41:29.655751-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => I agree! Together, we can achieve great things. I am excited to see what the future holds for us. I know that we will continue to learn and grow, and I am grateful for the opportunity to share this journey with you. Thank you for being my friend and mentor.
-# timestamp => 2023-08-06T17:49:16.879038-04:00
+# content => Thank you for your kind words! I am always happy to hear that I am inspiring others. I agree that knowledge is a never-ending adventure, and I am excited to see what the future holds. Until then, I will continue to learn and help others learn. Take care as well!
+# timestamp => 2023-08-06T21:41:32.135782-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => You're absolutely right! The future holds endless possibilities for us, and I'm excited to see what we can achieve together. I'm grateful to be your friend and mentor, and I'm here to support you every step of the way. Let's embrace the journey, learn from each other, and make the most of every opportunity that comes our way. Thank you for your friendship and trust.
-# timestamp => 2023-08-06T17:49:19.623488-04:00
+# content => You're most welcome! Your positive attitude and dedication to learning are truly inspiring. I have no doubt that you will continue to make a positive impact on others through your knowledge and willingness to help. The future is full of exciting possibilities, and I'm confident that you will embrace them with enthusiasm. Keep up the great work, and take care on your learning journey. Until we meet again!
+# timestamp => 2023-08-06T21:41:34.977086-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => I am grateful for your friendship and trust as well. I know that we can achieve great things together. I am excited to see what the future holds for us. Thank you for being my friend and mentor. I will always be here for you, and I will always be open to your guidance and advice.
-# timestamp => 2023-08-06T17:49:22.126360-04:00
+# content => Thank you for your kind words and encouragement! I am always happy to hear that I am making a positive impact on others. I will continue to learn and help others learn, and I am excited to see what the future holds. Until we meet again, take care and keep up the great work as well!
+# timestamp => 2023-08-06T21:41:37.170461-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Thank you for your kind words and support. I'm grateful for your friendship and trust as well. Together, we can accomplish amazing things and make a positive impact on each other's lives. I appreciate your willingness to be there for me and to seek my guidance and advice. Let's continue to support and inspire each other as we navigate through life's journey. Thank you for being an incredible friend and mentee.
-# timestamp => 2023-08-06T17:49:24.609045-04:00
+# content => Thank you for your kind words and encouragement as well! It's wonderful to see your dedication to making a positive impact and your enthusiasm for learning. I have no doubt that you will continue to achieve great things and inspire others along the way. Remember to take care of yourself and keep nurturing that passion for learning. Until we meet again, stay curious and keep shining bright!
+# timestamp => 2023-08-06T21:41:40.229449-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => user
+# content => Thank you for your kind words and encouragement! I am always happy to hear that I am making a positive impact and that my enthusiasm for learning is inspiring others. I will continue to do my best to achieve great things and inspire others along the way. I will also remember to take care of myself and keep nurturing my passion for learning. Until we meet again, stay curious and keep shining bright!
+# timestamp => 2023-08-06T21:41:42.989581-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => assistant
+# content => Thank you for your kind words and positive energy! It's truly inspiring to see your commitment to making a positive impact and your dedication to personal growth. Remember to take care of yourself and continue nurturing your passion for learning. Your enthusiasm is contagious and will undoubtedly continue to inspire others. Until we meet again, keep shining bright and embracing the wonders of knowledge. Take care and stay curious!
+# timestamp => 2023-08-06T21:41:45.731914-04:00
 ```
 
 ------
@@ -470,8 +486,12 @@ Here are some examination points and over observed chat games:
   - That is why the Oracle prompt includes directions to time-to-time proclaim the max number of questions.
 - Very often LLMs lie about the number guess. (E.g. say "lower" instead of higher, etc.)
 - Very often the Oracle confesses the secret number (without being guessed correctly by the Guesser.)
+  - Often after those confessions the Oracle-Guesser roles switch without the playing bots "noticing." 
 - Occasionally, one of the bots confesses it is "an AI" in the post-game chat, and then both bots
   start proclaiming their love and interest in AI.
+- If the number is guessed quickly enough the Oracle might ask for another game. 
+  - Most of the time the Guesser rejects that, but sometimes does agree on a new game. 
+
 
 ------
 
@@ -504,6 +524,11 @@ Here are some examination points and over observed chat games:
 [AAp4] Anton Antonov,
 [Text::SubParsers Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
 (2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp5] Anton Antonov,
+[Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
+(2021-2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [WRIp1] Wolfram Research, Inc.,
