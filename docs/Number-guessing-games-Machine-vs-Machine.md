@@ -31,15 +31,18 @@ Alternatively, Jupyter of Mathematica notebooks can be used.
 
 The Number-Oracle bot, henceforth referred to as the Oracle, plays a crucial role in our game. 
 Utilizing the capabilities of Google's PaLM (Probabilistic Language Model), 
-it leverages deep learning models to choose a random number and evaluate the guesses made by its counterpart. 
-The underlying probabilistic nature of the model ensures that the Oracle's responses to the guesses are not only accurate 
-but also based on the complex analysis of the given context.
+it leverages deep learning models to choose a random number and evaluate the guesses made by its counterpart.
+We hope that the underlying probabilistic nature of the model ensures that the Oracle's responses to the guesses 
+are not only accurate but also based on the complex analysis of the given context.
+(Somewhat true; see the last section.)
 
 #### The Number-Guesser Bot (using OpenAI's ChatGPT)
 
 The Number-Guesser bot, or simply the Guesser, is powered by OpenAI's ChatGPT, a state-of-the-art language model. 
 The Guesser's task is to identify the number chosen by the Oracle. 
-Employing sophisticated neural network architecture, the Guesser continuously refines its guesses based on the feedback provided by the Oracle, learning and adapting its strategy until it arrives at the correct answer.
+We hope that by employing sophisticated neural network architecture, the Guesser continuously refines its guesses based on the feedback provided by the Oracle, 
+learning and adapting its strategy until it arrives at the correct answer.
+(Somewhat true; see the last section.)
 
 ### Game Overview
 
@@ -68,25 +71,26 @@ would include different ranges of temperatures for each Oracle-Guesser pair.
 
 **Remark:** One way to address the LLM lying is to have a "referee" code segment in the game loop 
 that corrects false statements from the Oracle. 
-(Note done here; not considered important and intellectually honest for the Machine vs Machine experiments.)
+(Not done here; not considered important and intellectually honest for the Machine vs Machine experiments.)
 
 ### Structure of the Document
 
-This document is structured into various sections that detail the different aspects of the game, including:
+This rest of the document is structured these sections:
 
 1. **Initialization & Setup**: How the chatbots are configured, and the game parameters are initialized.
 2. **Game Logic & Interaction**: A thorough examination of the core gameplay mechanics, the interaction between the chatbots, and the decision-making process.
 3. **Guesser chat history**: The full transcript of Guesser messages.
 4. **Post match analysis**: An examination and analysis of observed chat interactions.
 
-By exploring the code, algorithms, and strategies used in the programming of this number guessing game, 
+**ChatGPT-4.0 Remark 1:** By exploring the code, algorithms, and strategies used in the programming of this number guessing game, 
 this document hopes to provide readers with a comprehensive understanding of not only the Raku language 
 but also the contemporary language models used to power each bot.
 
-The interactive nature of this Literate programming approach ensures that the document is suitable for both experienced programmers and newcomers,
-offering executable code snippets and detailed explanations that elucidate each step of the process. 
-So whether you are seeking to replicate this project or simply to learn more about chatbot interactions, Raku programming, or AI-driven language models, 
-this document should serve as a valuable resource.
+**ChatGPT-4.0 Remark 2:** The interactive nature of this Literate programming approach ensures that the document 
+is suitable for both experienced programmers and newcomers, offering executable code snippets and 
+detailed explanations that elucidate each step of the process. 
+So whether you are seeking to replicate this project or simply to learn more about chatbot interactions, 
+Raku programming, or AI-driven language models, this document should serve as a valuable resource.
 
 ### Game Logic & Interaction
 
