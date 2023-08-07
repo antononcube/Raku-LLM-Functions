@@ -77,10 +77,11 @@ that corrects false statements from the Oracle.
 
 This rest of the document is structured these sections:
 
-1. **Initialization & Setup**: How the chatbots are configured, and the game parameters are initialized.
-2. **Game Logic & Interaction**: A thorough examination of the core gameplay mechanics, the interaction between the chatbots, and the decision-making process.
-3. **Guesser chat history**: The full transcript of Guesser messages.
-4. **Post match analysis**: An examination and analysis of observed chat interactions.
+1. **Game logic & interaction**: A thorough examination of the core gameplay mechanics, the interaction between the chatbots, and the decision-making process.
+2. **Players setup**: How the chatbots are configured, and the game parameters are initialized.
+3. **Game play out**: The main game play out loop with print outs of bots' messages.
+4. **Guesser chat history**: The full transcript of Guesser messages.
+5. **Post match analysis**: An examination and analysis of observed chat interactions.
 
 **ChatGPT-4.0 Remark 1:** By exploring the code, algorithms, and strategies used in the programming of this number guessing game, 
 this document hopes to provide readers with a comprehensive understanding of not only the Raku language 
@@ -92,7 +93,7 @@ detailed explanations that elucidate each step of the process.
 So whether you are seeking to replicate this project or simply to learn more about chatbot interactions, 
 Raku programming, or AI-driven language models, this document should serve as a valuable resource.
 
-### Game Logic & Interaction
+### Game logic & interaction
 
 The following flowchart represents the process of two chatbots, **Oracle** and **Guesser**,
 playing a number guessing game.
