@@ -1,0 +1,53 @@
+digraph G {
+    // Define nodes
+    A [label = "Start", shape = box];
+HumanWorkflow [label = "Outline a workflow"];
+MakeLLMFuncs [label = "Make LLM function(s)"];
+MakePipeline [label = "Make pipeline"];
+LLMEval [label = "Evaluate LLM function(s)"];
+HumanAsses [label = "Asses LLM's Outputs"];
+GoodLLMQ [label = "Good or workable\nresults?", shape = diamond];
+CanProgramQ [label = "Can you\nprogrammatically\nchange the\noutputs?", shape = diamond];
+KnowVerb [label = "Can you\nverbalize\nthe required\nchange?", shape = diamond];
+KnowRule [label = "Can you\nspecify the change\nas a set of training\nrules?", shape = diamond];
+ShouldAddLLMQ [label = "Is it better to\nmake additional\nLLM function(s)?", shape = diamond];
+AddLLM [label = "Make additional\nLLM function(s)"];
+ChangePrompt [label = "Change prompt(s)\nof LLM function(s)"];
+ChangeOutputDescr [label = "Change output description(s)\nof LLM function(s)"];
+ApplySubParser [label = "Apply suitable (sub-)parsers"];
+HumanMassageOutput [label = "Program output transformations"];
+OverallGood [label = "Overall\nsatisfactory\n(robust enough)\nresults?", shape = diamond];
+End [label = "End", shape = box];
+DifferentModelQ [label = "Willing and able\nto apply\ndifferent model(s) or\nmodel parameters?", shape = diamond];
+ChangeModel [label = "Change model\nor model parameters"];
+LLMExamFunc [label = "Make LLM example function"];
+
+// Define edges
+    A -> HumanWorkflow;
+HumanWorkflow -> MakeLLMFuncs;
+MakeLLMFuncs -> MakePipeline;
+MakePipeline -> LLMEval;
+LLMEval -> HumanAsses;
+HumanAsses -> GoodLLMQ;
+GoodLLMQ -> CanProgramQ [label = "No"];
+CanProgramQ -> KnowVerb [label = "No"];
+KnowVerb -> KnowRule [label = "No"];
+KnowVerb -> ShouldAddLLMQ [label = "Yes"];
+ShouldAddLLMQ -> AddLLM [label = "Yes"];
+AddLLM -> MakePipeline;
+ShouldAddLLMQ -> ChangePrompt [label = "No"];
+ChangePrompt -> ChangeOutputDescr;
+ChangeOutputDescr -> MakeLLMFuncs;
+CanProgramQ -> ApplySubParser [label = "Yes"];
+ApplySubParser -> HumanMassageOutput;
+HumanMassageOutput -> MakePipeline;
+GoodLLMQ -> OverallGood [label = "Yes"];
+OverallGood -> End [label = "Yes"];
+OverallGood -> DifferentModelQ [label = "No"];
+DifferentModelQ -> HumanWorkflow [label = "No"];
+DifferentModelQ -> ChangeModel [label = "Yes"];
+ChangeModel -> MakeLLMFuncs;
+KnowRule -> LLMExamFunc [label = "Yes"];
+KnowRule -> HumanWorkflow [label = "No"];
+LLMExamFunc -> MakePipeline;
+}
