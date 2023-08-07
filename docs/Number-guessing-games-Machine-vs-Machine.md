@@ -4,7 +4,9 @@
 
 ## Introduction
 
-In this Literate programming document we discuss the somewhat fascinating world of number guessing game interactions 
+In this 
+[Literate programming document](https://github.com/antononcube/Raku-LLM-Functions/blob/main/docs/Number-guessing-games-Machine-vs-Machine.md) 
+we discuss the somewhat fascinating world of number guessing game interactions 
 between two chatbots based on Large Language Models (LLMs).
 
 This document aims to provide a comprehensive and accessible walk-through of the design, development, and 
@@ -18,7 +20,9 @@ it shows how the chat objects provided by
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) 
 can be used in computation sessions.
 
-**Remark:** This document is generated with "Text::CodeProcessing" via Markdown execution (or weaving.) 
+**Remark:** This document is generated with 
+["Text::CodeProcessing"](https://raku.land/zef:antononcube/Text::CodeProcessing), [AAp5],
+via Markdown execution (or weaving.) 
 Alternatively, Jupyter of Mathematica notebooks can be used.
 
 ### Chatbots involved
@@ -57,6 +61,15 @@ Machine vs Man and Man vs Machine. Here is a table outlining a comprehensive pla
 | Machine        | Machine        | PaLM         | PaLM         | ✓ Boring              |
 | Machine        | Machine        | ChatGPT      | PaLM         | ✓ Boring guesser...   |
 | Machine        | Machine        | PaLM         | ChatGPT      | ✓ Shown here          |
+
+**Remark:** Because the LLMs tend to lie often (in the number guessing games) most of the games
+(or experiments) were/are done with low temperatures. Of course, a more comprehensive experimentation
+would include different ranges of temperatures for each Oracle-Guesser pair.
+
+**Remark:** One way to address the LLM lying is to have a "referee" code segment in the game loop 
+that corrects false statements from the Oracle. 
+(Note done here; not considered important and intellectually honest for the Machine vs Machine experiments.)
+
 ### Structure of the Document
 
 This document is structured into various sections that detail the different aspects of the game, including:
@@ -286,8 +299,12 @@ Here are some examination points and over observed chat games:
   - That is why the Oracle prompt includes directions to time-to-time proclaim the max number of questions.
 - Very often LLMs lie about the number guess. (E.g. say "lower" instead of higher, etc.)
 - Very often the Oracle confesses the secret number (without being guessed correctly by the Guesser.)
+  - Often after those confessions the Oracle-Guesser roles switch without the playing bots "noticing." 
 - Occasionally, one of the bots confesses it is "an AI" in the post-game chat, and then both bots
   start proclaiming their love and interest in AI.
+- If the number is guessed quickly enough the Oracle might ask for another game. 
+  - Most of the time the Guesser rejects that, but sometimes does agree on a new game. 
+
 
 ------
 
@@ -320,6 +337,11 @@ Here are some examination points and over observed chat games:
 [AAp4] Anton Antonov,
 [Text::SubParsers Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
 (2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp5] Anton Antonov,
+[Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
+(2021-2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [WRIp1] Wolfram Research, Inc.,
