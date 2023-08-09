@@ -53,7 +53,8 @@ multi sub llm-configuration($spec, *%args) {
                             total-probability-cutoff => 0.03,
                             prompts => Empty,
                             prompt-delimiter => ' ',
-                            argument-renames => %('api-key' => 'auth-key'),
+                            stop-tokens => Empty,
+                            argument-renames => %('api-key' => 'auth-key', 'stop-tokens' => 'stop'),
                             format => 'values');
                 }
 
@@ -83,7 +84,10 @@ multi sub llm-configuration($spec, *%args) {
                             total-probability-cutoff => 0,
                             prompts => Empty,
                             prompt-delimiter => ' ',
-                            argument-renames => %('api-key' => 'auth-key', 'max-tokens' => 'max-output-tokens'),
+                            stop-tokens => Empty,
+                            argument-renames => %('api-key' => 'auth-key',
+                                                  'max-tokens' => 'max-output-tokens',
+                                                  'stop-tokens' => 'stop-sequences'),
                             format => 'values');
                 }
 
