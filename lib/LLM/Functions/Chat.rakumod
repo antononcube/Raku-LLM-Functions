@@ -9,9 +9,6 @@ class LLM::Functions::Chat {
     has @.messages;
     has Str $.context is rw = '';
     has @.examples is rw = Empty;
-    has Str $.user-role is rw = 'user';
-    has Str $.assistant-role is rw = 'assistant';
-    has Str $.system-role is rw = 'system';
 
     #-------------------------------------------------------
     method clone {
@@ -25,15 +22,12 @@ class LLM::Functions::Chat {
         with %args<llm-evaluator>  { self.llm-evaluator = %args<llm-evaluator>; }
         with %args<messages>       { self.messages = %args<messages>; }
         with %args<examples>       { self.messages = %args<examples>; }
-        with %args<user-role>      { self.user-role = %args<user-role>; }
-        with %args<assistant-role> { self.assistant-role = %args<assistant-role>; }
-        with %args<system-role>    { self.system-role = %args<system-role>; }
         return self;
     }
 
     #-------------------------------------------------------
     multi method make-message(Str $message) {
-        return self.make-message(role => $!user-role, :$message, timestamp => DateTime.now);
+        return self.make-message(role => Whatever, :$message, timestamp => DateTime.now);
     }
 
     multi method make-message(Str $role, Str $message) {
@@ -57,16 +51,17 @@ class LLM::Functions::Chat {
     multi method eval(Str :$message!, :$role is copy = Whatever, *%args) {
 
         # Process role argument
-        if $role.isa(Whatever) { $role = $!user-role; }
+        if $role.isa(Whatever) {
+            $role = self.llm-evaluator.user-role;
+        } else {
+            self.llm-evaluator.user-role = $role
+        }
 
         die 'The argument $role is expected to be a string or Whatever.'
         unless $role ~~ Str:D;
 
         # Make and store message struct
         @!messages.push(self.make-message(:$role, :$message));
-
-        # Make sure same system role is used in the evaluator object
-        $!llm-evaluator.system-role = $!system-role;
 
         # Get LLM result
         my $res = $!llm-evaluator.eval(@!messages, |%args);
@@ -83,7 +78,8 @@ class LLM::Functions::Chat {
         }
 
         # Make and store message response
-        @!messages.push(self.make-message(role => $!assistant-role, message => $msgRes));
+        my $assistant-role = self.llm-evaluator.assitant-role;
+        @!messages.push(self.make-message(role => $assistant-role, message => $msgRes));
 
         # Result
         return $res;

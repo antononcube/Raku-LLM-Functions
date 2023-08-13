@@ -10,12 +10,16 @@ class LLM::Functions::EvaluatorChat
         without self.formatron { self.formatron = 'Str'; }
     }
 
+    # Attributes with the same names exist in LLM::Functions::Chat.
+    # Should they also be here?
+    has Str $.user-role is rw = 'user';
+    has Str $.assitant-role is rw = 'assistant';
     has Str $.system-role is rw = 'system';
 
-    method prompt-texts-combiner($prompt, @texts) {
+    method prompt-texts-combiner($prompt, @texts, *%args) {
         my @messages = do given @texts {
             when $_.all ~~ Str {
-                ('user' X=> @texts);
+                (self.user-role X=> @texts);
             }
             when $_.all ~~ Pair {
                 @texts;
