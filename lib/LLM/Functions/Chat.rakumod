@@ -107,6 +107,15 @@ class LLM::Functions::Chat {
         say "Chat: { self.chat-id }";
         say $delim;
         say "Prompts: { self.llm-evaluator.conf.prompts }";
+        if self.llm-evaluator.conf.examples {
+            say $delim;
+            if self.llm-evaluator.conf.examples ~~ Positional {
+                say "Examples:";
+                .say for self.llm-evaluator.conf.examples;
+            } else {
+                say "Examples: { self.llm-evaluator.conf.examples }";
+            }
+        }
         for self.messages -> %h {
             say $delim;
             .say for <role content timestamp>.map({ $_ => %h{$_} });
