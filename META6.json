@@ -20,7 +20,9 @@
     "LLM::Functions": "lib/LLM/Functions.rakumod",
     "LLM::Functions::Chat": "lib/LLM/Functions/Chat.rakumod",
     "LLM::Functions::Configuration": "lib/LLM/Functions/Configuration.rakumod",
-    "LLM::Functions::Evaluator": "lib/LLM/Functions/Evaluator.rakumod"
+    "LLM::Functions::Evaluator": "lib/LLM/Functions/Evaluator.rakumod",
+    "LLM::Functions::EvaluatorChat": "lib/LLM/Functions/EvaluatorChat.rakumod",
+    "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod"
   },
   "resources": [
     "prompts/LAN-GPT.txt",
