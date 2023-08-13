@@ -49,6 +49,9 @@ class LLM::Functions::Configuration {
     # "PromptDelimiter" string to insert between prompts
     has $.prompt-delimiter = ' ';
 
+    # "Examples" initial prompts
+    has @.examples;
+
     # "StopTokens" tokens on which to stop generation
     has @.stop-tokens = <. ? !>;
 
@@ -91,6 +94,7 @@ class LLM::Functions::Configuration {
                   :$!temperature, :$!total-probability-cutoff, :$!max-tokens,
                   :$!format,
                   :@!prompts, :$!prompt-delimiter,
+                  :@!examples,
                   :@!stop-tokens,
                   :@!tools, :$!tool-prompt, :&!tool-request-parser, :&!tool-response-insertion-function,
                   :%.argument-renames,
