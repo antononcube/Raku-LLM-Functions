@@ -55,6 +55,7 @@ multi sub llm-configuration($spec, *%args) {
                             total-probability-cutoff => 0.03,
                             prompts => Empty,
                             prompt-delimiter => ' ',
+                            examples => Empty,
                             stop-tokens => Empty,
                             argument-renames => %('api-key' => 'auth-key', 'stop-tokens' => 'stop'),
                             format => 'values');
@@ -86,6 +87,7 @@ multi sub llm-configuration($spec, *%args) {
                             total-probability-cutoff => 0,
                             prompts => Empty,
                             prompt-delimiter => ' ',
+                            examples => Empty,
                             stop-tokens => Empty,
                             argument-renames => %('api-key' => 'auth-key',
                                                   'max-tokens' => 'max-output-tokens',
@@ -98,7 +100,8 @@ multi sub llm-configuration($spec, *%args) {
                             'palm',
                             name => 'chatpalm',
                             function => &PaLMGenerateMessage,
-                            model => 'chat-bison-001')
+                            model => 'chat-bison-001',
+                            examples => %args<examples> // Empty)
                 }
 
                 default {
@@ -127,12 +130,18 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
     # At this point if, say, 'prompts' is in %args then
     # $newConf has it containerized in an array, e.g. [$(...),]
     # Maybe these explanations for Perl apply : https://www.perlmonks.org/?node_id=347308
-    # BTW, just using .flat does not work:  .&reallyflat must be used.
+    # BTW, just using .flat does not work: .&reallyflat must be used.
 
     if %args<prompts>:exists {
         $newConf.prompts = %args<prompts>.&reallyflat;
     } else {
         $newConf.prompts = $newConf.prompts.&reallyflat;
+    }
+
+    if %args<examples>:exists {
+        $newConf.examples = %args<examples>.&reallyflat;
+    } else {
+        $newConf.examples = $newConf.examples.&reallyflat;
     }
 
     if %args<tools>:exists {
@@ -164,7 +173,7 @@ multi sub llm-evaluator(*%args) {
 
 multi sub llm-evaluator($llm-evaluator is copy, *%args) {
 
-    my @attrConf = LLM::Functions::Configuration.^attribute_table.values>>.name.map({ $_.substr(2)});
+    my @attrConf = LLM::Functions::Configuration.^attribute_table.values>>.name.map({ $_.substr(2) });
 
     my %argsConf = %args.grep({ $_.key ∈ @attrConf });
     my %argsEvlr = %args.grep({ $_.key ∉ %argsConf.keys });
