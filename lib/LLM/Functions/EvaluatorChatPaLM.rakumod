@@ -11,6 +11,8 @@ class LLM::Functions::EvaluatorChatPaLM
         self.conf.evaluator = self;
     }
 
+    has $.examples is rw = Whatever;
+
     # In the terminology of PaLM the first argument, $prompt, is a "context".
     method prompt-texts-combiner($prompt, @texts, *%args) {
         my @messages = do given @texts {
@@ -32,10 +34,7 @@ class LLM::Functions::EvaluatorChatPaLM
 
         @messages = @messages.grep({ $_.key ne 'examples' });
 
-        my $examples = @messages.Hash<examples> // %args<examples> // Whatever;
-
-        note (:$examples);
-
+        my $examples = @messages.Hash<examples> // %args<examples> // $!examples;
 
         if !$examples.isa(Whatever) {
             die "When examples spec is provied it is expected to be a Positional of pairs."
@@ -45,10 +44,8 @@ class LLM::Functions::EvaluatorChatPaLM
         }
 
         if $prompt {
-            note (messages => [self.system-role => $prompt, |@messages]);
             return [self.system-role => $prompt, |@messages];
         } else {
-            note (:@messages);
             return @messages;
         }
     }
