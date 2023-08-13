@@ -17,10 +17,10 @@ ok LLM::Functions::Evaluator.new;
 ok LLM::Functions::Evaluator.new(conf => llm-configuration(Whatever));
 
 ## 3
-ok LLM::Functions::ChatEvaluator.new(conf => llm-configuration(Whatever));
+ok LLM::Functions::EvaluatorChat.new(conf => llm-configuration(Whatever));
 
 ## 4
-ok LLM::Functions::ChatEvaluator.new(conf => llm-configuration('PaLM'));
+ok LLM::Functions::EvaluatorChat.new(conf => llm-configuration('PaLM'));
 
 ## 5
 is-deeply
