@@ -1,12 +1,14 @@
 use v6.d;
 
-use LLM::Functions::Evaluator;
+use LLM::Functions::EvaluatorChat;
 
 class LLM::Functions::Chat {
 
     has Str $.chat-id is rw = '';
-    has LLM::Functions::ChatEvaluator $.llm-evaluator is rw;
+    has LLM::Functions::EvaluatorChat $.llm-evaluator is rw;
     has @.messages;
+    has Str $.context is rw = '';
+    has @.examples is rw = Empty;
     has Str $.user-role is rw = 'user';
     has Str $.assistant-role is rw = 'assistant';
     has Str $.system-role is rw = 'system';
@@ -22,6 +24,7 @@ class LLM::Functions::Chat {
         with %args<chat-id>        { self.chat-id = %args<chat-id>; }
         with %args<llm-evaluator>  { self.llm-evaluator = %args<llm-evaluator>; }
         with %args<messages>       { self.messages = %args<messages>; }
+        with %args<examples>       { self.messages = %args<examples>; }
         with %args<user-role>      { self.user-role = %args<user-role>; }
         with %args<assistant-role> { self.assistant-role = %args<assistant-role>; }
         with %args<system-role>    { self.system-role = %args<system-role>; }
