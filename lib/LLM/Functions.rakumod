@@ -14,6 +14,8 @@ use WWW::PaLM::GenerateMessage;
 use LLM::Functions::Chat;
 use LLM::Functions::Configuration;
 use LLM::Functions::Evaluator;
+use LLM::Functions::EvaluatorChat;
+use LLM::Functions::EvaluatorChatPaLM;
 
 unit module LLM::Functions;
 
