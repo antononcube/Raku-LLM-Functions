@@ -65,7 +65,7 @@ multi sub llm-configuration($spec, *%args) {
                             function => &OpenAIChatCompletion,
                             model => 'gpt-3.5-turbo');
 
-                    $obj.evaluator = LLM::Functions::ChatEvaluator.new(conf => $obj);
+                    $obj.evaluator = LLM::Functions::EvaluatorChat.new(conf => $obj);
 
                     $obj;
                 }
@@ -346,25 +346,25 @@ multi sub llm-chat(:$prompt = '', *%args) {
     # Make evaluator object
     my $llmEvalObj = do given $spec {
         when $_.isa(Whatever) {
-            LLM::Functions::ChatEvaluator.new(
-                    conf => llm-configuration('PaLM-Chat', prompts => $prompt),
+            LLM::Functions::EvaluatorChat.new(
+                    conf => llm-configuration('ChatPaLM', prompts => $prompt),
                     formatron => %args<form> // %args<formatron>);
         }
 
         when $_.isa(LLM::Functions::Configuration) {
-            LLM::Functions::ChatEvaluator.new(
+            LLM::Functions::EvaluatorChat.new(
                     conf => llm-configuration($_, prompts => $prompt),
                     formatron => %args<form> // %args<formatron>);
         }
 
         when $_.isa(LLM::Functions::Evaluator) {
-            LLM::Functions::ChatEvaluator.new(
+            LLM::Functions::EvaluatorChat.new(
                     conf => llm-configuration($_.conf, prompts => $prompt),
                     formatron => %args<form> // %args<formatron> // $_.formatron);
         }
 
         when $_ ~~ Str:D {
-            LLM::Functions::ChatEvaluator.new(
+            LLM::Functions::EvaluatorChat.new(
                     conf => llm-configuration($_, prompts => $prompt),
                     formatron => %args<form> // %args<formatron>);
         }
