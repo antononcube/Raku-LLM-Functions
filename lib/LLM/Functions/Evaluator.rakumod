@@ -101,6 +101,11 @@ class LLM::Functions::Evaluator {
 
         %args2 = %args2.grep({ $_.key ∉ <prompts> && $_.key ∈ @knownParamNames }).Hash;
 
+        # Should this check be here?
+        #if %args2<examples>:exists && !%args2<examples> {
+        #    %args2<examples> = Whatever
+        #}
+
         note 'LLM function named arguments : ', %args2.raku if $echo;
 
         # Invoke the LLM function
