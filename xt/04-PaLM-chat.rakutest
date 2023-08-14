@@ -28,31 +28,33 @@ plan *;
 ## 1
 my $prompt = 'You are a gem expert and you give concise answers.';
 my $chat1 = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatPaLM', :$prompt);
-$chat1.system-role = $chat1.assistant-role;
 
-ok $chat1.eval('What is the most transparent gem?');
+isa-ok $chat1.llm-evaluator, LLM::Functions::EvaluatorChatPaLM;
 
 ## 2
-my $msg2 = 'Ok. What are the second and third most transparent gems?';
-ok $chat1.eval($msg2);
+ok $chat1.eval('What is the most transparent gem?');
 
 ## 3
-my $msg3 = 'Which country buys gems the most?';
+my $msg3 = 'Ok. What are the second and third most transparent gems?';
 ok $chat1.eval($msg3);
 
 ## 4
-my $msg4 = 'Which country exports gems the most?';
+my $msg4 = 'Which country buys gems the most?';
 ok $chat1.eval($msg4);
 
 ## 5
-is $chat1.messages.elems, 8;
+my $msg5 = 'Which country exports gems the most?';
+ok $chat1.eval($msg5);
 
 ## 6
-is $chat1.messages.all ~~ Hash, True;
+is $chat1.messages.elems, 8;
 
 ## 7
+is $chat1.messages.all ~~ Hash, True;
+
+## 8
 is-deeply
         $chat1.messages[2, 4, 6].map({ $_<content> }).Array,
-        [$msg2, $msg3, $msg4];
+        [$msg3, $msg4, $msg5];
 
 done-testing;
