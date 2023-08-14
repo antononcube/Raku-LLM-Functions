@@ -31,6 +31,8 @@ multi reallyflat(+@list) {
 # LLM configuration
 #===========================================================
 
+my @mustPassConfKeys = <name prompts examples temperature max-tokens stop-tokens api-key api-user-id>;
+
 #| LLM configuration creation and retrieval.
 our proto llm-configuration(|) is export {*}
 
@@ -66,7 +68,8 @@ multi sub llm-configuration($spec, *%args) {
                     my $obj = llm-configuration('openai',
                             name => 'chatgpt',
                             function => &OpenAIChatCompletion,
-                            model => 'gpt-3.5-turbo');
+                            model => 'gpt-3.5-turbo',
+                            |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
 
                     $obj.evaluator = LLM::Functions::EvaluatorChat.new(conf => $obj);
 
@@ -101,7 +104,7 @@ multi sub llm-configuration($spec, *%args) {
                             name => 'chatpalm',
                             function => &PaLMGenerateMessage,
                             model => 'chat-bison-001',
-                            examples => %args<examples> // Empty)
+                            |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash)
                 }
 
                 default {
@@ -417,7 +420,7 @@ multi sub llm-chat(:$prompt = '', *%args) {
             if $evaluatorClass.isa(Whatever) {
                 if $conf.name ~~ /:i palm / {
                     $conf = llm-configuration('ChatPaLM',
-                                    |$conf.Hash.grep({ $_.key ∈ <name prompts examples temperature max-tokens stop-tokens api-key api-user-id> }).Hash);
+                                    |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
 
                     $evaluatorClass = LLM::Functions::EvaluatorChatPaLM
                 } else {
