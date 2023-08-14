@@ -60,10 +60,15 @@ class LLM::Functions::Evaluator {
         # To echo or not
         my $echo = %args<echo> // False;
 
-        note "Configuration : {self.conf.Hash.raku}" if $echo;
+        # Clone configuration
+        # We clone the configuration because some changes of the prompts are done
+        # before sending the evaluation request to LLM service.
+        my $confLocal = self.conf.clone;
+
+        note "Configuration : {$confLocal.Hash.raku}" if $echo;
 
         # Load module
-        my $packageName = $.conf.module;
+        my $packageName = $confLocal.module;
 
         my Bool $no-package = False;
         try require ::($packageName);
@@ -78,20 +83,20 @@ class LLM::Functions::Evaluator {
         note "Loaded : $packageName"  if $echo;
 
         # Find known parameters
-        my @knownParamNames = $!conf.function.candidates.map({ $_.signature.params.map({ $_.usage-name }) }).flat;
+        my @knownParamNames = $confLocal.function.candidates.map({ $_.signature.params.map({ $_.usage-name }) }).flat;
 
         note "Known param mames : {@knownParamNames.raku}" if $echo;
 
         # Make all named parameters hash
-        my %args2 = merge-hash($!conf.Hash, %args);
+        my %args2 = merge-hash($confLocal.Hash, %args);
 
         # Handling the argument renaming in a more bureaucratic manner
-        for $.conf.argument-renames.kv -> $k, $v {
+        for $confLocal.argument-renames.kv -> $k, $v {
             %args2{$v} = %args2{$v} // %args2{$k} // Whatever;
         }
 
         # Make "full" prompt
-        my $prompt = $!conf.prompts.join($.conf.prompt-delimiter);
+        my $prompt = $confLocal.prompts.join($confLocal.prompt-delimiter);
 
         note 'Full prompt : ', $prompt.raku if $echo;
 
@@ -102,14 +107,14 @@ class LLM::Functions::Evaluator {
         %args2 = %args2.grep({ $_.key ∉ <prompts> && $_.key ∈ @knownParamNames }).Hash;
 
         # Should this check be here?
-        #if %args2<examples>:exists && !%args2<examples> {
-        #    %args2<examples> = Whatever
-        #}
+        if (%args2<examples>:exists) && (@messages.grep(* ~~ Pair).Hash<examples>:exists) {
+            %args2 .= grep({ $_.key ne 'examples' })
+        }
 
         note 'LLM function named arguments : ', %args2.raku if $echo;
 
         # Invoke the LLM function
-        my $res = $!conf.function.( @messages, |%args2);
+        my $res = $confLocal.function.( @messages, |%args2);
 
         note 'LLM response : ', $res if $echo;
 
