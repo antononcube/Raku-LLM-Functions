@@ -34,4 +34,12 @@ isa-ok $conf6.prompts, Positional;
 ## 7
 is-deeply $conf6.prompts, [$pre3,];
 
+## 8
+ok llm-configuration('ChatGPT', prompts => [$pre3, ]);
+
+## 9
+is-deeply
+        llm-configuration('ChatGPT', prompts => [$pre3, ]).Hash<name prompts>.List,
+        ('chatgpt',  [$pre3,]);
+
 done-testing;
