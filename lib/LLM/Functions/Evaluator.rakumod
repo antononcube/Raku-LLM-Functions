@@ -14,7 +14,7 @@ class LLM::Functions::Evaluator {
 
     #-------------------------------------------------------
     method prompt-texts-combiner($prompt, @texts, *%args) {
-        return [$prompt, |@texts].join($.conf.prompt-delimiter);
+        return [$prompt, |@texts].join($.conf.prompt-delimiter).trim;
     }
 
     #-------------------------------------------------------
@@ -96,7 +96,7 @@ class LLM::Functions::Evaluator {
         }
 
         # Make "full" prompt
-        my $prompt = $confLocal.prompts.join($confLocal.prompt-delimiter);
+        my $prompt = $confLocal.prompts.join($confLocal.prompt-delimiter).trim;
 
         note 'Full prompt : ', $prompt.raku if $echo;
 
