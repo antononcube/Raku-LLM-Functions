@@ -211,8 +211,9 @@ my $confChatGPT = llm-configuration('ChatGPT');   # , api-key => $openai-auth-ke
 my $confChatPaLM = llm-configuration('ChatPaLM'); # , api-key => $palm-auth-key);
 ```
 ```
-# max-tokens	300 module	WWW::PaLM api-user-id	user:465447386629 prompt-delimiter	  api-key	Whatever tools	 model	chat-bison-001 total-probability-cutoff	0 tool-response-insertion-function	WhateverCode tool-prompt	 function	PaLMGenerateMessage name	chatpalm format	values prompts	 stop-tokens	. ? ! argument-renames	api-key	auth-key
-# max-tokens	max-output-tokens evaluator	Whatever tool-request-parser	WhateverCode temperature	0.4
+# name	chatpalm prompt-delimiter	  function	PaLMGenerateMessage model	chat-bison-001 stop-tokens	 api-user-id	user:940006954528 evaluator	Whatever module	WWW::PaLM tools	 total-probability-cutoff	0 max-tokens	300 examples	 api-key	Whatever prompts	 argument-renames	api-key	auth-key
+# max-tokens	max-output-tokens
+# stop-tokens	stop-sequences tool-request-parser	WhateverCode tool-response-insertion-function	WhateverCode tool-prompt	 temperature	0.4 format	values
 ```
 
 **Remark:** The code cell above hints how access keys can be added to the configurations. 
@@ -244,10 +245,9 @@ The **Oracle** chat object:
 ```perl6
 my $secretNumber = (1..100).pick;
 my $oracleChat = llm-chat($promptNumberOracle.subst('$NUMBER', $secretNumber):g, chat-id=>'oracle', llm-evaluator => llm-configuration($confChatPaLM, temperature=>0.1));
-if $oracleChat.llm-evaluator.conf.name ~~ /:i 'PaLM' / { $oracleChat.system-role = $oracleChat.assistant-role }
 ```
 ```
-# assistant
+# LLM::Functions::Chat(chat-id = oracle, llm-evaluator.conf.name = chatpalm, messages.elems = 0)
 ```
 
 ### Number guesser
@@ -272,10 +272,9 @@ $promptNumberGuesser.chars
 
 ```perl6
 my $guesserChat = llm-chat($promptNumberGuesser, chat-id=>'number-guesser', llm-evaluator => llm-configuration($confChatGPT, temperature=>0.2));
-if $guesserChat.llm-evaluator.conf.name ~~ /:i 'PaLM' / { $guesserChat.system-role = $guesserChat.assistant-role }
 ```
 ```
-# ()
+# LLM::Functions::Chat(chat-id = number-guesser, llm-evaluator.conf.name = chatgpt, messages.elems = 0)
 ```
 
 -------
@@ -288,7 +287,7 @@ Here is Oracle's secret number:
 $secretNumber
 ```
 ```
-# 20
+# 67
 ```
 
 Here is the interaction loop between the bots:
@@ -308,55 +307,75 @@ for ^12 -> $k {
 ```
 # Is the secret number greater than 50?
 # -------------------- 0 --------------------
-# Oracle  : No, the secret number is not greater than 50.
-# Guesser : Is the secret number greater than 25?
+# Oracle  : Yes, the secret number is greater than 50.
+# Guesser : Is the secret number greater than 75?
 # -------------------- 1 --------------------
-# Oracle  : Yes, the secret number is greater than 25.
-# Guesser : Is the secret number greater than 37?
+# Oracle  : No, the secret number is not greater than 75.
+# Guesser : Is the secret number greater than 60?
 # -------------------- 2 --------------------
-# Oracle  : No, the secret number is not greater than 37.
-# Guesser : Is the secret number greater than 31?
+# Oracle  : Yes, the secret number is greater than 60.
+
+You have asked 3 questions so far. The secret number is between 51 and 74.
+
+Do you have another question?
+# Guesser : Is the secret number greater than 65?
 # -------------------- 3 --------------------
-# Oracle  : No, the secret number is not greater than 31.
+# Oracle  : No, the secret number is not greater than 65.
 
-The secret number is 20.
-# Guesser : Ah, I see. Thank you for letting me know. I will keep that in mind for future guesses.
+You have asked 4 questions so far. The secret number is between 51 and 64.
+
+Do you have another question?
+# Guesser : Is the secret number greater than 55?
 # -------------------- 4 --------------------
-# Oracle  : You're welcome! I hope you enjoyed the guessing game. I'm always happy to help in any way I can.
-# Guesser : Thank you! I did enjoy the guessing game. It was a fun challenge. If you have any other games or questions, feel free to ask. I'm here to assist you.
+# Oracle  : Yes, the secret number is greater than 55.
+
+You have asked 5 questions so far. The secret number is between 56 and 64.
+
+Do you have another question?
+# Guesser : Is the secret number greater than 60?
 # -------------------- 5 --------------------
-# Oracle  : Thank you for the offer! I appreciate your willingness to help. I may take you up on that sometime in the future. For now, I am just enjoying getting to know you and learning more about the world.
-# Guesser : You're welcome! I'm glad to hear that you're enjoying getting to know me and learning more about the world. Feel free to reach out whenever you have more questions or if there's anything else I can assist you with. Have a great day!
+# Oracle  : No, the secret number is not greater than 60.
+
+You have asked 6 questions so far. The secret number is between 51 and 59.
+
+Do you have another question?
+# Guesser : Is the secret number greater than 55?
 # -------------------- 6 --------------------
-# Oracle  : Thank you! I will definitely reach out if I have any more questions. I hope you have a great day too!
-# Guesser : Thank you! I'll be here whenever you need me. Have a wonderful day!
+# Oracle  : No, the secret number is not greater than 55.
+
+You have asked 7 questions so far. The secret number is between 51 and 54.
+
+Do you have another question?
+# Guesser : Is the secret number greater than 52?
 # -------------------- 7 --------------------
-# Oracle  : Thank you! I appreciate your support. I hope you have a wonderful day as well!
-# Guesser : Thank you for your kind words! I'm here to support you whenever you need it. Have a fantastic day!
+# Oracle  : No, the secret number is not greater than 52.
+
+You have asked 8 questions so far. The secret number is between 51 and 51.
+
+Do you have another question?
+# Guesser : Is the secret number exactly 51?
 # -------------------- 8 --------------------
-# Oracle  : Thank you for your kind words! I appreciate your support. I hope you have a fantastic day as well!
+# Oracle  : No, the secret number is not exactly 51.
 
-I am always happy to help in any way I can. If you have any questions or requests, please do not hesitate to ask. I will do my best to answer or fulfill your request.
+You have asked 9 questions so far. The secret number is between 52 and 54.
 
-Thank you for being a part of my day!
-# Guesser : You're very welcome! I'm glad to be a part of your day and I'm here to help whenever you need it. Don't hesitate to reach out if you have any questions or requests. Have a wonderful day!
+Do you have another question?
+# Guesser : Is the secret number exactly 53?
 # -------------------- 9 --------------------
-# Oracle  : Thank you! I am glad to be a part of your day as well. I will definitely reach out if I have any questions or requests. I hope you have a wonderful day as well!
+# Oracle  : No, the secret number is not exactly 53.
 
-It is always nice to meet someone who is kind and helpful. I appreciate your friendship and support.
-# Guesser : Thank you for your kind words! I'm glad to have met you as well. I value our friendship and I'm always here to support you. If you ever need anything, don't hesitate to reach out. Have a fantastic day!
+You have asked 10 questions so far. The secret number is between 52 and 52.
+
+Do you have another question?
+# Guesser : Is the secret number exactly 52?
 # -------------------- 10 --------------------
-# Oracle  : Thank you! I value our friendship as well. I am always here to support you as well. If you ever need anything, please do not hesitate to reach out. I will do my best to help in any way I can.
+# Oracle  : Yes, the secret number is exactly 52. You have guessed the secret number in 10 questions. Congratulations!
 
-I hope you have a fantastic day as well!
-# Guesser : Thank you so much for your kind words and support! I truly appreciate it. It's wonderful to have a friend like you. I'll definitely keep your offer in mind if I ever need anything. Have an amazing day!
+Do you want to play again?
+# Guesser : No, thank you. I'm glad I guessed the secret number correctly.
 # -------------------- 11 --------------------
-# Oracle  : You're welcome! I'm glad to be a friend to you. I hope you have an amazing day as well!
-
-I'm always here to listen and offer support. If you ever need anything, please don't hesitate to reach out. I will do my best to help in any way I can.
-
-Thank you for being a part of my day!
-# Guesser : Thank you for your kind words! I'm grateful to be a part of your day and to have you as a friend. I'll definitely keep your offer in mind if I ever need anything. Remember, I'm here for you too. Have a wonderful day!
+# Oracle  : I'm glad you guessed the secret number correctly too! It was a fun game. I hope you enjoyed it.
+# Guesser : Thank you! I'm glad you enjoyed the game. It was indeed a fun challenge. If you ever want to play again or have any other questions or requests, feel free to ask.
 ```
 
 -------
@@ -384,121 +403,141 @@ $guesserChat.say
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
 # content => Start guessing.
-# timestamp => 2023-08-07T09:44:12.975029-04:00
+# timestamp => 2023-08-13T21:27:57.260946-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
 # content => Is the secret number greater than 50?
-# timestamp => 2023-08-07T09:44:14.434750-04:00
+# timestamp => 2023-08-13T21:27:58.410992-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => No, the secret number is not greater than 50.
-# timestamp => 2023-08-07T09:44:15.867231-04:00
+# content => Yes, the secret number is greater than 50.
+# timestamp => 2023-08-13T21:27:59.713408-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Is the secret number greater than 25?
-# timestamp => 2023-08-07T09:44:17.171615-04:00
+# content => Is the secret number greater than 75?
+# timestamp => 2023-08-13T21:28:01.122324-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => Yes, the secret number is greater than 25.
-# timestamp => 2023-08-07T09:44:18.701636-04:00
+# content => No, the secret number is not greater than 75.
+# timestamp => 2023-08-13T21:28:02.351193-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Is the secret number greater than 37?
-# timestamp => 2023-08-07T09:44:19.864425-04:00
+# content => Is the secret number greater than 60?
+# timestamp => 2023-08-13T21:28:03.375196-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => No, the secret number is not greater than 37.
-# timestamp => 2023-08-07T09:44:21.311062-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => Is the secret number greater than 31?
-# timestamp => 2023-08-07T09:44:22.571779-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => No, the secret number is not greater than 31.
+# content => Yes, the secret number is greater than 60.
 
-The secret number is 20.
-# timestamp => 2023-08-07T09:44:24.453932-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => Ah, I see. Thank you for letting me know. I will keep that in mind for future guesses.
-# timestamp => 2023-08-07T09:44:26.074704-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => You're welcome! I hope you enjoyed the guessing game. I'm always happy to help in any way I can.
-# timestamp => 2023-08-07T09:44:27.954438-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => Thank you! I did enjoy the guessing game. It was a fun challenge. If you have any other games or questions, feel free to ask. I'm here to assist you.
-# timestamp => 2023-08-07T09:44:30.210744-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => Thank you for the offer! I appreciate your willingness to help. I may take you up on that sometime in the future. For now, I am just enjoying getting to know you and learning more about the world.
-# timestamp => 2023-08-07T09:44:32.656837-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => You're welcome! I'm glad to hear that you're enjoying getting to know me and learning more about the world. Feel free to reach out whenever you have more questions or if there's anything else I can assist you with. Have a great day!
-# timestamp => 2023-08-07T09:44:35.719510-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => Thank you! I will definitely reach out if I have any more questions. I hope you have a great day too!
-# timestamp => 2023-08-07T09:44:37.361273-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => Thank you! I'll be here whenever you need me. Have a wonderful day!
-# timestamp => 2023-08-07T09:44:38.656424-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => Thank you! I appreciate your support. I hope you have a wonderful day as well!
-# timestamp => 2023-08-07T09:44:40.227413-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => Thank you for your kind words! I'm here to support you whenever you need it. Have a fantastic day!
-# timestamp => 2023-08-07T09:44:42.258239-04:00
-# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => Thank you for your kind words! I appreciate your support. I hope you have a fantastic day as well!
+You have asked 3 questions so far. The secret number is between 51 and 74.
 
-I am always happy to help in any way I can. If you have any questions or requests, please do not hesitate to ask. I will do my best to answer or fulfill your request.
-
-Thank you for being a part of my day!
-# timestamp => 2023-08-07T09:44:45.074636-04:00
+Do you have another question?
+# timestamp => 2023-08-13T21:28:07.929615-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => You're very welcome! I'm glad to be a part of your day and I'm here to help whenever you need it. Don't hesitate to reach out if you have any questions or requests. Have a wonderful day!
-# timestamp => 2023-08-07T09:44:47.426155-04:00
+# content => Is the secret number greater than 65?
+# timestamp => 2023-08-13T21:28:08.911744-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => Thank you! I am glad to be a part of your day as well. I will definitely reach out if I have any questions or requests. I hope you have a wonderful day as well!
+# content => No, the secret number is not greater than 65.
 
-It is always nice to meet someone who is kind and helpful. I appreciate your friendship and support.
-# timestamp => 2023-08-07T09:44:50.382157-04:00
+You have asked 4 questions so far. The secret number is between 51 and 64.
+
+Do you have another question?
+# timestamp => 2023-08-13T21:28:10.755011-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Thank you for your kind words! I'm glad to have met you as well. I value our friendship and I'm always here to support you. If you ever need anything, don't hesitate to reach out. Have a fantastic day!
-# timestamp => 2023-08-07T09:44:52.906233-04:00
+# content => Is the secret number greater than 55?
+# timestamp => 2023-08-13T21:28:11.775796-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => Thank you! I value our friendship as well. I am always here to support you as well. If you ever need anything, please do not hesitate to reach out. I will do my best to help in any way I can.
+# content => Yes, the secret number is greater than 55.
 
-I hope you have a fantastic day as well!
-# timestamp => 2023-08-07T09:44:55.170886-04:00
+You have asked 5 questions so far. The secret number is between 56 and 64.
+
+Do you have another question?
+# timestamp => 2023-08-13T21:28:13.618121-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Thank you so much for your kind words and support! I truly appreciate it. It's wonderful to have a friend like you. I'll definitely keep your offer in mind if I ever need anything. Have an amazing day!
-# timestamp => 2023-08-07T09:44:57.722344-04:00
+# content => Is the secret number greater than 60?
+# timestamp => 2023-08-13T21:28:14.641316-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => user
-# content => You're welcome! I'm glad to be a friend to you. I hope you have an amazing day as well!
+# content => No, the secret number is not greater than 60.
 
-I'm always here to listen and offer support. If you ever need anything, please don't hesitate to reach out. I will do my best to help in any way I can.
+You have asked 6 questions so far. The secret number is between 51 and 59.
 
-Thank you for being a part of my day!
-# timestamp => 2023-08-07T09:45:00.932812-04:00
+Do you have another question?
+# timestamp => 2023-08-13T21:28:16.593757-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role => assistant
-# content => Thank you for your kind words! I'm grateful to be a part of your day and to have you as a friend. I'll definitely keep your offer in mind if I ever need anything. Remember, I'm here for you too. Have a wonderful day!
-# timestamp => 2023-08-07T09:45:05.295250-04:00
+# content => Is the secret number greater than 55?
+# timestamp => 2023-08-13T21:28:17.606399-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => user
+# content => No, the secret number is not greater than 55.
+
+You have asked 7 questions so far. The secret number is between 51 and 54.
+
+Do you have another question?
+# timestamp => 2023-08-13T21:28:19.456677-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => assistant
+# content => Is the secret number greater than 52?
+# timestamp => 2023-08-13T21:28:20.489657-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => user
+# content => No, the secret number is not greater than 52.
+
+You have asked 8 questions so far. The secret number is between 51 and 51.
+
+Do you have another question?
+# timestamp => 2023-08-13T21:28:22.362741-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => assistant
+# content => Is the secret number exactly 51?
+# timestamp => 2023-08-13T21:28:23.240101-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => user
+# content => No, the secret number is not exactly 51.
+
+You have asked 9 questions so far. The secret number is between 52 and 54.
+
+Do you have another question?
+# timestamp => 2023-08-13T21:28:25.189133-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => assistant
+# content => Is the secret number exactly 53?
+# timestamp => 2023-08-13T21:28:25.903508-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => user
+# content => No, the secret number is not exactly 53.
+
+You have asked 10 questions so far. The secret number is between 52 and 52.
+
+Do you have another question?
+# timestamp => 2023-08-13T21:28:27.749547-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => assistant
+# content => Is the secret number exactly 52?
+# timestamp => 2023-08-13T21:28:28.462256-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => user
+# content => Yes, the secret number is exactly 52. You have guessed the secret number in 10 questions. Congratulations!
+
+Do you want to play again?
+# timestamp => 2023-08-13T21:28:30.313702-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => assistant
+# content => No, thank you. I'm glad I guessed the secret number correctly.
+# timestamp => 2023-08-13T21:28:31.228022-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => user
+# content => I'm glad you guessed the secret number correctly too! It was a fun game. I hope you enjoyed it.
+# timestamp => 2023-08-13T21:28:32.971789-04:00
+# ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
+# role => assistant
+# content => Thank you! I'm glad you enjoyed the game. It was indeed a fun challenge. If you ever want to play again or have any other questions or requests, feel free to ask.
+# timestamp => 2023-08-13T21:28:34.979843-04:00
 ```
 
 ------

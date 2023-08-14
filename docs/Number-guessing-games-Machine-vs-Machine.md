@@ -234,7 +234,6 @@ The **Oracle** chat object:
 ```perl6
 my $secretNumber = (1..100).pick;
 my $oracleChat = llm-chat($promptNumberOracle.subst('$NUMBER', $secretNumber):g, chat-id=>'oracle', llm-evaluator => llm-configuration($confChatPaLM, temperature=>0.1));
-if $oracleChat.llm-evaluator.conf.name ~~ /:i 'PaLM' / { $oracleChat.system-role = $oracleChat.assistant-role }
 ```
 
 ### Number guesser
@@ -256,7 +255,6 @@ $promptNumberGuesser.chars
 
 ```perl6
 my $guesserChat = llm-chat($promptNumberGuesser, chat-id=>'number-guesser', llm-evaluator => llm-configuration($confChatGPT, temperature=>0.2));
-if $guesserChat.llm-evaluator.conf.name ~~ /:i 'PaLM' / { $guesserChat.system-role = $guesserChat.assistant-role }
 ```
 
 -------
