@@ -115,13 +115,19 @@ multi sub llm-configuration($spec, *%args) {
     return $resObj;
 }
 
+multi sub llm-configuration(LLM::Functions::Evaluator $evlr, *%args) {
+    return llm-configuration($evlr.conf, |%args);
+}
+
 multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
 
     # Make the corresponding configuration hash and modify it
     my %newConf = $conf.Hash;
+    my @knownKeys = %newConf.keys;
 
     # Nice and concise but does not work because Raku containerizes the array(s)
     %newConf = merge-hash(%newConf, %args);
+    %newConf = %newConf.grep({ $_.key ∈ @knownKeys });
 
     # Create object
     my $newConf = LLM::Functions::Configuration.new(|%newConf);
@@ -354,30 +360,42 @@ multi sub llm-chat(:$prompt = '', *%args) {
     # Get evaluator spec
     my $spec = %args<llm-evaluator> // %args<llm-configuration> // %args<conf> // Whatever;
 
+    # Default evaluator
+    my $evaluatorClass = %args<llm-evaluator-class> // Whatever;
+
+    die 'The value of llm-evaluator-class is to be Whatever or of the type LLM::Functions::EvaluatorChat.'
+    unless $evaluatorClass.isa(Whatever) || $evaluatorClass ~~ LLM::Functions::EvaluatorChat;
+
     # Make evaluator object
     my $llmEvalObj = do given $spec {
         when $_.isa(Whatever) {
-            LLM::Functions::EvaluatorChat.new(
-                    conf => llm-configuration('ChatPaLM', prompts => $prompt),
-                    formatron => %args<form> // %args<formatron>);
+
+            # Make Configuration object
+            my $conf = llm-configuration('ChatGPT', prompts => $prompt, |%args);
+
+            # Make Evaluator object
+            LLM::Functions::EvaluatorChat.new(:$conf, formatron => %args<form> // %args<formatron>);
         }
 
-        when $_.isa(LLM::Functions::Configuration) {
-            LLM::Functions::EvaluatorChat.new(
-                    conf => llm-configuration($_, prompts => $prompt),
-                    formatron => %args<form> // %args<formatron>);
-        }
+        when $_.isa(LLM::Functions::Configuration) || $_.isa(LLM::Functions::Evaluator) || $_ ~~ Str:D {
 
-        when $_.isa(LLM::Functions::Evaluator) {
-            LLM::Functions::EvaluatorChat.new(
-                    conf => llm-configuration($_.conf, prompts => $prompt),
-                    formatron => %args<form> // %args<formatron> // $_.formatron);
-        }
+            # Make Configuration object
+            my $conf = llm-configuration($_, prompts => $prompt, |%args);
 
-        when $_ ~~ Str:D {
-            LLM::Functions::EvaluatorChat.new(
-                    conf => llm-configuration($_, prompts => $prompt),
-                    formatron => %args<form> // %args<formatron>);
+            # Obtain Evaluator class
+            if $evaluatorClass.isa(Whatever) {
+                if $conf.name ~~ /:i palm / {
+                    $conf = llm-configuration('ChatPaLM',
+                                    |$conf.Hash.grep({ $_.key ∈ <name prompts examples temperature max-tokens stop-tokens api-key api-user-id> }).Hash);
+
+                    $evaluatorClass = LLM::Functions::EvaluatorChatPaLM
+                } else {
+                    $evaluatorClass = LLM::Functions::EvaluatorChat;
+                }
+            }
+
+            # Make Evaluator object
+            $evaluatorClass.new(:$conf, formatron => %args<form> // %args<formatron>);
         }
 
         default {
