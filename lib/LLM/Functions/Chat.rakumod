@@ -105,8 +105,14 @@ class LLM::Functions::Chat {
     #-------------------------------------------------------
     method say(:$delim = ('⸺' x 60)) {
         say "Chat: { self.chat-id }";
+
         say $delim;
-        say "Prompts: { self.llm-evaluator.conf.prompts }";
+
+        my $prompt = self.llm-evaluator.conf.prompts;
+        if ! $prompt { $prompt = self.llm-evaluator.context; }
+
+        say "Prompts: { $prompt }";
+
         if self.llm-evaluator.conf.examples {
             say $delim;
             if self.llm-evaluator.conf.examples ~~ Positional {
@@ -116,6 +122,7 @@ class LLM::Functions::Chat {
                 say "Examples: { self.llm-evaluator.conf.examples }";
             }
         }
+
         for self.messages -> %h {
             say $delim;
             .say for <role content timestamp>.map({ $_ => %h{$_} });
