@@ -1,14 +1,10 @@
 use v6.d;
 
 use LLM::Functions::Evaluator;
+use LLM::Functions::Configuration;
 
 class LLM::Functions::EvaluatorChat
         is LLM::Functions::Evaluator {
-
-    submethod TWEAK {
-        without self.conf { self.conf = Whatever; }
-        without self.formatron { self.formatron = 'Str'; }
-    }
 
     has $.context is rw = Whatever;
     has $.examples is rw = Whatever;
@@ -17,6 +13,33 @@ class LLM::Functions::EvaluatorChat
     has Str $.assitant-role is rw = 'assistant';
     has Str $.system-role is rw = 'system';
 
+    #------------------------------------------------------
+    submethod TWEAK {
+        without self.conf { self.conf = Whatever; }
+        without self.formatron { self.formatron = 'Str'; }
+
+        if self.conf ~~ LLM::Functions::Configuration && self.conf.prompts.all ~~ Str {
+            my $contextLocal = self.conf.prompts.join(self.conf.prompt-delimiter);
+            self.context = $contextLocal;
+            self.conf.prompts = Empty;
+        }
+    }
+
+    #------------------------------------------------------
+    method combine-role-messages(@messages where @messages.all ~~ Pair) {
+        my @resMessages = [@messages.head, ];
+        for @messages.tail(*-1) -> $p {
+            if $p.key eq @resMessages.tail.key {
+                my $l = @resMessages.pop;
+                @resMessages.push( Pair.new($p.key, [$l.value, $p.value].join(self.conf.prompt-delimiter)) );
+            } else {
+                @resMessages.push($p)
+            }
+        }
+        return @resMessages;
+    }
+
+    #------------------------------------------------------
     method process-examples(@messages, *%args) {
         my $examplesLocal = %args<examples> // self.examples;
 
@@ -32,6 +55,7 @@ class LLM::Functions::EvaluatorChat
         return @messages;
     }
 
+    #------------------------------------------------------
     method prompt-texts-combiner($prompt, @texts, *%args) {
 
         my @messages = do given @texts {
@@ -57,6 +81,9 @@ class LLM::Functions::EvaluatorChat
         if $prompt {
             @messages .= prepend((self.user-role => $prompt));
         }
+
+        # Combine role messages
+        @messages = self.combine-role-messages(@messages);
 
         # Process context
         my $contextLocal = @messages.Hash<context> // %args<context> // self.context;
