@@ -11,21 +11,29 @@ use Test;
 
 plan *;
 
+#===========================================================
 ## 1
+#===========================================================
 my $prompt1 = 'You are a gem expert and you give concise answers.';
 
 ok llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatPaLM', prompts => $prompt1);
 
+#===========================================================
 ## 2
+#===========================================================
 my $chat2 = llm-chat(chat-id => 'gem-expert-talk', llm-evaluator => 'ChatPaLM', prompts => $prompt1);
 is $chat2.llm-evaluator.conf.name.lc, 'chatpalm';
 
+#===========================================================
 ## 3
+#===========================================================
 my $chat3 = $chat2.clone;
 $chat3.messages.push($chat3.make-message(role => 'user', message => 'Another one.'));
 is $chat3.messages.elems > $chat2.messages.elems, True;
 
+#===========================================================
 ## 4
+#===========================================================
 my $prompt4 = 'This assistant is a gem expert and gives concise answers.';
 my $llmEvalObj4 = LLM::Functions::EvaluatorChatPaLM.new(conf => llm-configuration('PaLM-Chat', prompts => $prompt4));
 
@@ -36,28 +44,35 @@ is-deeply
         $chat4a.llm-evaluator.conf.Hash.grep({ $_.key ∉ <api-user-id> }).Hash,
         $chat4b.llm-evaluator.conf.Hash.grep({ $_.key ∉ <api-user-id> }).Hash;
 
+#===========================================================
 ## 5
+#===========================================================
 my $prompt5 = 'You are an interviewer from a magazine about computer programming';
 my $llmEvalObj5 = LLM::Functions::EvaluatorChat.new(conf => llm-configuration('ChatGPT', prompts => $prompt5));
 
 ok llm-chat($chat2, chat-id => 'changed', llm-evaluator => $llmEvalObj5);
 
+#===========================================================
 # 6
+#===========================================================
 my $chat6 = llm-chat($chat2, chat-id => 'changed', llm-evaluator => $llmEvalObj5);
 
 is-deeply
         ($chat6.chat-id, $chat6.llm-evaluator.conf.name, $chat6.llm-evaluator.conf.prompts),
         ('changed', 'chatgpt', [$prompt5,]);
 
-
+#===========================================================
 # 7
+#===========================================================
 my $chat7 = llm-chat(conf => 'PaLM');
 
 is $chat7.llm-evaluator.^name,
         LLM::Functions::EvaluatorChatPaLM.^name,
         'If the first agument matches /:i PaLM / then the LLM-evaluator is expected to be EvaluatorChatPaLM';
 
+#===========================================================
 ## 8
+#===========================================================
 my $conf8 = llm-configuration(
         'ChatPaLM',
         prompts => "You are an awesome haiku writer.",
@@ -80,5 +95,30 @@ my $chat8b = llm-chat(
         api-user-id => 'user');
 
 is-deeply $chat8a, $chat8b;
+
+#===========================================================
+# 9
+#===========================================================
+my $prompt9 = q:to/END/;
+You are playing a guessing game.
+You have the secret number $NUMBER.
+You say $NUMBER in answers only if the questions has $NUMBER in it.
+If the number guess is smaller than $NUMBER you say "smaller" or a similar phrase;
+If the number guess is greater than $NUMBER you say "greater" or a similar phrase;
+If the number guess is exactly as $NUMBER you say "exact" or a similar phrase;
+You can say what is the approximate range in multiples of 1000 if asked.
+You say $NUMBER if the user says he or she is giving up.
+You can add taunting to your answers.
+Every 3-5 answers you can tell that the number of questions is supposed to be 12.
+END
+
+my $secretNumber = 67;
+
+my $chat9 = llm-chat($prompt9.subst('$NUMBER', $secretNumber):g, chat-id=>'oracle', llm-evaluator => llm-configuration('ChatPaLM', temperature=>0.1));
+
+is $chat9.llm-evaluator.^name,
+        LLM::Functions::EvaluatorChatPaLM.^name,
+        'The evaluator object of a number oracle is EvaluatorChatPaLM';
+
 
 done-testing;
