@@ -14,10 +14,10 @@ plan *;
 ## 1
 my $prompt1 = 'You are a gem expert and you give concise answers.';
 
-ok llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatPaLM', :$prompt1);
+ok llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatPaLM', prompts => $prompt1);
 
 ## 2
-my $chat2 = llm-chat(chat-id => 'gem-expert-talk', llm-evaluator => 'ChatPaLM', :$prompt1);
+my $chat2 = llm-chat(chat-id => 'gem-expert-talk', llm-evaluator => 'ChatPaLM', prompts => $prompt1);
 is $chat2.llm-evaluator.conf.name.lc, 'chatpalm';
 
 ## 3
@@ -27,14 +27,14 @@ is $chat3.messages.elems > $chat2.messages.elems, True;
 
 ## 4
 my $prompt4 = 'This assistant is a gem expert and gives concise answers.';
-my $llmEvalObj4 = LLM::Functions::EvaluatorChat.new(conf => llm-configuration('PaLM-Chat', prompts => $prompt4));
+my $llmEvalObj4 = LLM::Functions::EvaluatorChatPaLM.new(conf => llm-configuration('PaLM-Chat', prompts => $prompt4));
 
 my $chat4a = LLM::Functions::Chat.new(llm-evaluator => $llmEvalObj4, chat-id => 'new-chat');
-my $chat4b = llm-chat(prompt => $prompt4, conf => 'PaLM-Chat', chat-id => 'new-chat');
+my $chat4b = llm-chat(prompts => $prompt4, conf => 'PaLM-Chat', chat-id => 'new-chat');
 
 is-deeply
-        $chat4a.llm-evaluator.conf.Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
-        $chat4b.llm-evaluator.conf.Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
+        $chat4a.llm-evaluator.conf.Hash.grep({ $_.key ∉ <api-user-id> }).Hash,
+        $chat4b.llm-evaluator.conf.Hash.grep({ $_.key ∉ <api-user-id> }).Hash;
 
 ## 5
 my $prompt5 = 'You are an interviewer from a magazine about computer programming';
@@ -48,5 +48,37 @@ my $chat6 = llm-chat($chat2, chat-id => 'changed', llm-evaluator => $llmEvalObj5
 is-deeply
         ($chat6.chat-id, $chat6.llm-evaluator.conf.name, $chat6.llm-evaluator.conf.prompts),
         ('changed', 'chatgpt', [$prompt5,]);
+
+
+# 7
+my $chat7 = llm-chat(conf => 'PaLM');
+
+is $chat7.llm-evaluator.^name,
+        LLM::Functions::EvaluatorChatPaLM.^name,
+        'If the first agument matches /:i PaLM / then the LLM-evaluator is expected to be EvaluatorChatPaLM';
+
+## 8
+my $conf8 = llm-configuration(
+        'ChatPaLM',
+        prompts => "You are an awesome haiku writer.",
+        examples => [
+            'Write a haiku about Google Photos.' => "Google Photos, my friend\nA journey of a lifetime\nCaptured in pixels"
+        ],
+        temperature => 0.5,
+        api-user-id => 'user');
+
+my $llmEvalObj8 = LLM::Functions::EvaluatorChatPaLM.new(conf => $conf8);
+
+my $chat8a = LLM::Functions::Chat.new(
+        chat-id => 'haiku-talk',
+        llm-evaluator => $llmEvalObj8);
+
+my $chat8b = llm-chat(
+        prompts => "You are an awesome haiku writer.",
+        chat-id => 'haiku-talk',
+        llm-evaluator => $conf8,
+        api-user-id => 'user');
+
+is-deeply $chat8a, $chat8b;
 
 done-testing;
