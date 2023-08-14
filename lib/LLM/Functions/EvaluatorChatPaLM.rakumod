@@ -8,45 +8,18 @@ class LLM::Functions::EvaluatorChatPaLM
 
     submethod TWEAK {
         self.system-role = 'context';
-        $!examples = self.conf.examples // Whatever;
     }
 
-    has $.examples is rw = Whatever;
+    method process-examples(@messages, *%args) {
+        my $examplesLocal = @messages.Hash<examples> // %args<examples> // self.examples;
 
-    # In the terminology of PaLM the first argument, $prompt, is a "context".
-    method prompt-texts-combiner($prompt, @texts, *%args) {
-        my @messages = do given @texts {
-            when $_.all ~~ Str {
-                (self.user-role X=> @texts);
-            }
-            when $_.all ~~ Pair {
-                @texts;
-            }
-
-            when $_.all ~~ Map {
-                @texts.map({ $_<role> => $_<content> }).Array;
-            }
-
-            default {
-                die 'Unknown form of the second argument (@texts).';
-            }
-        };
-
-        @messages = @messages.grep({ $_.key ne 'examples' });
-
-        my $examples = @messages.Hash<examples> // %args<examples> // $!examples;
-
-        if !$examples.isa(Whatever) {
+        if !$examplesLocal.isa(Whatever) {
             die "When examples spec is provied it is expected to be a Positional of pairs."
-            unless $examples ~~ Positional && $examples.all ~~ Pair;
+            unless $examplesLocal ~~ Positional && $examplesLocal.all ~~ Pair;
 
-            @messages = @messages.push(:$examples);
+            @messages .= grep({ $_.key ne 'examples' }).prepend((examples => $examplesLocal));
         }
 
-        if $prompt {
-            return [self.system-role => $prompt, |@messages];
-        } else {
-            return @messages;
-        }
+        return @messages;
     }
 }
