@@ -10,7 +10,7 @@ use Test;
 plan *;
 
 ## 1
-ok llm-example-function(<finger hand> => <hand arm>, llm-evaluator => 'palm')('foot');
+ok llm-example-function(<finger hand> => <hand arm>, llm-evaluator => 'OpenAI')('foot');
 
 ## 2
 isa-ok llm-example-function('<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }')('<| 23->3, G->33, T -> R5|>'), Str;
@@ -28,6 +28,6 @@ isa-ok llm-example-function({ "crocodile" => "grasshopper", "fox" => "cardinal" 
 is llm-example-function((1 .. 4) Z=> 11 «*« (1 .. 4))(8).trim, '88';
 
 ## 6
-is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'openai', form => { $_.trim.Int })(8), 88;
+is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'OpenAI', form => { $_.trim.Int })(8), 88;
 
 done-testing;

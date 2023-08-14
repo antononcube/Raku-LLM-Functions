@@ -1,0 +1,34 @@
+use v6.d;
+
+use lib '.';
+use lib './lib';
+
+use LLM::Functions;
+use Text::SubParsers;
+
+use Test;
+
+plan *;
+
+## 1
+ok llm-example-function(<finger hand> => <hand arm>, llm-evaluator => 'ChatPaLM')('foot');
+
+## 2
+isa-ok llm-example-function('<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }')('<| 23->3, G->33, T -> R5|>', e => 'ChatPaLM'), Str;
+
+## 3
+is-deeply
+        llm-example-function('<| A->3, 4->K1 |>' => '{ "A":3, "4":"K1" }', form => sub-parser('JSON', :!drop), e => 'ChatPaLM')('<| 23->3, G->33, T -> R5|>'),
+        ${"23" => 3, :G(33), :T("R5")};
+
+## 4
+isa-ok llm-example-function({ "crocodile" => "grasshopper", "fox" => "cardinal" }, hint => 'animal colors', e => 'ChatPaLM')('raccoon'),
+        Str;
+
+## 5
+is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'ChatPaLM')(8).trim, '88';
+
+## 6
+is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'ChatPaLM', form => { $_.trim.Int })(8), 88;
+
+done-testing;
