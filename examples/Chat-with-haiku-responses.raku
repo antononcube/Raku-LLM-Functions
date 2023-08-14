@@ -27,11 +27,11 @@ my $chat = LLM::Functions::Chat.new(llm-evaluator => $llmEvalObj, chat-id => 'ne
 my $productName = 'kettlebell weights';
 
 # Evaluate a message
-say $chat.eval("Write a cool haiku for $productName.");
+say $chat.eval("Write a cool haiku for $productName."):!echo;
 
 # Evaluate anotherR message
 say '-' x 120;
-say $chat.eval("Please redo it for a general, training device.");
+say $chat.eval("Please redo it for a general, training device."):!echo;
 
 # Show the whole chat
 say '=' x 120;
