@@ -58,8 +58,8 @@ ok llm-chat($chat2, chat-id => 'changed', llm-evaluator => $llmEvalObj5);
 my $chat6 = llm-chat($chat2, chat-id => 'changed', llm-evaluator => $llmEvalObj5);
 
 is-deeply
-        ($chat6.chat-id, $chat6.llm-evaluator.conf.name, $chat6.llm-evaluator.conf.prompts),
-        ('changed', 'chatgpt', [$prompt5,]);
+        ($chat6.chat-id, $chat6.llm-evaluator.conf.name, $chat6.llm-evaluator.conf.prompts, $chat6.llm-evaluator.context),
+        ('changed', 'chatgpt', [], $prompt5);
 
 #===========================================================
 # 7
