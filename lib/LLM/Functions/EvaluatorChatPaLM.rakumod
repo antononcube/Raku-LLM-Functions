@@ -8,7 +8,6 @@ class LLM::Functions::EvaluatorChatPaLM
 
     submethod TWEAK {
         self.system-role = 'context';
-        self.conf.evaluator = self;
         $!examples = self.conf.examples // Whatever;
     }
 
