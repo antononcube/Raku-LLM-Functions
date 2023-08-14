@@ -179,23 +179,32 @@ multi sub llm-evaluator(*%args) {
 
 multi sub llm-evaluator($llm-evaluator is copy, *%args) {
 
+    # Default evaluator class
+    my $evaluatorClass = %args<llm-evaluator-class>:exists ?? %args<llm-evaluator-class> !! Whatever;
+    if $evaluatorClass.isa(Whatever) { $evaluatorClass = LLM::Functions::Evaluator; }
+
+    die 'The value of llm-evaluator-class is expected to be Whatever or of type LLM::Functions::Evaluator.'
+    unless $evaluatorClass ~~ LLM::Functions::Evaluator;
+
+    # Separate configuration from evaluator options
     my @attrConf = LLM::Functions::Configuration.^attribute_table.values>>.name.map({ $_.substr(2) });
 
     my %argsConf = %args.grep({ $_.key ∈ @attrConf });
-    my %argsEvlr = %args.grep({ $_.key ∉ %argsConf.keys });
+    my %argsEvlr = %args.grep({ $_.key ∉ %argsConf.keys && $_.key ne 'llm-evaluator-class' });
 
+    # Create evaluator object
     $llm-evaluator = do given $llm-evaluator {
 
         when Whatever {
-            LLM::Functions::Evaluator.new(conf => llm-configuration('openai', |%argsConf), |%argsEvlr);
+            $evaluatorClass.new(conf => llm-configuration('openai', |%argsConf), |%argsEvlr);
         }
 
         when WhateverCode {
-            LLM::Functions::Evaluator.new(conf => llm-configuration('openai', |%argsConf), |%argsEvlr);
+            $evaluatorClass.new(conf => llm-configuration('openai', |%argsConf), |%argsEvlr);
         }
 
         when $_ ~~ Str:D {
-            llm-evaluator(llm-configuration($_, |%argsConf), |%argsEvlr);
+            llm-evaluator(llm-configuration($_, |%argsConf), |%argsEvlr, llm-evaluator-class => %args<llm-evaluator-class> // Whatever);
         }
 
         when $_ ~~ LLM::Functions::Configuration {
@@ -203,11 +212,9 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
             my $conf = $_.clone;
 
             if $conf.evaluator.isa(Whatever) {
-
-                LLM::Functions::Evaluator.new(:$conf, |%argsEvlr);
+                $evaluatorClass.new(:$conf, |%argsEvlr);
 
             } else {
-
                 die 'The configuration attribute .evaluator is expected to be of type if LLM::Functions::Evaluator or Whatever.'
                 unless $conf.evaluator ~~ LLM::Functions::Evaluator;
 
@@ -289,10 +296,16 @@ multi sub llm-function(&queryFunc,
     $llm-evaluator.conf.prompts.append('');
 
     return -> **@args, *%args {
+        # Get the named arguments for the query function
         my %args2 = %args.grep({ $_.key ∉ <prompts> && $_.key ∈ @queryFuncParamNames }).Hash;
-        my $prompt = &queryFunc(|@args, |%args2);
-        my $text = $llm-evaluator.conf.prompts[*- 1] = $prompt;
+
+        # Evaluate the query function with concrete arguments
+        my $text = &queryFunc(|@args, |%args2);
+
+        # Get the named arguments for the LLM evaluator
         my %args3 = %args.grep({ $_.key ∉ <prompts> && $_.key ∉ @queryFuncParamNames }).Hash;
+
+        # LMM-evaluate
         $llm-evaluator.eval($text, |%args3)
     };
 }
@@ -327,14 +340,32 @@ multi sub llm-example-function(@pairs,
                                :e(:$llm-evaluator) is copy = Whatever) {
 
     if @pairs.all ~~ Pair {
-        my $pre = @pairs.map({ "Input: { $_.key.Str } \n Output: { $_.value.Str } \n" }).join("\n");
 
-        if $hint ~~ Str && $hint.chars > 0 {
-            $hint = $hint ~~ /<punct> $/ ?? $hint !! $hint ~ '.';
-            $pre = "$hint\n\n$pre";
+        if $llm-evaluator ~~ LLM::Functions::EvaluatorChatPaLM {
+
+            given $hint {
+                when $_ ~~ Str && $_.chars > 0 {
+                    $llm-evaluator.context = $hint;
+                }
+                when Whatever {
+                    $llm-evaluator.context = 'You are a predictor trained with input-output examples.';
+                }
+            }
+
+            $llm-evaluator.examples = @pairs.map( -> $x { "Input: { $x.key.Str }" => "Output: { $x.value.Str }" }).Array;
+
+            return llm-function({ "\nInput: $_\nOutput:" }, :$formatron, :$llm-evaluator);
+
+        } else {
+            my $pre = @pairs.map({ "Input: { $_.key.Str } \n Output: { $_.value.Str } \n" }).join("\n");
+
+            if $hint ~~ Str && $hint.chars > 0 {
+                $hint = $hint ~~ /<punct> $/ ?? $hint !! $hint ~ '.';
+                $pre = "$hint\n\n$pre";
+            }
+
+            return llm-function({ $pre ~ "\nInput: $_\nOutput:" }, :$formatron, :$llm-evaluator);
         }
-
-        return llm-function({ $pre ~ "\nInput: $_\nOutput:" }, :$formatron, :$llm-evaluator);
     }
 
     die "The first argument is expected to be a list of pairs or a pair of two positionals with the same length.";
@@ -360,8 +391,8 @@ multi sub llm-chat(:$prompt = '', *%args) {
     # Get evaluator spec
     my $spec = %args<llm-evaluator> // %args<llm-configuration> // %args<conf> // Whatever;
 
-    # Default evaluator
-    my $evaluatorClass = %args<llm-evaluator-class> // Whatever;
+    # Default evaluator class
+    my $evaluatorClass = %args<llm-evaluator-class>:exists ?? %args<llm-evaluator-class> !! Whatever;
 
     die 'The value of llm-evaluator-class is to be Whatever or of the type LLM::Functions::EvaluatorChat.'
     unless $evaluatorClass.isa(Whatever) || $evaluatorClass ~~ LLM::Functions::EvaluatorChat;
