@@ -18,17 +18,31 @@ isa-ok llm-example-function('<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }')('<| 23->3, G
 
 ## 3
 is-deeply
-        llm-example-function('<| A->3, 4->K1 |>' => '{ "A":3, "4":"K1" }', form => sub-parser('JSON', :!drop), e => 'ChatPaLM')('<| 23->3, G->33, T -> R5|>'),
+        llm-example-function(
+                '<| A->3, 4->K1 |>' => '{ "A":3, "4":"K1" }',
+                form => sub-parser('JSON', :!drop), e => 'PaLM')('<| 23->3, G->33, T -> R5|>'),
         ${"23" => 3, :G(33), :T("R5")};
 
 ## 4
-isa-ok llm-example-function({ "crocodile" => "grasshopper", "fox" => "cardinal" }, hint => 'animal colors', e => 'ChatPaLM')('raccoon'),
-        Str;
+my $evlr4 = LLM::Functions::EvaluatorChatPaLM.new(conf => llm-configuration('ChatPaLM'));
+is-deeply
+        llm-example-function(
+                '<| A->3, 4->K1 |>' => '{ "A":3, "4":"K1" }',
+                form => sub-parser('JSON', :!drop), e => $evlr4)('<| 23->3, G->33, T -> R5|>'),
+        ${"23" => 3, :G(33), :T("R5")};
+
 
 ## 5
-is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'ChatPaLM')(8).trim, '88';
+isa-ok
+        llm-example-function(
+                { "crocodile" => "grasshopper", "fox" => "cardinal" },
+                hint => 'You are a predictor of animal colors. Use as few words as possible.', e => 'ChatPaLM')('raccoon'),
+        Str;
 
 ## 6
-is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'ChatPaLM', form => { $_.trim.Int })(8), 88;
+is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'PaLM')(8).trim, '88';
+
+## 7
+is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => $evlr4, form => { $_.trim.Int })(8), 88;
 
 done-testing;
