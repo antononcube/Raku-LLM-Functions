@@ -344,6 +344,8 @@ multi sub llm-example-function(@pairs,
 
     if @pairs.all ~~ Pair {
 
+        $llm-evaluator = llm-evaluator($llm-evaluator);
+
         if $llm-evaluator ~~ LLM::Functions::EvaluatorChatPaLM {
 
             given $hint {
@@ -355,9 +357,9 @@ multi sub llm-example-function(@pairs,
                 }
             }
 
-            $llm-evaluator.examples = @pairs.map( -> $x { "Input: { $x.key.Str }" => "Output: { $x.value.Str }" }).Array;
+            $llm-evaluator.examples = @pairs.map( -> $x { "{ $x.key.Str }" => "{ $x.value.Str }" }).Array;
 
-            return llm-function({ "\nInput: $_\nOutput:" }, :$formatron, :$llm-evaluator);
+            return llm-function({ "$_" }, :$formatron, :$llm-evaluator);
 
         } else {
             my $pre = @pairs.map({ "Input: { $_.key.Str } \n Output: { $_.value.Str } \n" }).join("\n");
