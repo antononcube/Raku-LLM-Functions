@@ -264,10 +264,13 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
 
 #-----------------------------------------------------------
 #| Represents a template for a large language model(LLM) prompt.
+#| C<$prompt> -- A string or a function (optional.)
+#| C<:form(:$formatron)> -- Specification how the output to processed.
+#| C<:e(:$llm-evaluator)> -- Evaluator object specification.
 our proto llm-function(|) is export {*}
 
 # No positional args
-multi sub llm-function(:$form = 'Str',
+multi sub llm-function(:form(:$formatron) = 'Str',
                        :e(:$llm-evaluator) is copy = Whatever) {
     return llm-function('', :$llm-evaluator);
 }
