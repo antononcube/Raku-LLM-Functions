@@ -383,7 +383,11 @@ multi sub llm-example-function(@pairs,
 # LLM Chat object
 #===========================================================
 
-#| Creates a new chat object
+#| Creates a new chat object.
+#| Signatures: C<llm-chat($chat, *%args)>, C<llm-chat($prompt, *%args)>, C<llm-chat(:$prompt, *%args)>.
+#| C<$chat> -- Chat object.
+#| C<$prompt> -- A prompt string.
+#| C<*%args> -- Named arguments to make the evaluator object.
 proto sub llm-chat(|) is export {*}
 
 multi sub llm-chat(LLM::Functions::Chat $chat, *%args) {
