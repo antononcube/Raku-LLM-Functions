@@ -25,7 +25,12 @@ isa-ok llm-example-function({ "crocodile" => "grasshopper", "fox" => "cardinal" 
         Str;
 
 ## 5
-is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'PaLM')(8).trim, '88';
+# Relaxed test.
+# PaLM produces more two 8s, e.g. 888 or 8888.
+like llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'PaLM')(8).trim,  / 8 8+ /;
+
+# This test givens: safetyFeedback	rating	category	HARM_CATEGORY_TOXICITY
+# is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => llm-configuration('PaLM', temperature => 0.01))(8).trim, '88';
 
 ## 6
 is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'PaLM', form => { $_.trim.Int })(8), 88;

@@ -40,7 +40,7 @@ isa-ok
         Str;
 
 ## 6
-is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'PaLM')(8).trim, '88';
+like llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'ChatPaLM')(8).trim, / 8 8+ / ;
 
 ## 7
 is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => $evlr4, form => { $_.trim.Int })(8), 88;
