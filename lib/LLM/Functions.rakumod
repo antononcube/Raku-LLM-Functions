@@ -299,8 +299,7 @@ multi sub llm-function(&queryFunc,
     # Find known parameters
     my @queryFuncParamNames = &queryFunc.signature.params.map({ $_.usage-name });
 
-    $llm-evaluator.conf.prompts.append('');
-
+    # Make the pure function
     return -> **@args, *%args {
         # Get the named arguments for the query function
         my %args2 = %args.grep({ $_.key ∉ <prompts> && $_.key ∈ @queryFuncParamNames }).Hash;
