@@ -103,29 +103,48 @@ class LLM::Functions::Chat {
     }
 
     #-------------------------------------------------------
-    method say(:$delim = ('⸺' x 60)) {
-        say "Chat: { self.chat-id }";
+    method form(:$delim is copy = Whatever) {
+        if $delim.isa(Whatever) { $delim = ('⸺' x 60); }
 
-        say $delim;
+        my $res = "Chat: { self.chat-id }";
+
+        $res ~= "\n" ~ $delim;
 
         my $prompt = self.llm-evaluator.conf.prompts;
         if ! $prompt { $prompt = self.llm-evaluator.context; }
 
-        say "Prompts: { $prompt }";
+        $res ~= "\n" ~ "Prompts: { $prompt.chomp }";
 
         if self.llm-evaluator.conf.examples {
-            say $delim;
+            $res ~= "\n" ~ $delim;
             if self.llm-evaluator.conf.examples ~~ Positional {
-                say "Examples:";
-                .say for self.llm-evaluator.conf.examples;
+                $res ~= "\n" ~ "Examples:";
+                for self.llm-evaluator.conf.examples {
+                    $res ~= "\n" ~ $_;
+                }
             } else {
-                say "Examples: { self.llm-evaluator.conf.examples }";
+                $res ~= "\n" ~ "Examples: { self.llm-evaluator.conf.examples }";
             }
         }
 
         for self.messages -> %h {
-            say $delim;
-            .say for <role content timestamp>.map({ $_ => %h{$_} });
+            $res ~= "\n" ~ $delim;
+            for <role content timestamp>.map({ $_ => %h{$_} }) {
+                $res ~= "\n" ~ $_;
+            }
         }
+
+        return $res;
     }
+
+    #-------------------------------------------------------
+    method say(:$delim = Whatever) {
+        say self.form(:$delim);
+    }
+
+    #-------------------------------------------------------
+    method note(:$delim = Whatever) {
+        note self.form(:$delim);
+    }
+
 }
