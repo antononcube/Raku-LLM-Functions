@@ -121,4 +121,15 @@ isa-ok llm-evaluator(llm-configuration('ChatPaLM'), llm-evaluator-class => LLM::
         LLM::Functions::EvaluatorChatPaLM,
         'Expected ChatPaLM type';
 
+#===========================================================
+## 16-18
+#===========================================================
+my $evlr16 = llm-evaluator('PaLM', api-user-id => 'u16', prompts => 'You are the best data scientist.', formatron => 'JSON');
+
+isa-ok $evlr16.Hash, Hash;
+
+isa-ok $evlr16.Str, Str;
+
+ok $evlr16.gist;
+
 done-testing;
