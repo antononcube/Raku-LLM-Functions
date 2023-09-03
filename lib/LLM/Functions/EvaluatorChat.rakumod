@@ -101,4 +101,11 @@ class LLM::Functions::EvaluatorChat
         # Result
         return @messages;
     }
+
+    #------------------------------------------------------
+    #| To Hash
+    method Hash (--> Hash) {
+        return %(conf => self.conf.Hash, formatron => self.formatron,
+                 :$!context, :$!examples, :$!assitant-role, :$!system-role, :$!user-role);
+    }
 }

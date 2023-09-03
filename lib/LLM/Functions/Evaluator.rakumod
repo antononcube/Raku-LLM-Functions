@@ -120,4 +120,23 @@ class LLM::Functions::Evaluator {
 
         return self.post-process($res, form => %args<form> // Whatever);
     }
+
+    #------------------------------------------------------
+    #| To Hash
+    method Hash (--> Hash) {
+        return %(conf => self.conf.Hash, formatron => self.formatron);
+    }
+
+    #------------------------------------------------------
+    #| To string
+    method Str(-->Str) {
+        return self.gist;
+    }
+
+    #------------------------------------------------------
+    #| To string
+    method gist(-->Str) {
+        return self.Hash>>.gist.Str;
+    }
+
 }
