@@ -90,6 +90,7 @@ class LLM::Functions::Chat {
         return self.gist;
     }
 
+    #-------------------------------------------------------
     method gist(-->Str) {
         my $res = "LLM::Functions::Chat(chat-id = $!chat-id, llm-evaluator.conf.name = { self.llm-evaluator.conf.name }, messages.elems = { self.messages.elems }";
 
