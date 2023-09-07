@@ -1,0 +1,26 @@
+use v6.d;
+
+use lib '.';
+use lib './lib';
+
+use LLM::Functions;
+use LLM::Prompts;
+
+use Test;
+
+plan *;
+
+#===========================================================
+## 1
+#===========================================================
+isa-ok llm-synthesize([llm-prompt('Yoda'), 'Today is sunny but noisy day...'], Whatever, e => 'PaLM'),
+        Str:D;
+
+#===========================================================
+## 2
+#===========================================================
+isa-ok llm-synthesize([llm-prompt('Translated')('German'), llm-prompt('Yoda'), 'Today is sunny but noisy day...'], Whatever, e => 'PaLM'),
+        Str:D;
+
+
+done-testing;
