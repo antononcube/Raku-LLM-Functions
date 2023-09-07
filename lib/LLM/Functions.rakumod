@@ -280,9 +280,17 @@ multi sub llm-function(Str $prompt,
                        :form(:$formatron) = 'Str',
                        :e(:$llm-evaluator) is copy = Whatever) {
 
+    return llm-function([$prompt,], :$formatron, :$llm-evaluator);
+}
+
+# Using an array of strings
+multi sub llm-function(@prompts where @prompts.all ~~ Str:D,
+                       :form(:$formatron) = 'Str',
+                       :e(:$llm-evaluator) is copy = Whatever) {
+
     $llm-evaluator = llm-evaluator($llm-evaluator);
 
-    $llm-evaluator.conf.prompts.append($prompt);
+    $llm-evaluator.conf.prompts.append(@prompts.Slip);
     $llm-evaluator.formatron = $formatron;
 
     return -> $text, *%args { $llm-evaluator.eval($text, |%args) };
@@ -376,6 +384,86 @@ multi sub llm-example-function(@pairs,
     }
 
     die "The first argument is expected to be a list of pairs or a pair of two positionals with the same length.";
+}
+
+#===========================================================
+# LLM Synthesise
+#===========================================================
+
+#-----------------------------------------------------------
+#| Generates text using by a combination prompts.
+our proto sub llm-synthesize($prompt,
+                             $prop = Whatever,
+                             :e(:$llm-evaluator) is copy = Whatever) is export {*}
+
+multi sub llm-synthesize($prompt,
+                         $prop = Whatever,
+                         :e(:$llm-evaluator) is copy = Whatever) {
+    return llm-synthesize([$prompt, ], $prop, :$llm-evaluator);
+}
+
+multi sub llm-synthesize(@prompts is copy,
+                         $prop is copy = Whatever,
+                         :e(:$llm-evaluator) is copy = Whatever) {
+
+    # Process properties
+    my @expectedProps = <FullText CompletionText PromptText>;
+    if $prop.isa(Whatever) { $prop = 'CompletionText'; }
+    die "The value of the second argument is expected to be Whatever or one of: {@expectedProps.join(', ')}."
+    unless $prop ~~ Str:D && $prop ∈ @expectedProps;
+
+    # Get evaluator
+    my $evlr = llm-evaluator($llm-evaluator);
+
+    # Add configuration prompts
+    # If we do that then we should change evaluator spec
+    @prompts = [|$evlr.conf.prompts, |@prompts];
+    $evlr.conf.prompts = [];
+
+    # Reduce prompts
+    my @processed;
+    for @prompts -> $p {
+        given $p {
+            when Str:D {
+                @processed.push($p);
+            }
+
+            when Callable {
+
+                my $pres;
+                try {
+                    $pres = $p.();
+                }
+
+                if $! || ! $pres ~~ Str:D {
+                    my @args = '' xx $p.arity;
+                    $pres = $p(|@args);
+                }
+
+                @processed.push($pres);
+            }
+        }
+    }
+
+    # Find the separator from the configuration
+    my $sep = $evlr.conf.prompt-delimiter;
+    my $prompt = @processed.join($sep);
+
+    # Post process
+    return do given $prop {
+        when 'FullText' {
+            my $res = llm-function(:$llm-evaluator)($prompt);
+            [|@processed, $res]
+        }
+
+        when 'PromptText' {
+            $prompt
+        }
+
+        default {
+            llm-function(:$llm-evaluator)($prompt)
+        }
+    }
 }
 
 #===========================================================
