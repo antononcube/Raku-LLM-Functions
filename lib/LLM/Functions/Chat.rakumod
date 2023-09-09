@@ -26,6 +26,16 @@ class LLM::Functions::Chat {
     }
 
     #-------------------------------------------------------
+    method prompt() {
+        my $prompt = self.llm-evaluator.conf.prompts;
+        if ! $prompt { $prompt = self.llm-evaluator.context; }
+        if $prompt ~~ Positional {
+           $prompt = $prompt.join(self.llm-evaluator.conf.prompt-delimiter)
+        }
+        return $prompt;
+    }
+
+    #-------------------------------------------------------
     multi method make-message(Str $message) {
         return self.make-message(role => Whatever, :$message, timestamp => DateTime.now);
     }
@@ -111,8 +121,7 @@ class LLM::Functions::Chat {
 
         $res ~= "\n" ~ $delim;
 
-        my $prompt = self.llm-evaluator.conf.prompts;
-        if ! $prompt { $prompt = self.llm-evaluator.context; }
+        my $prompt = self.prompt;
 
         $res ~= "\n" ~ "Prompts: { $prompt.chomp }";
 
