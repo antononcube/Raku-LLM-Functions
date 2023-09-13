@@ -52,7 +52,7 @@ Here is the ChatGPT configuration:
 # api-user-id => user:267091135027
 # tool-response-insertion-function => (WhateverCode)
 # tool-request-parser => (WhateverCode)
-# evaluator => (my \LLM::Functions::ChatEvaluator_3988700512944 = LLM::Functions::ChatEvaluator.new(system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:267091135027", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [[],], prompt-delimiter => " ", stop-tokens => [[".", "?", "!"],], tools => [[],], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_3988700512944), formatron => "Str"))
+# evaluator => (my \LLM::Functions::ChatEvaluator_3988700512944 = LLM::Functions::EvaluatorChat.new(system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:267091135027", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [[],], prompt-delimiter => " ", stop-tokens => [[".", "?", "!"],], tools => [[],], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key")}, evaluator => LLM::Functions::ChatEvaluator_3988700512944), formatron => "Str"))
 # stop-tokens => [[. ? !]]
 # tools => [[]]
 # max-tokens => 300
@@ -261,7 +261,7 @@ my $conf = llm-configuration('ChatGPT', prompts => [$preFTA,]);
 # DO NOT number the list or the items of the list.
 # Give preference to numeric results, and Yes/No results.
 # Try to put the question-answer pairs in GitHub Markdown table.
-#  module	WWW::OpenAI format	values prompt-delimiter	  function	OpenAIChatCompletion max-tokens	300 temperature	0.8 stop-tokens	. ? ! tool-response-insertion-function	WhateverCode evaluator	LLM::Functions::ChatEvaluator<3988789014672>
+#  module	WWW::OpenAI format	values prompt-delimiter	  function	OpenAIChatCompletion max-tokens	300 temperature	0.8 stop-tokens	. ? ! tool-response-insertion-function	WhateverCode evaluator	LLM::Functions::EvaluatorChat<3988789014672>
 ```
 
 Here we create a LLM-function that uses a function-prompt:

@@ -315,7 +315,7 @@ Here are some examination points and over observed chat games:
 
 ### Articles
 
-[AA1] Anton Antonov
+[AA1] Anton Antonov,
 ["Workflows with LLM functions"](https://rakuforprediction.wordpress.com/2023/08/01/workflows-with-llm-functions/),
 (2023),
 [RakuForPrediction at WordPress](https://rakuforprediction.wordpress.com).
