@@ -1,5 +1,3 @@
-use v6.d;
-
 use LLM::Functions::EvaluatorChat;
 
 # Should this class inherit from Evaluator or from EvaluatorChat

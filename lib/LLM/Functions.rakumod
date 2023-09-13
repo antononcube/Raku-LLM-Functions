@@ -1,5 +1,3 @@
-use v6.d;
-
 use JSON::Fast;
 use Hash::Merge;
 

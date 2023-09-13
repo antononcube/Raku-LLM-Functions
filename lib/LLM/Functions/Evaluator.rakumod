@@ -1,5 +1,3 @@
-use v6.d;
-
 use Hash::Merge;
 use LLM::Functions::Configuration;
 use Text::SubParsers;

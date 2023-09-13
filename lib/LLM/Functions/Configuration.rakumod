@@ -1,5 +1,3 @@
-use v6.d;
-
 # Merges the designs of:
 #   https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/ref/LLMConfiguration.html
 # and

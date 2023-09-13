@@ -1,5 +1,3 @@
-use v6.d;
-
 use LLM::Functions::EvaluatorChat;
 
 class LLM::Functions::Chat {

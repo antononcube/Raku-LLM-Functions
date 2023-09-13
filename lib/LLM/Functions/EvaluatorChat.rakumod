@@ -1,5 +1,3 @@
-use v6.d;
-
 use LLM::Functions::Evaluator;
 use LLM::Functions::Configuration;
 
