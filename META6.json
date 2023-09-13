@@ -1,7 +1,7 @@
 {
   "name": "LLM::Functions",
   "description": "LLM::Functions provides functions and function objects to access, interact, and utilize LLMs",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "perl": "6.*",
   "authors": [
     "Anton Antonov"
