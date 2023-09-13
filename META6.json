@@ -24,11 +24,7 @@
     "LLM::Functions::EvaluatorChat": "lib/LLM/Functions/EvaluatorChat.rakumod",
     "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod"
   },
-  "resources": [
-    "prompts/LAN-GPT.txt",
-    "prompts/Mind-Map.txt",
-    "prompts/Code-Writer.txt"
-  ],
+  "resources": [],
   "license": "Artistic-2.0",
   "tags": [
     "ai",
