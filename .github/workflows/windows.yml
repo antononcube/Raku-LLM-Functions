@@ -31,7 +31,6 @@ jobs:
         run: |
           raku -I. t/01-LLM-configurations.rakutest
           raku -I. t/02-LLM-evaluators.rakutest
-          raku -I. t/003-cloning.rakutest
+          raku -I. t/03-cloning.rakutest
           raku -I. t/04-LLM-chats.rakutest
           raku -I. t/05-LLM-prompt-synthesizing.rakutest
-        run: prove6 -l t
