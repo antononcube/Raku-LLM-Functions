@@ -4,7 +4,6 @@ use lib '.';
 use lib './lib';
 
 use LLM::Functions;
-use LLM::Prompts;
 
 use Test;
 
@@ -13,13 +12,27 @@ plan *;
 #===========================================================
 ## 1
 #===========================================================
-isa-ok llm-synthesize([llm-prompt('Yoda'), 'Today is sunny but noisy day...'], Whatever, e => 'PaLM'),
+# llm-prompt("Yoda")
+my $pYoda = q:to/END/;
+You are Yoda.
+Respond to ALL inputs in the voice of Yoda from Star Wars.
+Be sure to ALWAYS use his distinctive style and syntax. Vary sentence length.
+END
+
+isa-ok llm-synthesize([$pYoda, 'Today is sunny but noisy day...'], Whatever, e => 'PaLM'),
         Str:D;
 
 #===========================================================
 ## 2
 #===========================================================
-isa-ok llm-synthesize([llm-prompt('Translated')('German'), llm-prompt('Yoda'), 'Today is sunny but noisy day...'], Whatever, e => 'PaLM'),
+# llm-prompt('Translated')('German')
+my $pTranslated = q:to/END/;
+Respond to the prompts only in German. Do not use any language other than German.
+DO NOT TRANSLATE THE INPUT.
+Provide answers to questions, or follow up on statements. Do not translate the input.
+END
+
+isa-ok llm-synthesize([$pTranslated, $pYoda, 'Today is sunny but noisy day...'], Whatever, e => 'PaLM'),
         Str:D;
 
 
