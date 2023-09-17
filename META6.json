@@ -1,7 +1,7 @@
 {
   "name": "LLM::Functions",
   "description": "LLM::Functions provides functions and function objects to access, interact, and utilize LLMs",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "perl": "6.*",
   "authors": [
     "Anton Antonov"
@@ -12,8 +12,8 @@
     "Hash::Merge:ver<2.0.0+>:api<2+>",
     "JSON::Fast:ver<0.17+>",
     "Text::SubParsers:ver<0.1.1+>",
-    "WWW::OpenAI:ver<0.2.8+>",
-    "WWW::PaLM:ver<0.1.8+>"
+    "WWW::OpenAI:ver<0.2.11+>",
+    "WWW::PaLM:ver<0.1.9+>"
   ],
   "build-depends": [],
   "test-depends": [],
