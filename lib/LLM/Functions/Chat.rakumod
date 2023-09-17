@@ -72,7 +72,15 @@ class LLM::Functions::Chat {
         @!messages.push(self.make-message(:$role, :$message));
 
         # Get LLM result
-        my $res = $!llm-evaluator.eval(@!messages, |%args);
+        my $res;
+        try {
+            $res = $!llm-evaluator.eval(@!messages, |%args);
+        }
+
+        if $! {
+            note 'Failure while evaluating the message. Message and response are not logged.';
+            fail $!.payload;
+        }
 
         # Try to convert LLM response into a message
         my Str $msgRes;

@@ -112,7 +112,15 @@ class LLM::Functions::Evaluator {
         note 'LLM function named arguments : ', %args2.raku if $echo;
 
         # Invoke the LLM function
-        my $res = $confLocal.function.( @messages.elems == 1 ?? @messages.head !! @messages, |%args2);
+        my $res;
+        try {
+            $res = $confLocal.function.(@messages.elems == 1 ?? @messages.head !! @messages, |%args2);
+        }
+
+        if $! {
+            note 'LLM response was failure : ', $!.raku if $echo;
+            fail $!.payload;
+        }
 
         note 'LLM response : ', $res if $echo;
 
