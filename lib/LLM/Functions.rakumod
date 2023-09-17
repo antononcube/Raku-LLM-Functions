@@ -328,6 +328,9 @@ multi sub llm-function(&queryFunc,
 
 #-----------------------------------------------------------
 #| Creates an LLMFunction from few-shot examples.
+#| C<$training> -- Input-to-output example(s) given as a Pair, an array of Pairs, or a Map.
+#| C<:form(:$formatron)> -- Specification how the output to processed.
+#| C<:e(:$llm-evaluator)> -- Evaluator object specification.
 our proto llm-example-function(|) is export {*}
 
 multi sub llm-example-function(Pair $pair, *%args) {
@@ -390,6 +393,10 @@ multi sub llm-example-function(@pairs,
 
 #-----------------------------------------------------------
 #| Generates text using by a combination prompts.
+#| C<$prompt> -- Prompt(s) to synthesize LLM generative response with.
+#| C<$prop> -- Property or properties to return, one of <FullText CompletionText PromptText>.
+#| C<:form(:$formatron)> -- Specification how the output to processed.
+#| C<:e(:$llm-evaluator)> -- Evaluator object specification.
 our proto sub llm-synthesize($prompt,
                              $prop = Whatever,
                              :e(:$llm-evaluator) is copy = Whatever) is export {*}
