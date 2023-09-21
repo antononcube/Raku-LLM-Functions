@@ -42,7 +42,7 @@ class LLM::Functions::EvaluatorChat
         my $examplesLocal = %args<examples> // self.examples;
 
         if !$examplesLocal.isa(Whatever) {
-            die "When examples spec is provied it is expected to be a Positional of pairs."
+            die "When examples spec is provided it is expected to be a Positional of pairs."
             unless $examplesLocal ~~ Positional && $examplesLocal.all ~~ Pair;
 
             $examplesLocal .= map({ "Input: { $_.key.Str } \n Output: { $_.value.Str } \n" }).join("\n");
