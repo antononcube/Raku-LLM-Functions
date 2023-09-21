@@ -4,7 +4,7 @@ class LLM::Functions::Chat {
 
     has Str $.chat-id is rw = '';
     has LLM::Functions::EvaluatorChat $.llm-evaluator is rw;
-    has @.messages;
+    has @.messages is rw;
     has @.examples is rw = Empty;
 
     #-------------------------------------------------------
