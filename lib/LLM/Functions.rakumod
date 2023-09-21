@@ -498,7 +498,7 @@ multi sub llm-chat(:$prompt = '', *%args) {
     # Default evaluator class
     my $evaluatorClass = %args<llm-evaluator-class>:exists ?? %args<llm-evaluator-class> !! Whatever;
 
-    die 'The value of llm-evaluator-class is to be Whatever or of the type LLM::Functions::EvaluatorChat.'
+    die 'The value of llm-evaluator-class is expected to be Whatever or of the type LLM::Functions::EvaluatorChat.'
     unless $evaluatorClass.isa(Whatever) || $evaluatorClass ~~ LLM::Functions::EvaluatorChat;
 
     # Make evaluator object
