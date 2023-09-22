@@ -1,5 +1,8 @@
 name: Win64
 
+env:
+  TEST_JOBS: 1
+
 on:
   push:
     branches:
@@ -23,14 +26,6 @@ jobs:
         with:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Dependencies
-        run: |
-          choco install xclip
-          zef install --/test --deps-only .
-          zef install --/test App::Prove6
+        run: zef install --/test --test-depends --deps-only .
       - name: Run Tests
-        run: |
-          raku -I. t/01-LLM-configurations.rakutest
-          raku -I. t/02-LLM-evaluators.rakutest
-          raku -I. t/03-cloning.rakutest
-          raku -I. t/04-LLM-chats.rakutest
-          raku -I. t/05-LLM-prompt-synthesizing.rakutest
+        run: zef --debug --/prove --/tap-harness test .
