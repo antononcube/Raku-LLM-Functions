@@ -41,7 +41,7 @@ multi sub llm-configuration($spec, *%args) {
                     llm-configuration('openai')
                 }
 
-                when $_ ~~ Str && $_.lc eq 'openai' {
+                when $_ ~~ Str:D && $_.lc eq 'openai' {
 
                     LLM::Functions::Configuration.new(
                             name => 'openai',
@@ -61,7 +61,7 @@ multi sub llm-configuration($spec, *%args) {
                             format => 'values');
                 }
 
-                when $_ ~~ Str && $_.lc eq 'chatgpt' {
+                when $_ ~~ Str:D && $_.lc eq 'chatgpt' {
 
                     my $obj = llm-configuration('openai',
                             name => 'chatgpt',
@@ -74,7 +74,7 @@ multi sub llm-configuration($spec, *%args) {
                     $obj;
                 }
 
-                when $_ ~~ Str && $_.lc eq 'palm' {
+                when $_ ~~ Str:D && $_.lc eq 'palm' {
 
                     LLM::Functions::Configuration.new(
                             name => 'palm',
@@ -96,7 +96,7 @@ multi sub llm-configuration($spec, *%args) {
                             format => 'values');
                 }
 
-                when $_ ~~ Str && $_.lc ∈ <chatpalm chat-palm palmchat palm-chat> {
+                when $_ ~~ Str:D && $_.lc ∈ <chatpalm chat-palm palmchat palm-chat> {
                     llm-configuration(
                             'palm',
                             name => 'chatpalm',
@@ -216,7 +216,7 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
                 $evaluatorClass.new(:$conf, |%argsEvlr);
 
             } else {
-                die 'The configuration attribute .evaluator is expected to be of type if LLM::Functions::Evaluator or Whatever.'
+                die 'The configuration attribute .evaluator is expected to be of type LLM::Functions::Evaluator or Whatever.'
                 unless $conf.evaluator ~~ LLM::Functions::Evaluator;
 
                 $conf.evaluator.conf = $conf;
