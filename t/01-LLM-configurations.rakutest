@@ -42,4 +42,7 @@ is-deeply
         llm-configuration('ChatGPT', prompts => [$pre3, ]).Hash<name prompts>.List,
         ('chatgpt',  [$pre3,]);
 
+## 10
+ok llm-configuration("ChatGPT", model => "gpt-4");
+
 done-testing;
