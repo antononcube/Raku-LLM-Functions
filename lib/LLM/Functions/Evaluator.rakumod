@@ -140,9 +140,8 @@ class LLM::Functions::Evaluator {
     }
 
     #------------------------------------------------------
-    #| To string
-    method gist(-->Str) {
-        return self.Hash>>.gist.Str;
-    }
-
+    # Having a custom gist method produces hangs during assignments.
+    # method gist(-->Str) {
+    #     return self.Hash>>.gist.Str;
+    # }
 }
