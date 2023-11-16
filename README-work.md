@@ -193,7 +193,7 @@ my &func2 = llm-function(
 Here were we apply the function:
 
 ```perl6
-my $res2 = &func2("tenis balls", "toyota corolla 2010");
+my $res2 = &func2("tennis balls", "toyota corolla 2010");
 ```
 
 Here we show that we got a number:
@@ -214,7 +214,7 @@ my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $
 Here is an invocation:
 
 ```perl6
-&func3(dish => 'salad', cuisine => 'Russion', max-tokens => 300);
+&func3(dish => 'salad', cuisine => 'Russian', max-tokens => 300);
 ```
 
 --------
@@ -259,6 +259,21 @@ my &fec = llm-example-function(
         hint => 'animal colors');
 
 say &fec('raccoon');
+```
+
+--------
+
+## Using predefined prompts
+
+Using predefined prompts of the package ["LLM::Prompts"](https://raku.land/zef:antononcube/LLM::Prompts), [AAp8],
+can be very convenient in certain (many) cases.
+
+Here is an example using "Fixed That For You" synthesis:
+
+```perl6
+use LLM::Prompts;
+
+llm-synthesize([llm-prompt('FTFY'), 'Wha is ther population?'])
 ```
 
 --------
@@ -312,24 +327,25 @@ error => {code => 400, message => Messages must alternate between authors., stat
 
 ## TODO
 
-- [ ] TODO Resources
-  - [ ] TODO Gather prompts
-  - [ ] TODO Process prompts into a suitable database
+- [X] DONE Resources
+  - See ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts)
+  - [X] DONE Gather prompts
+  - [X] DONE Process prompts into a suitable database
     - Using JSON.
 - [ ] TODO Implementation
-  - [ ] TODO Processing and array of prompts as a first argument
-  - [ ] TODO Prompt class
+  - [X] DONE Processing and array of prompts as a first argument
+  - [X] DONE Prompt class / object / record
+    - Again, see ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts)
     - For retrieval and management of prompts.
-      - Prompts can be both plain strings or templates / functions.
-      - Each prompt has associated metadata:
+      - [X] DONE Prompts can be both plain strings or templates / functions.
+      - [X] DONE Each prompt has associated metadata:
         - Type: persona, function, modifier
         - Tool/parser
         - Keywords
         - Contributor?
         - Topics: "Advisor bot", "AI Guidance", "For Fun", ...
           - See: https://resources.wolframcloud.com/PromptRepository/
-    - Most likely, there would be a separate package "LLM::Prompts".
-      - And/or "LLM::Prompts::Repository".
+    - [X] DONE Most likely, there would be a separate package "LLM::Prompts", [AAp8].
   - [ ] MAYBE Random selection of LLM-evaluator
     - Currently, the LLM-evaluator of the LLM-functions and LLM-chats is static, assigned at creation.
     - This is easily implemented at "top-level." 
@@ -357,11 +373,11 @@ error => {code => 400, message => Messages must alternate between authors., stat
   - [X] DONE Using engineered prompts
   - [X] DONE Expand tests in documentation examples
   - [X] DONE Conversion of a test file tests into Gherkin specs
-  - [ ] TODO Using retrieved prompts
+  - [X] DONE Number game programming
+    - [X] DONE Man vs Machine
+    - [X] DONE Machine vs Machine
+  - [X] DONE Using retrieved prompts
   - [ ] TODO Longer conversations / chats
-  - [ ] TODO Number game programming
-    - [ ] TODO Man vs Machine
-    - [ ] TODO Machine vs Machine
 
 --------
 
@@ -420,6 +436,11 @@ error => {code => 400, message => Messages must alternate between authors., stat
 
 [AAp7] Anton Antonov,
 [ML::NLPTemplateEngine Raku package](https://github.com/antononcube/Raku-ML-NLPTemplateEngine),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp8] Anton Antonov,
+[LLM::Prompts Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 

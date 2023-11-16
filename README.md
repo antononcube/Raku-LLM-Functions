@@ -141,26 +141,26 @@ use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 ```
-# :stop-tokens($[])
-# :examples($[])
-# :tool-response-insertion-function(WhateverCode)
-# :prompt-delimiter(" ")
-# :model("text-davinci-003")
-# :total-probability-cutoff(0.03)
 # :tool-prompt("")
-# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
-# :tool-request-parser(WhateverCode)
-# :argument-renames(${:api-key("auth-key"), :stop-tokens("stop")})
-# :max-tokens(300)
-# :api-user-id("user:357821092670")
-# :prompts($[])
-# :evaluator(Whatever)
+# :examples($[])
 # :format("values")
-# :tools($[])
-# :api-key(Whatever)
-# :module("WWW::OpenAI")
-# :name("openai")
+# :max-tokens(300)
+# :api-user-id("user:337404901775")
 # :temperature(0.8)
+# :tool-request-parser(WhateverCode)
+# :prompts($[])
+# :tool-response-insertion-function(WhateverCode)
+# :model("text-davinci-003")
+# :stop-tokens($[])
+# :api-key(Whatever)
+# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
+# :module("WWW::OpenAI")
+# :argument-renames(${:api-key("auth-key"), :stop-tokens("stop")})
+# :total-probability-cutoff(0.03)
+# :prompt-delimiter(" ")
+# :evaluator(Whatever)
+# :tools($[])
+# :name("openai")
 ```
 
 Here is the ChatGPT-based configuration:
@@ -169,26 +169,26 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# prompt-delimiter =>  
-# format => values
-# examples => []
-# tool-prompt => 
-# function => &OpenAIChatCompletion
-# total-probability-cutoff => 0.03
-# module => WWW::OpenAI
-# api-key => (Whatever)
-# stop-tokens => []
-# max-tokens => 300
-# tool-request-parser => (WhateverCode)
-# api-user-id => user:958546605799
-# argument-renames => {api-key => auth-key, stop-tokens => stop}
-# temperature => 0.8
-# model => gpt-3.5-turbo
-# tool-response-insertion-function => (WhateverCode)
-# prompts => []
-# name => chatgpt
-# evaluator => (my \LLM::Functions::EvaluatorChat_2514878444792 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assitant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:958546605799", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$type is copy = Whatever, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$auth-key is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_2514878444792), formatron => "Str"))
 # tools => []
+# function => &OpenAIChatCompletion
+# max-tokens => 300
+# evaluator => (my \LLM::Functions::EvaluatorChat_4192624689152 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assitant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:244341737759", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_4192624689152), formatron => "Str"))
+# name => chatgpt
+# examples => []
+# prompt-delimiter =>  
+# temperature => 0.8
+# total-probability-cutoff => 0.03
+# format => values
+# api-user-id => user:244341737759
+# model => gpt-3.5-turbo
+# api-key => (Whatever)
+# prompts => []
+# tool-response-insertion-function => (WhateverCode)
+# tool-request-parser => (WhateverCode)
+# tool-prompt => 
+# module => WWW::OpenAI
+# stop-tokens => []
+# argument-renames => {api-key => auth-key, stop-tokens => stop}
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -205,26 +205,26 @@ Here is the default PaLM configuration:
 .say for llm-configuration('PaLM').Hash;
 ```
 ```
-# api-key => (Whatever)
-# model => text-bison-001
-# tool-response-insertion-function => (WhateverCode)
-# format => values
-# stop-tokens => []
-# module => WWW::PaLM
-# tool-prompt => 
-# evaluator => (Whatever)
-# function => &PaLMGenerateText
 # tool-request-parser => (WhateverCode)
-# name => palm
-# tools => []
-# total-probability-cutoff => 0
-# api-user-id => user:235041118372
-# temperature => 0.4
-# max-tokens => 300
+# function => &PaLMGenerateText
 # prompt-delimiter =>  
-# prompts => []
+# tool-response-insertion-function => (WhateverCode)
+# model => text-bison-001
 # examples => []
+# api-key => (Whatever)
+# max-tokens => 300
+# api-user-id => user:148868177699
+# prompts => []
+# stop-tokens => []
+# evaluator => (Whatever)
+# format => values
+# tools => []
+# temperature => 0.4
+# module => WWW::PaLM
+# total-probability-cutoff => 0
 # argument-renames => {api-key => auth-key, max-tokens => max-output-tokens, stop-tokens => stop-sequences}
+# tool-prompt => 
+# name => palm
 ```
 
 -----
@@ -239,7 +239,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# -> $text, *%args { #`(Block|2515004761376) ... }
+# -> $text, *%args { #`(Block|4192645382936) ... }
 ```
 
 Here we evaluate over a message: 
@@ -252,35 +252,26 @@ say &func('greek salad');
 # 
 # Ingredients:
 # 
-# - 2 large tomatoes, diced
-# 
-# - 1 cucumber, diced
-# 
-# - 1/2 red onion, diced
-# 
-# - 1/3 cup kalamata olives, pitted and halved
-# 
+# - 1 head romaine lettuce, chopped
+# - 1 cucumber, sliced
+# - 1/2 red onion, thinly sliced
+# - 1/2 cup Kalamata olives
 # - 1/2 cup crumbled feta cheese
-# 
 # - 1/4 cup extra virgin olive oil
-# 
-# - 2 tablespoons lemon juice
-# 
-# - 1 tablespoon oregano
-# 
-# - salt and pepper to taste
+# - 2 tablespoons red wine vinegar
+# - 1 garlic clove, minced
+# - 1 teaspoon dried oregano
+# - Salt and freshly ground black pepper, to taste
 # 
 # Instructions:
 # 
-# 1. In a large bowl, combine the tomatoes, cucumber, onion, and olives.
+# 1. In a large bowl, combine the lettuce, cucumber, onion, olives, and feta cheese.
 # 
-# 2. In a small bowl, whisk together the olive oil, lemon juice, oregano, salt, and pepper.
+# 2. In a small bowl, whisk together the olive oil, vinegar, garlic, oregano, salt, and pepper.
 # 
-# 3. Pour the dressing over the vegetables and toss to combine.
+# 3. Pour the dressing over the salad and toss to coat.
 # 
-# 4. Sprinkle the feta cheese over the top.
-# 
-# 5. Serve immediately, or refrigerate for up to two days. Enjoy!
+# 4. Serve immediately.
 ```
 
 ### Positional arguments
@@ -294,13 +285,13 @@ my &func2 = llm-function(
         llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|2515008657592) ... }
+# -> **@args, *%args { #`(Block|4192613528368) ... }
 ```
 
 Here were we apply the function:
 
 ```perl6
-my $res2 = &func2("tenis balls", "toyota corolla 2010");
+my $res2 = &func2("tennis balls", "toyota corolla 2010");
 ```
 ```
 # 110
@@ -324,41 +315,37 @@ Here the first argument is a template with two named arguments:
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|2515008662848) ... }
+# -> **@args, *%args { #`(Block|4192645498728) ... }
 ```
 
 Here is an invocation:
 
 ```perl6
-&func3(dish => 'salad', cuisine => 'Russion', max-tokens => 300);
+&func3(dish => 'salad', cuisine => 'Russian', max-tokens => 300);
 ```
 ```
-# **Russian Salad (Olivier Salad)**
+# **Ingredients**
 # 
-# Ingredients:
-# 
-# * 2 pounds (900g) potatoes, peeled and cubed
-# * 1 pound (450g) carrots, peeled and cubed
-# * 1 pound (450g) celery root, peeled and cubed
-# * 1 pound (450g) green beans, trimmed and blanched
-# * 1 pound (450g) red onion, diced
-# * 1 pound (450g) ham, diced
-# * 1 pound (450g) hard-boiled eggs, peeled and diced
-# * 1 cup (240ml) mayonnaise
-# * 1/2 cup (120ml) sour cream
-# * 1/4 cup (60ml) finely chopped fresh dill
+# * 1 head of cabbage (about 1 pound)
+# * 1/2 cup mayonnaise
+# * 1/4 cup sour cream
+# * 1/4 cup chopped onion
+# * 1/4 cup chopped dill
+# * 1/4 cup chopped parsley
 # * Salt and pepper to taste
 # 
-# Instructions:
+# **Instructions**
 # 
-# 1. In a large bowl, combine the potatoes, carrots, celery root, green beans, red onion, ham, and eggs.
-# 2. In a small bowl, whisk together the mayonnaise, sour cream, dill, salt, and pepper.
-# 3. Pour the dressing over the salad and toss to coat.
+# 1. Shred the cabbage.
+# 2. In a large bowl, combine the cabbage, mayonnaise, sour cream, onion, dill, parsley, salt, and pepper.
+# 3. Stir until well combined.
 # 4. Serve immediately or chill for later.
 # 
-# **Tips:**
+# **Tips**
 # 
-# * To make the dressing ahead of time, whisk together the mayonnaise, sour cream, dill, salt, and pepper in a small
+# * For a more flavorful salad, marinate the cabbage in the dressing for at least 30 minutes before serving.
+# * You can also add other ingredients to the salad, such as carrots, celery, or tomatoes.
+# * Serve the salad with your favorite bread or crackers.
 ```
 
 --------
@@ -419,6 +406,24 @@ say &fec('raccoon');
 
 --------
 
+## Using predefined prompts
+
+Using predefined prompts of the package ["LLM::Prompts"](https://raku.land/zef:antononcube/LLM::Prompts), [AAp8],
+can be very convenient in certain (many) cases.
+
+Here is an example using "Fixed That For You" synthesis:
+
+```perl6
+use LLM::Prompts;
+
+llm-synthesize([llm-prompt('FTFY'), 'Wha is ther population?'])
+```
+```
+# What is the population?
+```
+
+--------
+
 ## Using chat-global prompts
 
 The configuration objects can be given prompts that influence the LLM responses 
@@ -447,14 +452,14 @@ my $chat = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatGPT', :$prompt);
 $chat.eval('What is the most transparent gem?');
 ```
 ```
-# The most transparent gem is typically considered to be diamond.
+# The most transparent gem is diamond.
 ```
 
 ```perl6
 $chat.eval('Ok. What are the second and third most transparent gems?');
 ```
 ```
-# The second most transparent gem is usually considered to be sapphire, and the third most transparent gem is generally considered to be spinel.
+# The second most transparent gem is typically considered to be sapphire, while the third most transparent gem is usually emerald.
 ```
 
 Here are the prompt(s) and all messages of the chat object:
@@ -467,21 +472,21 @@ $chat.say
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # Prompts: You are a gem expert and you give concise answers.
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => What is the most transparent gem?
-# timestamp => 2023-08-14T16:36:49.221171-04:00
+# role	user
+# content	What is the most transparent gem?
+# timestamp	2023-11-16T06:25:57.460871-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => The most transparent gem is typically considered to be diamond.
-# timestamp => 2023-08-14T16:36:50.528752-04:00
+# role	assistant
+# content	The most transparent gem is diamond.
+# timestamp	2023-11-16T06:25:58.343413-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => user
-# content => Ok. What are the second and third most transparent gems?
-# timestamp => 2023-08-14T16:36:50.548841-04:00
+# role	user
+# content	Ok. What are the second and third most transparent gems?
+# timestamp	2023-11-16T06:25:58.360544-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role => assistant
-# content => The second most transparent gem is usually considered to be sapphire, and the third most transparent gem is generally considered to be spinel.
-# timestamp => 2023-08-14T16:36:51.844316-04:00
+# role	assistant
+# content	The second most transparent gem is typically considered to be sapphire, while the third most transparent gem is usually emerald.
+# timestamp	2023-11-16T06:26:00.283375-05:00
 ```
 
 --------
@@ -498,24 +503,25 @@ error => {code => 400, message => Messages must alternate between authors., stat
 
 ## TODO
 
-- [ ] TODO Resources
-  - [ ] TODO Gather prompts
-  - [ ] TODO Process prompts into a suitable database
+- [X] DONE Resources
+  - See ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts)
+  - [X] DONE Gather prompts
+  - [X] DONE Process prompts into a suitable database
     - Using JSON.
 - [ ] TODO Implementation
-  - [ ] TODO Processing and array of prompts as a first argument
-  - [ ] TODO Prompt class
+  - [X] DONE Processing and array of prompts as a first argument
+  - [X] DONE Prompt class / object / record
+    - Again, see ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts)
     - For retrieval and management of prompts.
-      - Prompts can be both plain strings or templates / functions.
-      - Each prompt has associated metadata:
+      - [X] DONE Prompts can be both plain strings or templates / functions.
+      - [X] DONE Each prompt has associated metadata:
         - Type: persona, function, modifier
         - Tool/parser
         - Keywords
         - Contributor?
         - Topics: "Advisor bot", "AI Guidance", "For Fun", ...
           - See: https://resources.wolframcloud.com/PromptRepository/
-    - Most likely, there would be a separate package "LLM::Prompts".
-      - And/or "LLM::Prompts::Repository".
+    - [X] DONE Most likely, there would be a separate package "LLM::Prompts", [AAp8].
   - [ ] MAYBE Random selection of LLM-evaluator
     - Currently, the LLM-evaluator of the LLM-functions and LLM-chats is static, assigned at creation.
     - This is easily implemented at "top-level." 
@@ -543,11 +549,11 @@ error => {code => 400, message => Messages must alternate between authors., stat
   - [X] DONE Using engineered prompts
   - [X] DONE Expand tests in documentation examples
   - [X] DONE Conversion of a test file tests into Gherkin specs
-  - [ ] TODO Using retrieved prompts
+  - [X] DONE Number game programming
+    - [X] DONE Man vs Machine
+    - [X] DONE Machine vs Machine
+  - [X] DONE Using retrieved prompts
   - [ ] TODO Longer conversations / chats
-  - [ ] TODO Number game programming
-    - [ ] TODO Man vs Machine
-    - [ ] TODO Machine vs Machine
 
 --------
 
@@ -606,6 +612,11 @@ error => {code => 400, message => Messages must alternate between authors., stat
 
 [AAp7] Anton Antonov,
 [ML::NLPTemplateEngine Raku package](https://github.com/antononcube/Raku-ML-NLPTemplateEngine),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp8] Anton Antonov,
+[LLM::Prompts Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
