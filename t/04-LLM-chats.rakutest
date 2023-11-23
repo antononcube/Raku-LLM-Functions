@@ -114,11 +114,24 @@ END
 
 my $secretNumber = 67;
 
-my $chat9 = llm-chat($prompt9.subst('$NUMBER', $secretNumber):g, chat-id=>'oracle', llm-evaluator => llm-configuration('ChatPaLM', temperature=>0.1));
+my $chat9 = llm-chat($prompt9.subst('$NUMBER', $secretNumber):g, chat-id => 'oracle',
+        llm-evaluator => llm-configuration('ChatPaLM', temperature => 0.1));
 
 is $chat9.llm-evaluator.^name,
         LLM::Functions::EvaluatorChatPaLM.^name,
         'The evaluator object of a number oracle is EvaluatorChatPaLM';
 
+#===========================================================
+## 10
+#===========================================================
+
+my @exam10 = [1 => '10', 3 => '30', 10 => '100'];
+my $chat10 = LLM::Functions::Chat.new(
+        chat-id => 'exam10',
+        api-user-id => 'user',
+        examples => @exam10
+        );
+
+is-deeply $chat10.examples, @exam10;
 
 done-testing;
