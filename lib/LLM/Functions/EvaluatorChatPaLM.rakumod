@@ -12,8 +12,8 @@ class LLM::Functions::EvaluatorChatPaLM
         my $examplesLocal = @messages.Hash<examples> // %args<examples> // self.examples;
 
         if !$examplesLocal.isa(Whatever) {
-            die "When examples spec is provied it is expected to be a Positional of pairs."
-            unless $examplesLocal ~~ Positional && $examplesLocal.all ~~ Pair;
+            die "When examples spec is provied it is expected to be a Iterable of pairs."
+            unless $examplesLocal ~~ Iterable && $examplesLocal.all ~~ Pair;
 
             @messages .= grep({ $_.key ne 'examples' }).prepend((examples => $examplesLocal));
         }
