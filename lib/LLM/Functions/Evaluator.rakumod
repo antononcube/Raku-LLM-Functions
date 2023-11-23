@@ -8,7 +8,9 @@ class LLM::Functions::Evaluator {
     has $.formatron is rw = 'Str';
 
     #-------------------------------------------------------
-    method clone { nextwith :conf($!conf.clone), |%_ }
+    method clone {
+        nextwith :conf($!conf.clone), |%_
+    }
 
     #-------------------------------------------------------
     method prompt-texts-combiner($prompt, @texts, *%args) {
@@ -63,7 +65,7 @@ class LLM::Functions::Evaluator {
         # before sending the evaluation request to LLM service.
         my $confLocal = self.conf.clone;
 
-        note "Configuration : {$confLocal.Hash.raku}" if $echo;
+        note "Configuration : { $confLocal.Hash.raku }" if $echo;
 
         # Load module
         my $packageName = $confLocal.module;
@@ -83,7 +85,7 @@ class LLM::Functions::Evaluator {
         # Find known parameters
         my @knownParamNames = $confLocal.function.candidates.map({ $_.signature.params.map({ $_.usage-name }) }).flat;
 
-        note "Known param mames : {@knownParamNames.raku}" if $echo;
+        note "Known param mames : { @knownParamNames.raku }" if $echo;
 
         # Make all named parameters hash
         my %args2 = merge-hash($confLocal.Hash, %args);
@@ -105,7 +107,7 @@ class LLM::Functions::Evaluator {
         %args2 = %args2.grep({ $_.key ∉ <prompts> && $_.key ∈ @knownParamNames }).Hash;
 
         # Should this check be here?
-        if (%args2<examples>:exists) && (@messages.grep(* ~~ Pair).Hash<examples>:exists) {
+        if (%args2<examples>:exists) && (@messages.grep(*~~ Pair).Hash<examples>:exists) {
             %args2 .= grep({ $_.key ne 'examples' })
         }
 
@@ -129,19 +131,20 @@ class LLM::Functions::Evaluator {
 
     #------------------------------------------------------
     #| To Hash
-    method Hash (--> Hash) {
+    multi method Hash (::?CLASS:D:--> Hash) {
         return %(conf => self.conf.Hash, formatron => self.formatron);
     }
 
     #------------------------------------------------------
     #| To string
-    method Str(-->Str) {
+    multi method Str(::?CLASS:D:-->Str) {
         return self.gist;
     }
 
     #------------------------------------------------------
-    # Having a custom gist method produces hangs during assignments.
-    # method gist(-->Str) {
-    #     return self.Hash>>.gist.Str;
-    # }
+    # The custom gist method has to be an instance method.
+    # Otherwise, it produces hangs during assignments.
+    multi method gist(::?CLASS:D:-->Str) {
+        return self.Hash>>.gist.Str;
+    }
 }

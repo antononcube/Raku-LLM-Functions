@@ -84,7 +84,7 @@ class LLM::Functions::Configuration {
 
     #--------------------------------------------------------
     #| To Hash
-    method Hash(-->Hash) {
+    multi method Hash(::?CLASS:D:-->Hash) {
         return
                 { :$!name,
                   :$!api-key, :$!api-user-id,
@@ -101,12 +101,12 @@ class LLM::Functions::Configuration {
     }
 
     #| To string
-    method Str(-->Str) {
+    multi method Str(::?CLASS:D:-->Str) {
         return self.gist;
     }
 
     #| To gist
-    method gist(-->Str) {
+    multi method gist(::?CLASS:D:-->Str) {
         return self.Hash.map( -> $p {
             given $p.value {
                 when Whatever { $p.key => 'Whatever'}
