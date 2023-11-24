@@ -65,6 +65,9 @@ class LLM::Functions::Configuration {
     # "ToolResponseInsertionFunction" function for serializing tool responses
     has &.tool-response-insertion-function = WhateverCode;
 
+    # List of images URLs, file names, or Base64 strings
+    has @.images;
+
     # Argument remaps
     # Re-naming into arguments known by the LLM function &!function .
     has %.argument-renames;
@@ -78,6 +81,7 @@ class LLM::Functions::Configuration {
                 :prompts(@!prompts.clone),
                 :stop-tokens(@!stop-tokens.clone),
                 :tools(@!tools.clone),
+                :images(@!images.clone),
                 :argument-renames(%!argument-renames.clone),
                 |%_
     }
@@ -95,6 +99,7 @@ class LLM::Functions::Configuration {
                   :@!examples,
                   :@!stop-tokens,
                   :@!tools, :$!tool-prompt, :&!tool-request-parser, :&!tool-response-insertion-function,
+                  :@!images,
                   :%.argument-renames,
                   :$.evaluator
                 };
