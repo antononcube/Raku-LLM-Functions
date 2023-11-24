@@ -163,6 +163,12 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
         $newConf.stop-tokens = |$newConf.stop-tokens.&reallyflat;
     }
 
+    if %args<images>:exists {
+        $newConf.images = %args<images>.&reallyflat;
+    } else {
+        $newConf.images = $newConf.images.&reallyflat;
+    }
+
     # Result
     return $newConf;
 }
