@@ -144,7 +144,7 @@ class LLM::Functions::Evaluator {
     #------------------------------------------------------
     # The custom gist method has to be an instance method.
     # Otherwise, it produces hangs during assignments.
-    multi method gist(::?CLASS:D:-->Str) {
-        return self.Hash>>.gist.Str;
-    }
+#    multi method gist(::?CLASS:D:-->Str) {
+#        return self.Str;
+#    }
 }
