@@ -211,7 +211,8 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
         }
 
         when $_ ~~ Str:D {
-            llm-evaluator(llm-configuration($_, |%argsConf), |%argsEvlr, llm-evaluator-class => %args<llm-evaluator-class> // Whatever);
+            llm-evaluator(llm-configuration($_, |%argsConf), |%argsEvlr,
+                    llm-evaluator-class => %args<llm-evaluator-class> // Whatever);
         }
 
         when $_ ~~ LLM::Functions::Configuration {
@@ -283,7 +284,6 @@ multi sub llm-function(:form(:$formatron) = 'Str',
 multi sub llm-function(Str $prompt,
                        :form(:$formatron) = 'Str',
                        :e(:$llm-evaluator) is copy = Whatever) {
-
     return llm-function([$prompt,], :$formatron, :$llm-evaluator);
 }
 
@@ -374,7 +374,7 @@ multi sub llm-example-function(@pairs,
                 }
             }
 
-            $llm-evaluator.examples = @pairs.map( -> $x { "{ $x.key.Str }" => "{ $x.value.Str }" }).Array;
+            $llm-evaluator.examples = @pairs.map(-> $x { "{ $x.key.Str }" => "{ $x.value.Str }" }).Array;
 
             return llm-function({ "$_" }, :$formatron, :$llm-evaluator);
 
@@ -410,7 +410,7 @@ our proto sub llm-synthesize($prompt,
 multi sub llm-synthesize($prompt,
                          $prop = Whatever,
                          :e(:$llm-evaluator) is copy = Whatever) {
-    return llm-synthesize([$prompt, ], $prop, :$llm-evaluator);
+    return llm-synthesize([$prompt,], $prop, :$llm-evaluator);
 }
 
 multi sub llm-synthesize(@prompts is copy,
@@ -420,7 +420,7 @@ multi sub llm-synthesize(@prompts is copy,
     # Process properties
     my @expectedProps = <FullText CompletionText PromptText>;
     if $prop.isa(Whatever) { $prop = 'CompletionText'; }
-    die "The value of the second argument is expected to be Whatever or one of: {@expectedProps.join(', ')}."
+    die "The value of the second argument is expected to be Whatever or one of: { @expectedProps.join(', ') }."
     unless $prop ~~ Str:D && $prop ∈ @expectedProps;
 
     # Get evaluator
@@ -446,7 +446,7 @@ multi sub llm-synthesize(@prompts is copy,
                     $pres = $p.();
                 }
 
-                if $! || ! $pres ~~ Str:D {
+                if $! || !$pres ~~ Str:D {
                     my @args = '' xx $p.arity;
                     $pres = $p(|@args);
                 }
@@ -526,8 +526,7 @@ multi sub llm-chat(:$prompt = '', *%args) {
             # Obtain Evaluator class
             if $evaluatorClass.isa(Whatever) {
                 if $conf.name ~~ /:i palm / {
-                    $conf = llm-configuration('ChatPaLM',
-                                    |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
+                    $conf = llm-configuration('ChatPaLM', |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
 
                     $evaluatorClass = LLM::Functions::EvaluatorChatPaLM
                 } else {
@@ -547,4 +546,57 @@ multi sub llm-chat(:$prompt = '', *%args) {
     # Result
     my %args2 = %args.grep({ $_.key ∉ <llm-evaluator llm-configuration conf prompt form formatron> });
     return LLM::Functions::Chat.new(llm-evaluator => $llmEvalObj, |%args2);
+}
+
+#===========================================================
+# LLM vision synthesize
+#===========================================================
+
+#| Creates a new chat object.
+#| Signatures: C<llm-vision-synthesize(@prompts, @images, *%args)>, C<llm-vision-synthesize($prompt, *%args)>.
+#| C<$prompt> -- A prompt string or a list of prompt strings.
+#| C<@images> -- List of images.
+#| C<*%args> -- Named arguments to make the evaluator object.
+proto sub llm-vision-synthesize(|) is export {*}
+
+multi sub llm-vision-synthesize(:@images, *%args) {
+    my $prompt = do if @images > 1 {
+        'Give descriptions of the images:'
+    } else {
+        'Give description of the image:'
+    }
+    return llm-vision-synthesize([$prompt,], @images, |%args);
+}
+
+multi sub llm-vision-synthesize($prompt, $image where $image ~~ Str, *%args) {
+    return llm-vision-synthesize($prompt, [$image,], |%args);
+}
+
+multi sub llm-vision-synthesize(Str $prompt, @images, *%args) {
+    return llm-vision-synthesize([$prompt,], @images, |%args);
+}
+
+multi sub llm-vision-synthesize(@prompts, @images, *%args) {
+    my $conf = llm-configuration("ChatGPT", model => 'gpt-4-vision-preview', temperature => 0.2, |%args, :@images);
+    return llm-synthesize(@prompts, llm-evaluator => $conf);
+}
+
+#===========================================================
+# LLM vision function
+#===========================================================
+
+#| Represents a template for a large language model(LLM) prompt.
+#| C<$prompt> -- A string or a function (optional.)
+#| C<@images> -- A list of image URLs, file names, or Base64 strings.
+#| C<:form(:$formatron)> -- Specification how the output to processed.
+#| C<:e(:$llm-evaluator)> -- Evaluator object specification.
+proto sub llm-vision-function($prompt, @images, :form(:$formatron), :e(:$llm-evaluator)) is export {*}
+
+# Using a function
+multi sub llm-vision-function($prompt,
+                              @images,
+                              :form(:$formatron) = 'Str',
+                              *%args) {
+    my $conf = llm-evaluator("ChatGPT", model => 'gpt-4-vision-preview', temperature => 0.2, |%args, :@images);
+    return llm-function($prompt, $formatron, llm-evaluator => $conf);
 }
