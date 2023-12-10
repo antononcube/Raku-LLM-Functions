@@ -1,0 +1,29 @@
+use v6.d;
+
+use lib '.';
+use lib './lib';
+
+use LLM::Functions;
+use LLM::Functions::Configuration;
+use LLM::Functions::Evaluator;
+
+use Test;
+
+plan *;
+
+#===========================================================
+## 1
+#===========================================================
+
+my $url1 = 'https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/MarkdownDocuments/Diagrams/AI-vision-via-WL/0iyello2xfyfo.png';
+isa-ok llm-vision-synthesize('Describe the image.', $url1), Str;
+
+
+#===========================================================
+## 2
+#===========================================================
+
+#say llm-vision-function({"For the given image answer the question: $_ . Be as concise as possible in your answers."}, $url1)('How many years are present?');
+isa-ok llm-vision-function({"For the given image answer the question: $_ . Be as concise as possible in your answers."}, $url1), Callable;
+
+done-testing;
