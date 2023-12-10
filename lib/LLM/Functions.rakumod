@@ -585,18 +585,18 @@ multi sub llm-vision-synthesize(@prompts, @images, *%args) {
 # LLM vision function
 #===========================================================
 
-#| Represents a template for a large language model(LLM) prompt.
+#| Represents a template for a large language model(LLM) prompt over images.
 #| C<$prompt> -- A string or a function (optional.)
 #| C<@images> -- A list of image URLs, file names, or Base64 strings.
 #| C<:form(:$formatron)> -- Specification how the output to processed.
-#| C<:e(:$llm-evaluator)> -- Evaluator object specification.
-proto sub llm-vision-function($prompt, @images, :form(:$formatron), :e(:$llm-evaluator)) is export {*}
+#| C<*%args> -- additional argument of llm-configuration.
+proto sub llm-vision-function($prompt, $images, :form(:$formatron) = 'Str', *%args) is export {*}
 
-# Using a function
-multi sub llm-vision-function($prompt,
-                              @images,
-                              :form(:$formatron) = 'Str',
-                              *%args) {
+multi sub llm-vision-function($prompt, Str $image, :form(:$formatron) = 'Str', *%args) {
+    return llm-vision-function($prompt, [$image, ], :$formatron, |%args);
+}
+
+multi sub llm-vision-function($prompt, @images, :form(:$formatron) = 'Str', *%args) {
     my $conf = llm-evaluator("ChatGPT", model => 'gpt-4-vision-preview', temperature => 0.2, |%args, :@images);
-    return llm-function($prompt, $formatron, llm-evaluator => $conf);
+    return llm-function($prompt, :$formatron, llm-evaluator => $conf);
 }
