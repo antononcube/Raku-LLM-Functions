@@ -9,6 +9,9 @@ use WWW::PaLM;
 use WWW::PaLM::GenerateText;
 use WWW::PaLM::GenerateMessage;
 
+use WWW::MistralAI;
+use WWW::MistralAI::ChatCompletions;
+
 use LLM::Functions::Chat;
 use LLM::Functions::Configuration;
 use LLM::Functions::Evaluator;
@@ -103,6 +106,26 @@ multi sub llm-configuration($spec, *%args) {
                             function => &PaLMGenerateMessage,
                             model => 'chat-bison-001',
                             |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash)
+                }
+
+                when $_ ~~ Str:D && $_.lc ∈ <mistralai mistral mistral-chat chatmistral> {
+
+                    LLM::Functions::Configuration.new(
+                            name => 'mistralai',
+                            api-key => Whatever,
+                            api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
+                            module => 'WWW::MistralAI',
+                            model => 'mistral-tiny',
+                            function => &MistralAIChatCompletion,
+                            temperature => 0.6,
+                            max-tokens => 300,
+                            total-probability-cutoff => 0.03,
+                            prompts => Empty,
+                            prompt-delimiter => ' ',
+                            examples => Empty,
+                            stop-tokens => Empty,
+                            argument-renames => %('api-key' => 'auth-key'),
+                            format => 'values');
                 }
 
                 default {
