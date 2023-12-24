@@ -9,15 +9,18 @@
 
 This Raku package provides functions and function objects to access, interact, and utilize 
 Large Language Models (LLMs), like 
-[OpenAI](https://platform.openai.com), [OAI1], and 
-[PaLM](https://developers.generativeai.google/products/palm), [ZG1].
+[OpenAI](https://platform.openai.com), [OAI1],
+[PaLM](https://developers.generativeai.google/products/palm), [ZG1],
+and
+[MistralAI](https://docs.mistral.ai), [MAI1].
 
 For more details how the concrete LLMs are accessed see the packages
-["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
+["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2],
+["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3], and
+["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9].
 
 The LLM functions built by this package can have evaluators that use "sub-parsers" -- see 
-["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/Text::SubParsers), [AAp4].
+["Text::SubParsers"](https://raku.land/zef:antononcube/Text::SubParsers), [AAp4].
 
 The primary motivation to have handy, configurable functions for utilizing LLMs
 came from my work on the packages
@@ -30,6 +33,9 @@ see the paclet
 
 For well curated and instructive examples of LLM prompts see the
 [Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
+Many of those prompts (≈220) are available in Raku and Python --
+see ["LLM::Prompts"](https://raku.land/zef:antononcube/LLM::Prompts), [AAp8], and
+["LLMPrompts"](https://pypi.org/project/LLMPrompts/), [AAp10], respectively.
 
 The article
 ["Generating documents via templates and LLMs"](https://rakuforprediction.wordpress.com/2023/07/11/generating-documents-via-templates-and-llms/), [AA1],
@@ -60,8 +66,9 @@ zef install https://github.com/antononcube/Raku-LLM-Functions.git
 
 "Out of the box"
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
-["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
+["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2],
+["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3], and
+["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9].
 Other LLM access packages can be utilized via appropriate LLM configurations.
 
 Configurations:
@@ -141,26 +148,27 @@ use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 ```
-# :tool-prompt("")
-# :examples($[])
-# :format("values")
-# :max-tokens(300)
-# :api-user-id("user:337404901775")
-# :temperature(0.8)
-# :tool-request-parser(WhateverCode)
-# :prompts($[])
-# :tool-response-insertion-function(WhateverCode)
-# :model("text-davinci-003")
 # :stop-tokens($[])
-# :api-key(Whatever)
-# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
-# :module("WWW::OpenAI")
-# :argument-renames(${:api-key("auth-key"), :stop-tokens("stop")})
-# :total-probability-cutoff(0.03)
-# :prompt-delimiter(" ")
+# :model("text-davinci-003")
+# :api-user-id("user:853403645647")
 # :evaluator(Whatever)
-# :tools($[])
+# :examples($[])
+# :temperature(0.8)
+# :max-tokens(300)
 # :name("openai")
+# :images($[])
+# :prompt-delimiter(" ")
+# :tools($[])
+# :api-key(Whatever)
+# :tool-response-insertion-function(WhateverCode)
+# :module("WWW::OpenAI")
+# :tool-prompt("")
+# :argument-renames(${:api-key("auth-key"), :stop-tokens("stop")})
+# :format("values")
+# :prompts($[])
+# :tool-request-parser(WhateverCode)
+# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*})
+# :total-probability-cutoff(0.03)
 ```
 
 Here is the ChatGPT-based configuration:
@@ -169,26 +177,27 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# tools => []
-# function => &OpenAIChatCompletion
-# max-tokens => 300
-# evaluator => (my \LLM::Functions::EvaluatorChat_4192624689152 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assitant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:244341737759", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_4192624689152), formatron => "Str"))
-# name => chatgpt
-# examples => []
-# prompt-delimiter =>  
-# temperature => 0.8
-# total-probability-cutoff => 0.03
-# format => values
-# api-user-id => user:244341737759
-# model => gpt-3.5-turbo
-# api-key => (Whatever)
 # prompts => []
 # tool-response-insertion-function => (WhateverCode)
-# tool-request-parser => (WhateverCode)
-# tool-prompt => 
 # module => WWW::OpenAI
-# stop-tokens => []
+# tool-request-parser => (WhateverCode)
+# api-user-id => user:300992191133
 # argument-renames => {api-key => auth-key, stop-tokens => stop}
+# evaluator => (my \LLM::Functions::EvaluatorChat_5457798984688 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assitant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:300992191133", module => "WWW::OpenAI", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :@images is copy = Empty, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, images => [], argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_5457798984688), formatron => "Str"))
+# images => []
+# api-key => (Whatever)
+# tool-prompt => 
+# format => values
+# model => gpt-3.5-turbo
+# function => &OpenAIChatCompletion
+# prompt-delimiter =>  
+# total-probability-cutoff => 0.03
+# stop-tokens => []
+# tools => []
+# temperature => 0.8
+# examples => []
+# name => chatgpt
+# max-tokens => 300
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -205,26 +214,27 @@ Here is the default PaLM configuration:
 .say for llm-configuration('PaLM').Hash;
 ```
 ```
-# tool-request-parser => (WhateverCode)
-# function => &PaLMGenerateText
-# prompt-delimiter =>  
-# tool-response-insertion-function => (WhateverCode)
-# model => text-bison-001
-# examples => []
-# api-key => (Whatever)
-# max-tokens => 300
-# api-user-id => user:148868177699
-# prompts => []
-# stop-tokens => []
-# evaluator => (Whatever)
-# format => values
-# tools => []
-# temperature => 0.4
-# module => WWW::PaLM
 # total-probability-cutoff => 0
-# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens, stop-tokens => stop-sequences}
-# tool-prompt => 
 # name => palm
+# tools => []
+# examples => []
+# model => text-bison-001
+# module => WWW::PaLM
+# stop-tokens => []
+# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens, stop-tokens => stop-sequences}
+# evaluator => (Whatever)
+# function => &PaLMGenerateText
+# temperature => 0.4
+# prompt-delimiter =>  
+# prompts => []
+# tool-response-insertion-function => (WhateverCode)
+# images => []
+# api-user-id => user:794547769572
+# max-tokens => 300
+# api-key => (Whatever)
+# format => values
+# tool-request-parser => (WhateverCode)
+# tool-prompt =>
 ```
 
 -----
@@ -239,7 +249,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# -> $text, *%args { #`(Block|4192645382936) ... }
+# -> $text, *%args { #`(Block|5457781528120) ... }
 ```
 
 Here we evaluate over a message: 
@@ -252,26 +262,26 @@ say &func('greek salad');
 # 
 # Ingredients:
 # 
-# - 1 head romaine lettuce, chopped
-# - 1 cucumber, sliced
-# - 1/2 red onion, thinly sliced
-# - 1/2 cup Kalamata olives
-# - 1/2 cup crumbled feta cheese
-# - 1/4 cup extra virgin olive oil
-# - 2 tablespoons red wine vinegar
-# - 1 garlic clove, minced
-# - 1 teaspoon dried oregano
-# - Salt and freshly ground black pepper, to taste
+# -1 head of romaine lettuce, chopped 
+# -1 cucumber, sliced
+# -1/2 red onion, diced
+# -1 green pepper, sliced
+# -1/2 cup feta cheese crumbles
+# -1/2 cup kalamata olives
+# -1/4 cup olive oil
+# -3 tablespoons red wine vinegar
+# -1 teaspoon oregano
+# -Salt and pepper to taste
 # 
 # Instructions:
 # 
-# 1. In a large bowl, combine the lettuce, cucumber, onion, olives, and feta cheese.
+# 1. In a large bowl, combine the lettuce, cucumber, red onion, green pepper, feta cheese, and olives.
 # 
-# 2. In a small bowl, whisk together the olive oil, vinegar, garlic, oregano, salt, and pepper.
+# 2. In a small bowl, whisk together the olive oil, red wine vinegar, oregano, salt, and pepper.
 # 
-# 3. Pour the dressing over the salad and toss to coat.
+# 3. Drizzle the dressing over the salad and toss to combine.
 # 
-# 4. Serve immediately.
+# 4. Serve and enjoy!
 ```
 
 ### Positional arguments
@@ -285,7 +295,7 @@ my &func2 = llm-function(
         llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|4192613528368) ... }
+# -> **@args, *%args { #`(Block|5457817200328) ... }
 ```
 
 Here were we apply the function:
@@ -294,7 +304,7 @@ Here were we apply the function:
 my $res2 = &func2("tennis balls", "toyota corolla 2010");
 ```
 ```
-# 110
+# 50
 ```
 
 Here we show that we got a number:
@@ -315,7 +325,7 @@ Here the first argument is a template with two named arguments:
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
 ```
 ```
-# -> **@args, *%args { #`(Block|4192645498728) ... }
+# -> **@args, *%args { #`(Block|5457817237688) ... }
 ```
 
 Here is an invocation:
@@ -324,28 +334,33 @@ Here is an invocation:
 &func3(dish => 'salad', cuisine => 'Russian', max-tokens => 300);
 ```
 ```
-# **Ingredients**
+# **Russian Salad (Olivier Salad)**
 # 
-# * 1 head of cabbage (about 1 pound)
-# * 1/2 cup mayonnaise
-# * 1/4 cup sour cream
-# * 1/4 cup chopped onion
-# * 1/4 cup chopped dill
-# * 1/4 cup chopped parsley
+# Ingredients:
+# 
+# * 2 pounds (900g) potatoes, peeled and cubed
+# * 1 pound (450g) carrots, peeled and cubed
+# * 1 pound (450g) celery root, peeled and cubed
+# * 1 pound (450g) red cabbage, thinly sliced
+# * 1 pound (450g) green beans, cooked and cooled
+# * 1 cup (240ml) mayonnaise
+# * 1/2 cup (120ml) sour cream
+# * 1/4 cup (60ml) finely chopped fresh dill
+# * 1/4 cup (60ml) finely chopped fresh parsley
 # * Salt and pepper to taste
 # 
-# **Instructions**
+# Instructions:
 # 
-# 1. Shred the cabbage.
-# 2. In a large bowl, combine the cabbage, mayonnaise, sour cream, onion, dill, parsley, salt, and pepper.
-# 3. Stir until well combined.
+# 1. In a large bowl, combine the potatoes, carrots, celery root, and red cabbage.
+# 2. In a small bowl, whisk together the mayonnaise, sour cream, dill, parsley, salt, and pepper.
+# 3. Pour the dressing over the salad and toss to coat.
 # 4. Serve immediately or chill for later.
 # 
-# **Tips**
+# **Tips:**
 # 
-# * For a more flavorful salad, marinate the cabbage in the dressing for at least 30 minutes before serving.
-# * You can also add other ingredients to the salad, such as carrots, celery, or tomatoes.
-# * Serve the salad with your favorite bread or crackers.
+# * To make the salad ahead of time, chill it for at least 2 hours before serving.
+# * If you don't have time to cook the green beans, you can use canned green beans instead.
+# * Feel free to add
 ```
 
 --------
@@ -401,7 +416,7 @@ my &fec = llm-example-function(
 say &fec('raccoon');
 ```
 ```
-# skunk
+# opossum
 ```
 
 --------
@@ -459,7 +474,7 @@ $chat.eval('What is the most transparent gem?');
 $chat.eval('Ok. What are the second and third most transparent gems?');
 ```
 ```
-# The second most transparent gem is typically considered to be sapphire, while the third most transparent gem is usually emerald.
+# The second most transparent gem is spinel, and the third most transparent gem is sapphire.
 ```
 
 Here are the prompt(s) and all messages of the chat object:
@@ -474,19 +489,19 @@ $chat.say
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role	user
 # content	What is the most transparent gem?
-# timestamp	2023-11-16T06:25:57.460871-05:00
+# timestamp	2023-12-24T13:03:10.357824-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role	assistant
 # content	The most transparent gem is diamond.
-# timestamp	2023-11-16T06:25:58.343413-05:00
+# timestamp	2023-12-24T13:03:11.436697-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role	user
 # content	Ok. What are the second and third most transparent gems?
-# timestamp	2023-11-16T06:25:58.360544-05:00
+# timestamp	2023-12-24T13:03:11.464407-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role	assistant
-# content	The second most transparent gem is typically considered to be sapphire, while the third most transparent gem is usually emerald.
-# timestamp	2023-11-16T06:26:00.283375-05:00
+# content	The second most transparent gem is spinel, and the third most transparent gem is sapphire.
+# timestamp	2023-12-24T13:03:12.298578-05:00
 ```
 
 --------
@@ -573,7 +588,9 @@ error => {code => 400, message => Messages must alternate between authors., stat
 
 ### Repositories, sites
 
-[OAI1] OpenAI Platform, [OpenAI platform](https://platform.openai.com/).
+[MAI1] MistralAI team, [MistralAI platform](https://docs.mistral.ai).
+
+[OAI1] OpenAI team, [OpenAI platform](https://platform.openai.com/).
 
 [WRIr1] Wolfram Research, Inc.
 [Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
@@ -619,6 +636,16 @@ error => {code => 400, message => Messages must alternate between authors., stat
 [LLM::Prompts Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
+
+[AAp9] Anton Antonov,
+[WWW::MistralAI Raku package](https://github.com/antononcube/Raku-WWW-MistralAI),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp10] Anton Antonov,
+[LLMPrompts Python package](https://pypi.org/project/LLMPrompts/),
+(2023),
+[PyPI.org/antononcube](https://pypi.org/user/antononcube/).
 
 [WRIp1] Wolfram Research, Inc.
 [LLMFunctions paclet](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/),

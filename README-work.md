@@ -9,15 +9,18 @@
 
 This Raku package provides functions and function objects to access, interact, and utilize 
 Large Language Models (LLMs), like 
-[OpenAI](https://platform.openai.com), [OAI1], and 
-[PaLM](https://developers.generativeai.google/products/palm), [ZG1].
+[OpenAI](https://platform.openai.com), [OAI1],
+[PaLM](https://developers.generativeai.google/products/palm), [ZG1],
+and
+[MistralAI](https://docs.mistral.ai), [MAI1].
 
 For more details how the concrete LLMs are accessed see the packages
-["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
+["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2],
+["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3], and
+["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9].
 
 The LLM functions built by this package can have evaluators that use "sub-parsers" -- see 
-["ML::NLPTemplateEngine"](https://raku.land/zef:antononcube/Text::SubParsers), [AAp4].
+["Text::SubParsers"](https://raku.land/zef:antononcube/Text::SubParsers), [AAp4].
 
 The primary motivation to have handy, configurable functions for utilizing LLMs
 came from my work on the packages
@@ -30,6 +33,9 @@ see the paclet
 
 For well curated and instructive examples of LLM prompts see the
 [Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
+Many of those prompts (≈220) are available in Raku and Python --
+see ["LLM::Prompts"](https://raku.land/zef:antononcube/LLM::Prompts), [AAp8], and
+["LLMPrompts"](https://pypi.org/project/LLMPrompts/), [AAp10], respectively.
 
 The article
 ["Generating documents via templates and LLMs"](https://rakuforprediction.wordpress.com/2023/07/11/generating-documents-via-templates-and-llms/), [AA1],
@@ -60,8 +66,9 @@ zef install https://github.com/antononcube/Raku-LLM-Functions.git
 
 "Out of the box"
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
-["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2], and
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3].
+["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2],
+["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3], and
+["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9].
 Other LLM access packages can be utilized via appropriate LLM configurations.
 
 Configurations:
@@ -397,7 +404,9 @@ error => {code => 400, message => Messages must alternate between authors., stat
 
 ### Repositories, sites
 
-[OAI1] OpenAI Platform, [OpenAI platform](https://platform.openai.com/).
+[MAI1] MistralAI team, [MistralAI platform](https://docs.mistral.ai).
+
+[OAI1] OpenAI team, [OpenAI platform](https://platform.openai.com/).
 
 [WRIr1] Wolfram Research, Inc.
 [Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
@@ -443,6 +452,16 @@ error => {code => 400, message => Messages must alternate between authors., stat
 [LLM::Prompts Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
+
+[AAp9] Anton Antonov,
+[WWW::MistralAI Raku package](https://github.com/antononcube/Raku-WWW-MistralAI),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp10] Anton Antonov,
+[LLMPrompts Python package](https://pypi.org/project/LLMPrompts/),
+(2023),
+[PyPI.org/antononcube](https://pypi.org/user/antononcube/).
 
 [WRIp1] Wolfram Research, Inc.
 [LLMFunctions paclet](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/),
