@@ -4,6 +4,7 @@ use lib '.';
 use lib './lib';
 
 use LLM::Functions;
+use Text::SubParsers;
 
 use Test;
 
@@ -18,5 +19,9 @@ ok ($prompt2 ==> llm-function(llm-evaluator => llm-configuration('openai') ))("g
 
 ## 3
 ok ($prompt2 ==> llm-function(llm-evaluator => 'openai'))("greek salad");
+
+## 4
+my $res = llm-synthesize(['Give the GDP of the top 10 countries in 2020. Give the results as a JSON dictionary.'], e=>'chatgpt', form => sub-parser('JSON'):drop);
+isa-ok $res, Hash;
 
 done-testing;
