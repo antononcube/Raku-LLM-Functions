@@ -300,7 +300,7 @@ our proto llm-function(|) is export {*}
 # No positional args
 multi sub llm-function(:form(:$formatron) = 'Str',
                        :e(:$llm-evaluator) is copy = Whatever) {
-    return llm-function('', :$llm-evaluator);
+    return llm-function('', :$formatron, :$llm-evaluator);
 }
 
 # Using a string
@@ -428,16 +428,19 @@ multi sub llm-example-function(@pairs,
 #| C<:e(:$llm-evaluator)> -- Evaluator object specification.
 our proto sub llm-synthesize($prompt,
                              $prop = Whatever,
+                             :form(:$formatron) = 'Str',
                              :e(:$llm-evaluator) is copy = Whatever) is export {*}
 
 multi sub llm-synthesize($prompt,
                          $prop = Whatever,
+                         :form(:$formatron) = 'Str',
                          :e(:$llm-evaluator) is copy = Whatever) {
-    return llm-synthesize([$prompt,], $prop, :$llm-evaluator);
+    return llm-synthesize([$prompt,], $prop, :$formatron, :$llm-evaluator);
 }
 
 multi sub llm-synthesize(@prompts is copy,
                          $prop is copy = Whatever,
+                         :form(:$formatron) = 'Str',
                          :e(:$llm-evaluator) is copy = Whatever) {
 
     # Process properties
@@ -486,7 +489,7 @@ multi sub llm-synthesize(@prompts is copy,
     # Post process
     return do given $prop {
         when 'FullText' {
-            my $res = llm-function(:$llm-evaluator)($prompt);
+            my $res = llm-function(:$formatron, :$llm-evaluator)($prompt);
             [|@processed, $res]
         }
 
@@ -495,7 +498,7 @@ multi sub llm-synthesize(@prompts is copy,
         }
 
         default {
-            llm-function(:$llm-evaluator)($prompt)
+            llm-function(:$formatron, :$llm-evaluator)($prompt)
         }
     }
 }
@@ -582,26 +585,26 @@ multi sub llm-chat(:$prompt = '', *%args) {
 #| C<*%args> -- Named arguments to make the evaluator object.
 proto sub llm-vision-synthesize(|) is export {*}
 
-multi sub llm-vision-synthesize(:@images, *%args) {
+multi sub llm-vision-synthesize(:@images, :form(:$formatron) = 'Str', *%args) {
     my $prompt = do if @images > 1 {
         'Give descriptions of the images:'
     } else {
         'Give description of the image:'
     }
-    return llm-vision-synthesize([$prompt,], @images, |%args);
+    return llm-vision-synthesize([$prompt,], @images, :$formatron, |%args);
 }
 
-multi sub llm-vision-synthesize($prompt, $image where $image ~~ Str, *%args) {
-    return llm-vision-synthesize($prompt, [$image,], |%args);
+multi sub llm-vision-synthesize($prompt, $image where $image ~~ Str, :form(:$formatron) = 'Str', *%args) {
+    return llm-vision-synthesize($prompt, [$image,], :$formatron, |%args);
 }
 
-multi sub llm-vision-synthesize(Str $prompt, @images, *%args) {
-    return llm-vision-synthesize([$prompt,], @images, |%args);
+multi sub llm-vision-synthesize(Str $prompt, @images, :form(:$formatron) = 'Str', *%args) {
+    return llm-vision-synthesize([$prompt,], @images, :$formatron, |%args);
 }
 
-multi sub llm-vision-synthesize(@prompts, @images, *%args) {
+multi sub llm-vision-synthesize(@prompts, @images, :form(:$formatron) = 'Str', *%args) {
     my $conf = llm-configuration("ChatGPT", model => 'gpt-4-vision-preview', temperature => 0.2, |%args, :@images);
-    return llm-synthesize(@prompts, llm-evaluator => $conf);
+    return llm-synthesize(@prompts, :$formatron, llm-evaluator => $conf);
 }
 
 #===========================================================
