@@ -41,7 +41,7 @@ multi sub llm-configuration($spec, *%args) {
     my $resObj =
             do given $spec {
                 when Whatever {
-                    llm-configuration('openai')
+                    llm-configuration('chatgpt')
                 }
 
                 when $_ ~~ Str:D && $_.lc eq 'openai' {
@@ -51,7 +51,7 @@ multi sub llm-configuration($spec, *%args) {
                             api-key => Whatever,
                             api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
                             module => 'WWW::OpenAI',
-                            model => 'text-davinci-003',
+                            model => 'gpt-3.5-turbo-instruct',
                             function => &OpenAITextCompletion,
                             temperature => 0.8,
                             max-tokens => 300,
@@ -129,7 +129,7 @@ multi sub llm-configuration($spec, *%args) {
                 }
 
                 default {
-                    llm-configuration('openai')
+                    llm-configuration('chatgpt')
                 }
             }
 
@@ -226,11 +226,11 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
     $llm-evaluator = do given $llm-evaluator {
 
         when Whatever {
-            $evaluatorClass.new(conf => llm-configuration('openai', |%argsConf), |%argsEvlr);
+            $evaluatorClass.new(conf => llm-configuration('chatgpt', |%argsConf), |%argsEvlr);
         }
 
         when WhateverCode {
-            $evaluatorClass.new(conf => llm-configuration('openai', |%argsConf), |%argsEvlr);
+            $evaluatorClass.new(conf => llm-configuration('chatgpt', |%argsConf), |%argsEvlr);
         }
 
         when $_ ~~ Str:D {
