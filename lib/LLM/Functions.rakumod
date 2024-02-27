@@ -130,7 +130,7 @@ multi sub llm-configuration($spec, *%args) {
                             api-key => Whatever,
                             api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
                             module => 'WWW::MistralAI',
-                            base-url => 'https://api.mistral.ai/v1',
+                            base-url => mistralai-base-url(),
                             model => 'mistral-tiny',
                             function => &MistralAIChatCompletion,
                             temperature => 0.6,
