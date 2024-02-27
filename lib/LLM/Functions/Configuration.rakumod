@@ -22,6 +22,9 @@ class LLM::Functions::Configuration {
     # LLM module (to load for access)
     has Str $.module;
 
+    # Base URL
+    has Str $.base-url is rw = '';
+
     # "Model" base model
     has Str $.model is rw;
 
@@ -92,7 +95,7 @@ class LLM::Functions::Configuration {
         return
                 { :$!name,
                   :$!api-key, :$!api-user-id,
-                  :$!module, :$!model, :&!function,
+                  :$!module, :$!base-url, :$!model, :&!function,
                   :$!temperature, :$!total-probability-cutoff, :$!max-tokens,
                   :$!format,
                   :@!prompts, :$!prompt-delimiter,
