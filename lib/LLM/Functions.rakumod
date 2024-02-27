@@ -32,7 +32,7 @@ multi reallyflat(+@list) {
 # LLM configuration
 #===========================================================
 
-my @mustPassConfKeys = <name prompts examples temperature max-tokens stop-tokens api-key api-user-id>;
+my @mustPassConfKeys = <name prompts examples temperature max-tokens stop-tokens api-key api-user-id base-url>;
 
 #| LLM configuration creation and retrieval.
 our proto llm-configuration(|) is export {*}
@@ -51,6 +51,7 @@ multi sub llm-configuration($spec, *%args) {
                             api-key => Whatever,
                             api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
                             module => 'WWW::OpenAI',
+                            base-url => openai-base-url(),
                             model => 'gpt-3.5-turbo-instruct',
                             function => &OpenAITextCompletion,
                             temperature => 0.8,
@@ -77,6 +78,19 @@ multi sub llm-configuration($spec, *%args) {
                     $obj;
                 }
 
+                when $_ ~~ Str:D && $_.lc eq 'llama' {
+
+                    my $obj = llm-configuration('chatpgt',
+                            name => 'llama',
+                            base-url => 'http://localhost:8080/v1',
+                            model => 'gpt-3.5-turbo',
+                            |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
+
+                    $obj.evaluator = LLM::Functions::EvaluatorChat.new(conf => $obj);
+
+                    $obj;
+                }
+
                 when $_ ~~ Str:D && $_.lc eq 'palm' {
 
                     LLM::Functions::Configuration.new(
@@ -84,6 +98,7 @@ multi sub llm-configuration($spec, *%args) {
                             api-key => Whatever,
                             api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
                             module => 'WWW::PaLM',
+                            base-url => '',
                             model => 'text-bison-001',
                             function => &PaLMGenerateText,
                             temperature => 0.4,
@@ -115,6 +130,7 @@ multi sub llm-configuration($spec, *%args) {
                             api-key => Whatever,
                             api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
                             module => 'WWW::MistralAI',
+                            base-url => 'https://api.mistral.ai/v1',
                             model => 'mistral-tiny',
                             function => &MistralAIChatCompletion,
                             temperature => 0.6,
