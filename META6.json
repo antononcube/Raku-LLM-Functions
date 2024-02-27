@@ -1,7 +1,7 @@
 {
   "name": "LLM::Functions",
   "description": "LLM::Functions provides functions and function objects to access, interact, and utilize LLMs",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "perl": "6.d",
   "authors": [
     "Anton Antonov"
@@ -13,7 +13,7 @@
     "JSON::Fast:ver<0.17+>",
     "Text::SubParsers:ver<0.1.1+>",
     "WWW::MistralAI:ver<0.1.0+>",
-    "WWW::OpenAI:ver<0.2.11+>",
+    "WWW::OpenAI:ver<0.3.0+>",
     "WWW::PaLM:ver<0.1.9+>"
   ],
   "build-depends": [],
@@ -35,11 +35,14 @@
     "censorship",
     "chat-gpt",
     "chatgpt",
+    "generative ai",
     "generative art",
     "generative",
+    "llama",
+    "mistaralai",
     "moderation",
-    "censorship",
     "openai",
+    "palm",
     "transcription",
     "translation",
     "web service",
