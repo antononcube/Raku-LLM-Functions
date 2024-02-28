@@ -82,7 +82,7 @@ multi sub llm-configuration($spec, *%args) {
 
                     my $obj = llm-configuration('chatpgt',
                             name => 'llama',
-                            base-url => 'http://localhost:8080/v1',
+                            base-url => 'http://127.0.0.1:8080/v1',
                             model => 'gpt-3.5-turbo',
                             |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
 
