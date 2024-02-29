@@ -132,4 +132,16 @@ isa-ok $evlr16.Str, Str;
 
 ok $evlr16.gist;
 
+#===========================================================
+## 19
+#===========================================================
+my $conf19 = 'Llama';
+my $prompt19 = 'Given a topic, write emails in a concise, professional manner.';
+
+my $llm-evaluator19 = llm-evaluator($conf19,
+        conf => llm-configuration($conf19, prompts => $prompt19, temperature => 0.01),
+        formatron => 'JSON');
+
+is $llm-evaluator19.conf.prompts, [$prompt19,], 'Same prompt';
+
 done-testing;
