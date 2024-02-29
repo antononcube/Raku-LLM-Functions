@@ -78,7 +78,7 @@ multi sub llm-configuration($spec, *%args) {
                     $obj;
                 }
 
-                when $_ ~~ Str:D && $_.lc eq 'llama' {
+                when $_ ~~ Str:D && $_.lc ∈ <llama llamafile> {
 
                     my $obj = llm-configuration('chatpgt',
                             name => 'llama',
@@ -257,6 +257,9 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
         when $_ ~~ LLM::Functions::Configuration {
 
             my $conf = $_.clone;
+            with %argsEvlr<conf> {
+                $conf = llm-configuration($conf, |%argsEvlr<conf>.Hash);
+            }
 
             if $conf.evaluator.isa(Whatever) {
                 $evaluatorClass.new(:$conf, |%argsEvlr);
