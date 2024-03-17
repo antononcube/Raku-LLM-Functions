@@ -16,8 +16,9 @@ and
 
 For more details how the concrete LLMs are accessed see the packages
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2],
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3], and
-["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9].
+["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3],
+["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9], and
+["WWW::Gemini"](https://raku.land/zef:antononcube/WWW::Gemini), [AAp11].
 
 The LLM functions built by this package can have evaluators that use "sub-parsers" -- see 
 ["Text::SubParsers"](https://raku.land/zef:antononcube/Text::SubParsers), [AAp4].
@@ -358,6 +359,11 @@ error => {code => 400, message => Messages must alternate between authors., stat
     - This is easily implemented at "top-level." 
   - [X] DONE Chat class / object
     - For long conversations
+  - [X] DONE Include LLaMA 
+    - Just using a different `:$base-url` for "ChatGPT" for the configurations.
+  - [X] DONE Include Gemini
+    - [X] DONE Separate configuration
+    - [X] DONE Its own evaluator class
   - [X] DONE LLM example function
     - [X] DONE First version with the signatures:
       - [X] `@pairs`
@@ -365,6 +371,7 @@ error => {code => 400, message => Messages must alternate between authors., stat
       - [X] Hint option
     - [X] DONE Verify works with OpenAI 
     - [X] DONE Verify works with PaLM
+    - [X] DONE Verify works with Gemini
   - [X] DONE Interpreter argument for `llm-function`
     - See the `formatron` attribute of `LLM::Functions::Evaluator`.
   - [X] DONE Adding `form` option to chat objects evaluator
@@ -462,6 +469,11 @@ error => {code => 400, message => Messages must alternate between authors., stat
 [LLMPrompts Python package](https://pypi.org/project/LLMPrompts/),
 (2023),
 [PyPI.org/antononcube](https://pypi.org/user/antononcube/).
+
+[AAp11] Anton Antonov,
+[WWW::Gemini Raku package](https://github.com/antononcube/Raku-WWW-Gemini),
+(2024),
+[GitHub/antononcube](https://github.com/antononcube).
 
 [WRIp1] Wolfram Research, Inc.
 [LLMFunctions paclet](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/LLMFunctions/),
