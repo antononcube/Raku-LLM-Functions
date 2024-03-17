@@ -9,6 +9,9 @@ use WWW::PaLM;
 use WWW::PaLM::GenerateText;
 use WWW::PaLM::GenerateMessage;
 
+use WWW::Gemini;
+use WWW::Gemini::GenerateContent;
+
 use WWW::MistralAI;
 use WWW::MistralAI::ChatCompletions;
 
@@ -16,6 +19,7 @@ use LLM::Functions::Chat;
 use LLM::Functions::Configuration;
 use LLM::Functions::Evaluator;
 use LLM::Functions::EvaluatorChat;
+use LLM::Functions::EvaluatorChatGemini;
 use LLM::Functions::EvaluatorChatPaLM;
 
 unit module LLM::Functions;
@@ -121,6 +125,30 @@ multi sub llm-configuration($spec, *%args) {
                             function => &PaLMGenerateMessage,
                             model => 'chat-bison-001',
                             |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash)
+                }
+
+                when $_ ~~ Str:D && $_.lc ∈ <gemini chatgemini> {
+
+                    LLM::Functions::Configuration.new(
+                            name => 'gemini',
+                            api-key => Whatever,
+                            api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
+                            module => 'WWW::Gemini',
+                            base-url => '',
+                            model => 'gemini-pro',
+                            function => &GeminiGenerateContent,
+                            temperature => 0.4,
+                            max-tokens => 300,
+                            total-probability-cutoff => 0,
+                            prompts => Empty,
+                            prompt-delimiter => ' ',
+                            examples => Empty,
+                            stop-tokens => Empty,
+                            base-url => 'https://generativelanguage.googleapis.com/v1beta/models',
+                            argument-renames => %('api-key' => 'auth-key',
+                                                  'max-tokens' => 'max-output-tokens',
+                                                  'stop-tokens' => 'stop-sequences'),
+                            format => 'values');
                 }
 
                 when $_ ~~ Str:D && $_.lc ∈ <mistralai mistral mistral-chat chatmistral> {
@@ -571,9 +599,17 @@ multi sub llm-chat(:$prompt = '', *%args) {
             # Obtain Evaluator class
             if $evaluatorClass.isa(Whatever) {
                 if $conf.name ~~ /:i palm / {
+
                     $conf = llm-configuration('ChatPaLM', |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
 
                     $evaluatorClass = LLM::Functions::EvaluatorChatPaLM
+
+                } elsif $conf.name ~~ /:i gemini / {
+
+                    $conf = llm-configuration('Gemini', |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
+
+                    $evaluatorClass = LLM::Functions::EvaluatorChatGemini
+
                 } else {
                     $evaluatorClass = LLM::Functions::EvaluatorChat;
                 }
