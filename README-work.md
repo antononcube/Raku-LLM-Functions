@@ -323,6 +323,40 @@ $chat.say
 
 --------
 
+## AI-vision functions
+
+Consider [this image](https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/MarkdownDocuments/Diagrams/AI-vision-via-WL/0iyello2xfyfo.png):
+
+![](https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/MarkdownDocuments/Diagrams/AI-vision-via-WL/0iyello2xfyfo.png)
+
+Here we import the image (as a Base64 string):
+
+```perl6
+use Image::Markup::Utilities;
+my $url = 'https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/MarkdownDocuments/Diagrams/AI-vision-via-WL/0iyello2xfyfo.png';
+my $img = image-import($url);
+$img.substr(^100)
+```
+
+Here we apply OpenAI's AI vision model `gpt-4-vision-preview` (which is the default one) over the ***URL of the image***:
+
+```perl6
+llm-vision-synthesize('Describe the image.', $url);
+```
+
+Here we apply Gemini's AI vision model `gemini-pro-vision` over the image:
+
+```perl6
+llm-vision-synthesize('Describe the image.', $img, e => 'Gemini');
+```
+
+**Remark:** Currently, Gemini works with (Base64) images only (and does not with URLs.) OpenAI's vision works with both URLs and images.
+
+
+The function `llm-vision-function` uses the same evaluators (configurations, models) as `llm-vision-synthesize`.
+
+--------
+
 ## Potential problems
 
 With PaLM with certain wrong configuration we get the error:
