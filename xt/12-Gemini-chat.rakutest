@@ -1,0 +1,48 @@
+use v6.d;
+
+use lib '.';
+use lib './lib';
+
+use LLM::Functions;
+
+use Test;
+
+plan *;
+
+## 1
+my $prompt = 'You are a gem expert and you give concise answers.';
+my $chat1 = llm-chat(chat-id => 'gem-expert-talk', conf => 'Gemini', :$prompt);
+
+isa-ok $chat1.llm-evaluator, LLM::Functions::EvaluatorChat;
+
+## 2
+note $chat1.eval('What is the most transparent gem?', :echo);
+ok $chat1.eval('What is the most transparent gem?');
+
+## 3
+my $msg3 = 'Ok. What are the second and third most transparent gems?';
+ok $chat1.eval($msg3);
+
+## 4
+my $msg4 = 'Which country buys gems the most?';
+ok $chat1.eval($msg4);
+
+## 5
+my $msg5 = 'Which country exports gems the most?';
+ok $chat1.eval($msg5);
+
+## 6
+# For Gemini in order to specify context we use the pattern:
+#  [ user => <context-prompt>, model => 'Ok.', ...]
+# Hence, we have two more messages.
+is $chat1.messages.elems, 8 + 2;
+
+## 7
+is $chat1.messages.all ~~ Hash, True;
+
+## 8
+is-deeply
+        $chat1.messages[4, 6, 8].map({ $_<content> }).Array,
+        [$msg3, $msg4, $msg5];
+
+done-testing;

@@ -1,0 +1,38 @@
+use v6.d;
+
+use lib '.';
+use lib './lib';
+
+use LLM::Functions;
+
+use Test;
+
+plan *;
+
+## 1
+ok llm-example-function(<finger hand> => <hand arm>, llm-evaluator => 'Gemini')('foot');
+
+## 2
+isa-ok llm-example-function('<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }')('<| 23->3, G->33, T -> R5|>', e => 'Gemini'), Str;
+
+## 3
+is-deeply
+        llm-example-function('<| A->3, 4->K1 |>' => '{ "A":3, "4":"K1" }', e => 'Gemini', form => 'JSON')('<| 23->3, G->33, T -> R5|>'),
+        ${"23" => 3, :G(33), :T("R5")};
+
+## 4
+isa-ok llm-example-function({ "crocodile" => "grasshopper", "fox" => "cardinal" }, hint => 'animal colors', e => 'Gemini')('raccoon'),
+        Str;
+
+## 5
+# Relaxed test.
+# PaLM produces more two 8s, e.g. 888 or 8888.
+like llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'Gemini')(8).trim,  / 8 8+ /;
+
+# This test gives: safetyFeedback	rating	category	HARM_CATEGORY_TOXICITY
+# is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => llm-configuration('Gemini', temperature => 0.01))(8).trim, '88';
+
+## 6
+is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'Gemini', form => { $_.trim.Int })(8), 88;
+
+done-testing;

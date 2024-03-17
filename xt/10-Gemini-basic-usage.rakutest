@@ -1,0 +1,50 @@
+use v6.d;
+
+use lib '.';
+use lib './lib';
+
+use LLM::Functions;
+use Text::SubParsers;
+
+use Test;
+
+my $echo = False;
+
+plan *;
+
+## 1
+ok llm-configuration('gemini');
+
+## 2
+my $prompt2 = "Make a recipe for the given phrase.";
+#note llm-function($prompt2, llm-evaluator => llm-configuration('gemini'))("greek salad". :$echo);
+ok llm-function($prompt2, llm-evaluator => llm-configuration('gemini'))("greek salad", :$echo);
+
+## 3
+isa-ok llm-function($prompt2, e => 'gemini')("greek salad", :$echo),
+        Str,
+        'greek salad';
+
+## 4
+my &prompt3 = { "How many $^a can fit inside one $^b?" };
+#note llm-function(&prompt3, llm-evaluator => 'gemini')('basket balls', 'toyota corolla 2010');
+is llm-function(&prompt3, llm-evaluator => 'gemini')('basket balls', 'toyota corolla 2010', :$echo).all ~~ Str,
+        True,
+        'basket balls in toyota corolla 2010';
+
+## 5
+my &prompt4 = -> :$dish, :$cuisine { "Give a recipe for $dish in the $cuisine cuisine." }
+is llm-function(&prompt4, llm-evaluator => 'gemini')(dish => 'salad', cuisine => 'Russian', max-tokens => 300, :$echo).all ~~ Str,
+        True,
+        'recipe';
+
+## 6
+my &f6 = llm-function(
+        { "What is the average speed of $_ ?" },
+        form => sub-parser(Numeric),
+        llm-evaluator => 'PaLM');
+
+#note &f6('a car on a USA highway', :$echo);
+isa-ok &f6('a car on a USA highway', :$echo), Positional;
+
+done-testing;
