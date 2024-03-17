@@ -633,33 +633,64 @@ multi sub llm-chat(:$prompt = '', *%args) {
 # LLM vision synthesize
 #===========================================================
 
+sub get-vision-llm-evaluator($spec, @images, *%args) {
+    return do given $spec {
+        when $_.isa(Whatever) && ($_ ~~ Str:D) && $spec.lc eq 'chatgpt' {
+            llm-evaluator("ChatGPT", model => 'gpt-4-vision-preview', temperature => 0.2, |%args, :@images);
+        }
+        when ($_ ~~ Str:D) && $spec.lc ∈ <gemini chatgemini> {
+            llm-evaluator("Gemini", model => 'gemini-pro-vision', temperature => 0.2, |%args, :@images);
+        }
+        default {
+            $spec
+        }
+    }
+}
+
 #| Creates a new chat object.
 #| Signatures: C<llm-vision-synthesize(@prompts, @images, *%args)>, C<llm-vision-synthesize($prompt, *%args)>.
 #| C<$prompt> -- A prompt string or a list of prompt strings.
 #| C<@images> -- List of images.
+#| C<:form(:$formatron)> -- Specification how the output to processed.
+#| C<:e(:$llm-evaluator)> -- LLM evaluator specification.
 #| C<*%args> -- Named arguments to make the evaluator object.
 proto sub llm-vision-synthesize(|) is export {*}
 
-multi sub llm-vision-synthesize(:@images, :form(:$formatron) = 'Str', *%args) {
+multi sub llm-vision-synthesize(:@images,
+                                :form(:$formatron) = 'Str',
+                                :e(:$llm-evaluator) is copy = Whatever,
+                                *%args) {
     my $prompt = do if @images > 1 {
         'Give descriptions of the images:'
     } else {
         'Give description of the image:'
     }
-    return llm-vision-synthesize([$prompt,], @images, :$formatron, |%args);
+    return llm-vision-synthesize([$prompt,], @images, :$formatron, :$llm-evaluator, |%args);
 }
 
-multi sub llm-vision-synthesize($prompt, $image where $image ~~ Str, :form(:$formatron) = 'Str', *%args) {
-    return llm-vision-synthesize($prompt, [$image,], :$formatron, |%args);
+multi sub llm-vision-synthesize($prompt,
+                                $image where $image ~~ Str,
+                                :form(:$formatron) = 'Str',
+                                :e(:$llm-evaluator) is copy = Whatever,
+                                *%args) {
+    return llm-vision-synthesize($prompt, [$image,], :$formatron, :$llm-evaluator, |%args);
 }
 
-multi sub llm-vision-synthesize(Str $prompt, @images, :form(:$formatron) = 'Str', *%args) {
-    return llm-vision-synthesize([$prompt,], @images, :$formatron, |%args);
+multi sub llm-vision-synthesize(Str $prompt,
+                                @images,
+                                :form(:$formatron) = 'Str',
+                                :e(:$llm-evaluator) is copy = Whatever,
+                                *%args) {
+    return llm-vision-synthesize([$prompt,], @images, :$formatron, :$llm-evaluator, |%args);
 }
 
-multi sub llm-vision-synthesize(@prompts, @images, :form(:$formatron) = 'Str', *%args) {
-    my $conf = llm-configuration("ChatGPT", model => 'gpt-4-vision-preview', temperature => 0.2, |%args, :@images);
-    return llm-synthesize(@prompts, :$formatron, llm-evaluator => $conf);
+multi sub llm-vision-synthesize(@prompts,
+                                @images,
+                                :form(:$formatron) = 'Str',
+                                :e(:$llm-evaluator) is copy = Whatever,
+                                *%args) {
+    $llm-evaluator = get-vision-llm-evaluator($llm-evaluator, @images, |%args);
+    return llm-synthesize(@prompts, :$formatron, :$llm-evaluator);
 }
 
 #===========================================================
@@ -670,14 +701,27 @@ multi sub llm-vision-synthesize(@prompts, @images, :form(:$formatron) = 'Str', *
 #| C<$prompt> -- A string or a function (optional.)
 #| C<@images> -- A list of image URLs, file names, or Base64 strings.
 #| C<:form(:$formatron)> -- Specification how the output to processed.
+#| C<:e(:$llm-evaluator)> -- LLM evaluator specification.
 #| C<*%args> -- additional argument of llm-configuration.
-proto sub llm-vision-function($prompt, $images, :form(:$formatron) = 'Str', *%args) is export {*}
+proto sub llm-vision-function($prompt,
+                              $images,
+                              :form(:$formatron) = 'Str',
+                              :e(:$llm-evaluator) is copy = Whatever,
+                              *%args) is export {*}
 
-multi sub llm-vision-function($prompt, Str $image, :form(:$formatron) = 'Str', *%args) {
-    return llm-vision-function($prompt, [$image, ], :$formatron, |%args);
+multi sub llm-vision-function($prompt,
+                              Str $image,
+                              :form(:$formatron) = 'Str',
+                              :e(:$llm-evaluator) is copy = Whatever,
+                              *%args) {
+    return llm-vision-function($prompt, [$image, ], :$formatron, :$llm-evaluator, |%args);
 }
 
-multi sub llm-vision-function($prompt, @images, :form(:$formatron) = 'Str', *%args) {
-    my $conf = llm-evaluator("ChatGPT", model => 'gpt-4-vision-preview', temperature => 0.2, |%args, :@images);
-    return llm-function($prompt, :$formatron, llm-evaluator => $conf);
+multi sub llm-vision-function($prompt,
+                              @images,
+                              :form(:$formatron) = 'Str',
+                              :e(:$llm-evaluator) is copy = Whatever,
+                              *%args) {
+    $llm-evaluator = get-vision-llm-evaluator($llm-evaluator, @images, |%args);
+    return llm-function($prompt, :$formatron, :$llm-evaluator);
 }
