@@ -12,6 +12,7 @@
     "Hash::Merge:ver<2.0.0+>:api<2+>",
     "JSON::Fast:ver<0.17+>",
     "Text::SubParsers:ver<0.1.1+>",
+    "WWW::Gemini:ver<0.0.8+>",
     "WWW::MistralAI:ver<0.1.3+>",
     "WWW::OpenAI:ver<0.3.0+>",
     "WWW::PaLM:ver<0.1.9+>"
@@ -24,6 +25,7 @@
     "LLM::Functions::Configuration": "lib/LLM/Functions/Configuration.rakumod",
     "LLM::Functions::Evaluator": "lib/LLM/Functions/Evaluator.rakumod",
     "LLM::Functions::EvaluatorChat": "lib/LLM/Functions/EvaluatorChat.rakumod",
+    "LLM::Functions::EvaluatorChatGemini": "lib/LLM/Functions/EvaluatorChatGemini.rakumod",
     "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod"
   },
   "resources": [],
