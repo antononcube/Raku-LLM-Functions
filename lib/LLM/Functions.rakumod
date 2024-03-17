@@ -635,7 +635,7 @@ multi sub llm-chat(:$prompt = '', *%args) {
 
 sub get-vision-llm-evaluator($spec, @images, *%args) {
     return do given $spec {
-        when $_.isa(Whatever) && ($_ ~~ Str:D) && $spec.lc eq 'chatgpt' {
+        when $_.isa(Whatever) || ($_ ~~ Str:D) && $spec.lc eq 'chatgpt' {
             llm-evaluator("ChatGPT", model => 'gpt-4-vision-preview', temperature => 0.2, |%args, :@images);
         }
         when ($_ ~~ Str:D) && $spec.lc ∈ <gemini chatgemini> {
