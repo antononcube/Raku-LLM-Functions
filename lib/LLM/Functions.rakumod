@@ -734,5 +734,6 @@ multi sub llm-vision-function($prompt,
                               :e(:$llm-evaluator) is copy = Whatever,
                               *%args) {
     $llm-evaluator = get-vision-llm-evaluator($llm-evaluator, @images, |%args);
+    note "llm-evaluator => {$llm-evaluator.raku}" if %args<echo> // False;
     return llm-function($prompt, :$formatron, :$llm-evaluator);
 }
