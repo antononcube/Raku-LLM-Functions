@@ -289,6 +289,10 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
                 $conf = llm-configuration($conf, |%argsEvlr<conf>.Hash);
             }
 
+            if %argsConf {
+                $conf = llm-configuration($conf, |%argsConf);
+            }
+
             if $conf.evaluator.isa(Whatever) {
                 $evaluatorClass.new(:$conf, |%argsEvlr);
 
@@ -634,20 +638,21 @@ multi sub llm-chat(:$prompt = '', *%args) {
 #===========================================================
 
 # [2024-05-09] OpenAI's vision models are:
-# 'gpt-4-vision-preview', 'gpt-4-1106-vision-preview', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo'.
-# It is not clear which one is the cheapest.
-# The most standard/mainstream seems to be 'gpt-4-turbo', which is both chat and vision model:
+# 'gpt-4-vision-preview', 'gpt-4-1106-vision-preview', 'gpt-4-turbo-2024-04-09', 'gpt-4-turbo', 'gpt-4o'.
+# It is stated by OpenAI that 'gpt-4o' is the cheapest.
+# The most standard/mainstream seems to be 'gpt-4-turbo' and 'gpt-4o', which are both chat and vision models:
 # https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
+# https://platform.openai.com/docs/models/gpt-4o
 sub get-vision-llm-evaluator($spec, @images, *%args) {
     return do given $spec {
         when $_.isa(Whatever) || ($_ ~~ Str:D) && $spec.lc eq 'chatgpt' {
-            llm-evaluator("ChatGPT", model => %args<model> // 'gpt-4-turbo', temperature => 0.2, |%args, :@images);
+            llm-evaluator("ChatGPT", model => %args<model> // 'gpt-4o', temperature => 0.2, |%args, :@images);
         }
         when ($_ ~~ Str:D) && $spec.lc ∈ <gemini chatgemini> {
             llm-evaluator("Gemini", model => %args<model> // 'gemini-pro-vision', temperature => 0.2, |%args, :@images);
         }
         default {
-            $spec
+            llm-evaluator($spec, |%args, :@images);
         }
     }
 }
@@ -695,6 +700,7 @@ multi sub llm-vision-synthesize(@prompts,
                                 :e(:$llm-evaluator) is copy = Whatever,
                                 *%args) {
     $llm-evaluator = get-vision-llm-evaluator($llm-evaluator, @images, |%args);
+    note "llm-evaluator => {$llm-evaluator.raku}" if %args<echo> // False;
     return llm-synthesize(@prompts, :$formatron, :$llm-evaluator);
 }
 
