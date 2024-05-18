@@ -144,4 +144,26 @@ my $llm-evaluator19 = llm-evaluator($conf19,
 
 is $llm-evaluator19.conf.prompts, [$prompt19,], 'Same prompt';
 
+#===========================================================
+## 20
+#===========================================================
+my @imgs20 = ['https://url1.com', 'https://url2.com'];
+my $llm-evaluator20a = llm-evaluator('ChatGPT', model => 'gpt-4o', images => @imgs20);
+my $llm-evaluator20b = llm-evaluator($llm-evaluator20a, images => @imgs20);
+
+is-deeply
+        $llm-evaluator20a.conf.Hash,
+        $llm-evaluator20b.conf.Hash,
+        'Same configurations of evaluators with images';
+
+#===========================================================
+## 21 & 22
+#===========================================================
+my $conf21 = llm-configuration('ChatGPT', model => 'gpt-4o', images => @imgs20);
+my $llm-evaluator21 = llm-evaluator($conf21, images => @imgs20);
+
+is-deeply $conf21.Hash, $llm-evaluator21.conf.Hash, 'Same configurations with images';
+
+is-deeply $conf21.Hash, $llm-evaluator21.conf.evaluator.conf.Hash, 'Same configurations with images';
+
 done-testing;
