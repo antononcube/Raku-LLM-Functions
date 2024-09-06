@@ -7,9 +7,9 @@ use LLM::Functions;
 # https://codelabs.developers.google.com/haiku-generator#4
 
 # Make a Chat-PaLM evaluator object
-my $llmEvalObj = LLM::Functions::EvaluatorChatPaLM.new(
+my $llmEvalObj = LLM::Functions::EvaluatorChatGemini.new(
         conf => llm-configuration(
-                'ChatPaLM',
+                'ChatGemini',
                 prompts => "You are an awesome haiku writer.",
                 examples => [
                     'Write a haiku about Google Photos.' => "Google Photos, my friend\nA journey of a lifetime\nCaptured in pixels"
