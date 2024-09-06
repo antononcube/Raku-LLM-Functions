@@ -8,7 +8,7 @@ class LLM::Functions::EvaluatorChat
     has $.examples is rw = Whatever;
 
     has Str $.user-role is rw = 'user';
-    has Str $.assitant-role is rw = 'assistant';
+    has Str $.assistant-role is rw = 'assistant';
     has Str $.system-role is rw = 'system';
 
     #------------------------------------------------------
@@ -104,6 +104,6 @@ class LLM::Functions::EvaluatorChat
     #| To Hash
     method Hash (--> Hash) {
         return %(conf => self.conf.Hash, formatron => self.formatron,
-                 :$!context, :$!examples, :$!assitant-role, :$!system-role, :$!user-role);
+                 :$!context, :$!examples, :$!assistant-role, :$!system-role, :$!user-role);
     }
 }

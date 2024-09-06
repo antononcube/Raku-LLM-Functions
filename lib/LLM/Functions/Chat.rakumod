@@ -93,7 +93,7 @@ class LLM::Functions::Chat {
         }
 
         # Make and store message response
-        my $assistant-role = self.llm-evaluator.assitant-role;
+        my $assistant-role = self.llm-evaluator.assistant-role;
         @!messages.push(self.make-message(role => $assistant-role, message => $msgRes));
 
         # Result
