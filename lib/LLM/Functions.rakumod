@@ -62,7 +62,7 @@ multi sub llm-configuration($spec, *%args) {
                             base-url => openai-base-url(),
                             model => 'gpt-3.5-turbo-instruct',
                             function => &OpenAITextCompletion,
-                            embedding-model => 'text-embedding-3-large',
+                            embedding-model => 'text-embedding-3-small',
                             embedding-function => &OpenAIEmbeddings,
                             temperature => 0.8,
                             max-tokens => 300,
