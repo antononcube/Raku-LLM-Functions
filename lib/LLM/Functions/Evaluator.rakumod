@@ -186,6 +186,7 @@ class LLM::Functions::Evaluator {
         # Invoke the LLM function
         my @res;
         try {
+            # It should be checked does the current model takes arrays of strings, or just strings.
             @res = @texts.map({ $confLocal.embedding-function.($_, |%args2) });
         }
 
