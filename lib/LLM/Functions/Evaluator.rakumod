@@ -129,6 +129,79 @@ class LLM::Functions::Evaluator {
         return self.post-process($res, form => %args<form> // Whatever);
     }
 
+
+    #-------------------------------------------------------
+    multi method embed(Str $text, *%args) {
+        return self.embed([$text,], |%args);
+    }
+
+    multi method embed(@texts, *%args) {
+
+        # To echo or not
+        my $echo = %args<echo> // False;
+
+        # Clone configuration
+        # We clone the configuration because some changes of the model are done
+        # before sending the evaluation request to LLM service.
+        my $confLocal = self.conf.clone;
+
+        note "Configuration : { $confLocal.Hash.raku }" if $echo;
+
+        # Change model
+        $confLocal.model = $confLocal.embedding-model;
+
+        # Load module
+        my $packageName = $confLocal.module;
+
+        my Bool $no-package = False;
+        try require ::($packageName);
+        if ::($packageName) ~~ Failure {
+            $no-package = True
+        }
+
+        CATCH {
+            if $no-package { warn "Cannot load package named $packageName."; }
+        }
+
+        note "Loaded : $packageName"  if $echo;
+
+        # Find known parameters
+        my @knownParamNames = $confLocal.embedding-function.candidates.map({ $_.signature.params.map({ $_.usage-name }) }).flat;
+
+        note "Known param mames : { @knownParamNames.raku }" if $echo;
+
+        # Make all named parameters hash
+        my %args2 = merge-hash($confLocal.Hash, %args);
+
+        # Handling the argument renaming in a more bureaucratic manner
+        for $confLocal.argument-renames.kv -> $k, $v {
+            %args2{$v} = %args2{$v} // %args2{$k} // Whatever;
+        }
+
+        # Filter parameters
+        %args2 = %args2.grep({ $_.key ∈ @knownParamNames }).Hash;
+
+        note 'LLM embedding function named arguments : ', %args2.raku if $echo;
+
+        # Invoke the LLM function
+        my @res;
+        try {
+            @res = @texts.map({ $confLocal.embedding-function.($_, |%args2) });
+        }
+
+        if $! {
+            note 'LLM embedding response was failure : ', $!.raku if $echo;
+            fail $!.payload;
+        }
+
+        note 'LLM embedding response : ', @res if $echo;
+
+        # Using .head since not all models give a vector
+        @res .= map({ $_.elems == 1 ?? $_.head !! $_ });
+
+        return @res;
+    }
+
     #------------------------------------------------------
     #| To Hash
     multi method Hash (::?CLASS:D:--> Hash) {

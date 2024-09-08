@@ -4,16 +4,20 @@ use Hash::Merge;
 use WWW::OpenAI;
 use WWW::OpenAI::TextCompletions;
 use WWW::OpenAI::ChatCompletions;
+use WWW::OpenAI::Embeddings;
 
 use WWW::PaLM;
 use WWW::PaLM::GenerateText;
 use WWW::PaLM::GenerateMessage;
+use WWW::PaLM::EmbedText;
 
 use WWW::Gemini;
 use WWW::Gemini::GenerateContent;
+use WWW::Gemini::EmbedContent;
 
 use WWW::MistralAI;
 use WWW::MistralAI::ChatCompletions;
+use WWW::MistralAI::Embeddings;
 
 use LLM::Functions::Chat;
 use LLM::Functions::Configuration;
@@ -58,6 +62,8 @@ multi sub llm-configuration($spec, *%args) {
                             base-url => openai-base-url(),
                             model => 'gpt-3.5-turbo-instruct',
                             function => &OpenAITextCompletion,
+                            embedding-model => 'text-embedding-3-large',
+                            embedding-function => &OpenAIEmbeddings,
                             temperature => 0.8,
                             max-tokens => 300,
                             total-probability-cutoff => 0.03,
@@ -105,6 +111,8 @@ multi sub llm-configuration($spec, *%args) {
                             base-url => '',
                             model => 'text-bison-001',
                             function => &PaLMGenerateText,
+                            embedding-model => 'embedding-gecko-001',
+                            embedding-function => &PaLMEmbedText,
                             temperature => 0.4,
                             max-tokens => 300,
                             total-probability-cutoff => 0,
@@ -137,6 +145,8 @@ multi sub llm-configuration($spec, *%args) {
                             base-url => '',
                             model => 'gemini-pro',
                             function => &GeminiGenerateContent,
+                            embedding-model => 'embedding-001',
+                            embedding-function => &GeminiEmbedContent,
                             temperature => 0.4,
                             max-tokens => 300,
                             total-probability-cutoff => 0,
@@ -161,6 +171,8 @@ multi sub llm-configuration($spec, *%args) {
                             base-url => mistralai-base-url(),
                             model => 'mistral-tiny',
                             function => &MistralAIChatCompletion,
+                            embedding-model => 'mistral-embed',
+                            embedding-function => &MistralAIEmbeddings,
                             temperature => 0.6,
                             max-tokens => 300,
                             total-probability-cutoff => 0.03,
@@ -736,4 +748,29 @@ multi sub llm-vision-function($prompt,
     $llm-evaluator = get-vision-llm-evaluator($llm-evaluator, @images, |%args);
     note "llm-evaluator => {$llm-evaluator.raku}" if %args<echo> // False;
     return llm-function($prompt, :$formatron, :$llm-evaluator);
+}
+
+#===========================================================
+# LLM Embedding
+#===========================================================
+
+#| Generic function for a large language model(LLM) embeddings.
+#| C<$content> -- A string or a list of strings
+#| C<:e(:$llm-evaluator)> -- LLM evaluator specification.
+#| C<*%args> -- additional argument of llm-configuration.
+proto sub llm-embedding($content,
+                        :e(:$llm-evaluator) is copy = Whatever,
+                        *%args) is export {*}
+
+multi sub llm-embedding($prompt,
+                        :e(:$llm-evaluator) is copy = Whatever,
+                        *%args) {
+    return llm-embedding([$prompt], :$llm-evaluator, |%args);
+}
+
+multi sub llm-embedding(@prompts,
+                        :e(:$llm-evaluator) is copy = Whatever,
+                        *%args) {
+    $llm-evaluator = llm-evaluator($llm-evaluator);
+    return $llm-evaluator.embed(@prompts, |%args).Array;
 }

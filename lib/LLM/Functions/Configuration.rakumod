@@ -28,8 +28,14 @@ class LLM::Functions::Configuration {
     # "Model" base model
     has Str $.model is rw;
 
-    # "Query function
+    # "Query" function
     has &.function is rw = WhateverCode;
+
+    # Embedding Model
+    has Str $.embedding-model is rw;
+
+    # "Embedding" function
+    has &.embedding-function is rw = WhateverCode;
 
     # "Temperature" sampling temperature
     has Numeric $.temperature = 0;
@@ -95,7 +101,7 @@ class LLM::Functions::Configuration {
         return
                 { :$!name,
                   :$!api-key, :$!api-user-id,
-                  :$!module, :$!base-url, :$!model, :&!function,
+                  :$!module, :$!base-url, :$!model, :&!function, :$!embedding-model, :&!embedding-function,
                   :$!temperature, :$!total-probability-cutoff, :$!max-tokens,
                   :$!format,
                   :@!prompts, :$!prompt-delimiter,
