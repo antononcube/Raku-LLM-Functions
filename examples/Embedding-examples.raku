@@ -12,7 +12,8 @@ my @queries = [
 ];
 
 my $tstart = now;
-my @vecs = llm-embedding(@queries, e => llm-configuration("ChatGPT")):echo;
+#my @vecs = llm-embedding(@queries, e => llm-configuration("ChatGPT")):echo;
+my @vecs = llm-embedding(@queries, e => llm-configuration("ChatGPT", model => 'text-embedding-002')):echo;
 #my @vecs = llm-embedding(@queries, e => llm-configuration("Gemini")):echo;
 my $tend = now;
 
@@ -20,4 +21,4 @@ say "Time {$tend - $tstart}.";
 
 say '=' x 100;
 
-.raku.say for @vecs;
+.elems.say for @vecs;
