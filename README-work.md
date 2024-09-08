@@ -409,6 +409,8 @@ error => {code => 400, message => Messages must alternate between authors., stat
   - [X] DONE Interpreter argument for `llm-function`
     - See the `formatron` attribute of `LLM::Functions::Evaluator`.
   - [X] DONE Adding `form` option to chat objects evaluator
+  - [X] DONE Implement `llm-embedding` function
+    - Generic, universal function for accessing the embeddings of different providers/models. 
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
   - [ ] TODO Storage and retrieval of chats
