@@ -143,7 +143,7 @@ multi sub llm-configuration($spec, *%args) {
                             api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
                             module => 'WWW::Gemini',
                             base-url => '',
-                            model => 'gemini-pro',
+                            model => 'gemini-2.0-flash-lite',
                             function => &GeminiGenerateContent,
                             embedding-model => 'embedding-001',
                             embedding-function => &GeminiEmbedContent,
