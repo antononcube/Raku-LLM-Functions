@@ -41,6 +41,7 @@ multi reallyflat(+@list) {
 #===========================================================
 
 my @mustPassConfKeys = <name prompts examples temperature max-tokens stop-tokens api-key api-user-id base-url>;
+my @mustPassConfKeysExt = @mustPassConfKeys.push('model');
 
 #| LLM configuration creation and retrieval.
 our proto llm-configuration(|) is export {*}
@@ -614,15 +615,16 @@ multi sub llm-chat(:$prompt = '', *%args) {
 
             # Obtain Evaluator class
             if $evaluatorClass.isa(Whatever) {
+                # PaLM and Gemini have special evaluator objects.
                 if $conf.name ~~ /:i palm / {
 
-                    $conf = llm-configuration('ChatPaLM', |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
+                    $conf = llm-configuration('ChatPaLM', |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeysExt }).Hash);
 
                     $evaluatorClass = LLM::Functions::EvaluatorChatPaLM
 
                 } elsif $conf.name ~~ /:i gemini / {
 
-                    $conf = llm-configuration('Gemini', |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
+                    $conf = llm-configuration('Gemini', |$conf.Hash.grep({ $_.key ∈ @mustPassConfKeysExt }).Hash);
 
                     $evaluatorClass = LLM::Functions::EvaluatorChatGemini
 
