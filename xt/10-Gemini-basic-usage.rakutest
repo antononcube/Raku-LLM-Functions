@@ -41,13 +41,21 @@ is llm-function(&prompt4, llm-evaluator => 'gemini')(dish => 'salad', cuisine =>
 # See issue:
 #       Allow model to be passed to llm-chat for gemini #2
 #       https://github.com/antononcube/Raku-LLM-Functions/issues/2
-my &f6 = llm-function(
-        { "What is the average speed of $_ ?" },
-        form => sub-parser(Numeric),
-        llm-evaluator => llm-configuration( "gemini", model => "gemini-1.5-flash"));
+subtest {
+        # See llm-prompt('NumericOnly') or
+        # https://github.com/antononcube/Raku-LLM-Prompts/blob/cbb98ddf5ed011ae4cfd664f8b9750d65ad834ca/resources/prompts.json#L6117
+        my $numOnly = q:to/END/;
+        Respond with numerical responses only. Exclude any non-numerical responses. Do not include include any letters.
+        Change words into numbers if possible, for example instead of "1 billion" write "1000000000".';
+        END
+        my &f6 = llm-function(
+                { "What is the average speed of $_ ?" ~ $numOnly },
+                form => sub-parser(Numeric),
+                llm-evaluator => llm-configuration("gemini", model => "gemini-1.5-flash"));
 
-#note &f6('a car on a USA highway', :$echo);
-isa-ok &f6('a car on a USA highway', :$echo), Positional;
+        # note &f6('a car on a USA highway', :$echo);
+        isa-ok &f6('a car on a USA highway', :$echo), Numeric:D;
+}
 
 ## PaLM is obsolete
 #`[
