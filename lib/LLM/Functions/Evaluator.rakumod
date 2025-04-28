@@ -140,6 +140,11 @@ class LLM::Functions::Evaluator {
         # To echo or not
         my $echo = %args<echo> // False;
 
+        # To batch or not
+        my $batched = %args<batched> // False;
+        die 'The option $batched is expected to be boolean.'
+        unless $batched ~~ Bool:D;
+
         # Clone configuration
         # We clone the configuration because some changes of the model are done
         # before sending the evaluation request to LLM service.
@@ -187,7 +192,12 @@ class LLM::Functions::Evaluator {
         my @res;
         try {
             # It should be checked does the current model takes arrays of strings, or just strings.
-            @res = @texts.map({ $confLocal.embedding-function.($_, |%args2) });
+            # For now we just check the option :$batched.
+            @res = do if $batched {
+                $confLocal.embedding-function.(@texts, |%args2)
+            } else {
+                @texts.map({ $confLocal.embedding-function.($_, |%args2) })
+            }
         }
 
         if $! {
