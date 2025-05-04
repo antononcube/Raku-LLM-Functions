@@ -99,6 +99,7 @@ multi sub llm-configuration($spec, *%args) {
                     my $obj = llm-configuration('chatpgt',
                             name => 'llama',
                             model => 'llama',
+                            function => &LLaMAChatCompletion,
                             base-url => 'http://127.0.0.1:8080',
                             embedding-model => 'llama-embedding',
                             embedding-function => &LLaMAEmbeddings,
