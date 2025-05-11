@@ -45,7 +45,7 @@ multi reallyflat(+@list) {
 # LLM configuration
 #===========================================================
 
-my @mustPassConfKeys = <name prompts examples temperature max-tokens stop-tokens api-key api-user-id base-url>;
+my @mustPassConfKeys = <name prompts examples temperature max-tokens stop-tokens api-key api-user-id base-url tools>;
 my @mustPassConfKeysExt = @mustPassConfKeys.push('model');
 
 #| LLM configuration creation and retrieval.
