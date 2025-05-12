@@ -56,7 +56,7 @@ subtest {
         return $length * $width;
     }
 
-    say llm-tool-definition(&calculate-area);
+    #say llm-tool-definition(&calculate-area);
     llm-tool-definition(&calculate-area, format => 'json');
 
 }, 'LLM tool spec';
