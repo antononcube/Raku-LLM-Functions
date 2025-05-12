@@ -785,3 +785,51 @@ multi sub llm-embedding(@prompts,
     $llm-evaluator = llm-evaluator($llm-evaluator);
     return $llm-evaluator.embed(@prompts, |%args).Array;
 }
+
+#===========================================================
+# Sub info extraction
+#===========================================================
+
+#| Function to extract sub info into a hashmap.
+#| C<&sub> -- a callable.
+our sub sub-info(&sub --> Hash) is export {
+    my %sub-info;
+
+    # Get subroutine signature and name
+    my $sub-name = &sub.name;
+    my $signature = &sub.signature;
+
+    # Store sub name and arguments
+    %sub-info{'name'} = $sub-name;
+    %sub-info{'returns'} = $signature.returns.gist;
+    %sub-info{'arity'} = $signature.arity;
+    %sub-info{'count'} = $signature.count;
+
+    # Get sub description from pod documentation
+    %sub-info{'description'} = do if &sub.WHY {
+        my $res = &sub.WHY.leading ?? &sub.WHY.leading.Str.trim !! '';
+        $res ~= &sub.WHY.trailing ?? ' ' ~ &sub.WHY.trailing.Str.trim !! '';
+        $res.trim
+    } else {
+        "No description available";
+    }
+
+    # Get argument descriptions
+    %sub-info{'arguments'} =
+            do for $signature.params -> $param {
+                my $name = $param.name;
+                my $type = $param.type.gist;
+                my $named = $param.named;
+                my $default = $param.default ~~ Callable:D ?? $param.default.() !! Nil;
+                my $description = do if $param.WHY {
+                    my $res = $param.WHY.leading ?? $param.WHY.leading.Str.trim !! '';
+                    $res ~= $param.WHY.trailing ?? ' ' ~ $param.WHY.trailing.Str.trim !! '';
+                    $res.trim
+                } else {
+                    ''
+                }
+                {:$name, :$type, :$named, :$default, :$description}
+            }
+
+    return %sub-info;
+}
