@@ -1,7 +1,7 @@
 use v6.d;
 use Test;
 
-use lib <. lib>;
+#use lib <. lib>;
 use LLM::Functions;
 
 plan *;
@@ -42,5 +42,23 @@ subtest {
             'parameters are given in an array';
 
 }, 'Magician duel sub';
+
+## 2
+subtest {
+
+    #| Calculates the area of a rectangle given length and width.
+    sub calculate-area(
+            Numeric:D $length,       #= Length of the rectangle in units
+            Numeric:D $width = 1,    #= Width of the rectangle in units
+            Str:D :$unit = 'meters', #= Unit, one of meters or feet
+            --> Numeric              #= Returns the area in square units
+                       ) {
+        return $length * $width;
+    }
+
+    say llm-tool-definition(&calculate-area);
+    llm-tool-definition(&calculate-area, format => 'json');
+
+}, 'LLM tool spec';
 
 done-testing;

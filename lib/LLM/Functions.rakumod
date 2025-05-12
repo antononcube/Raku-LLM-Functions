@@ -837,16 +837,75 @@ our sub sub-info(&sub --> Hash) is export {
 #===========================================================
 # LLM function calling definition
 #===========================================================
-
+#| Make LLM tool (function calling) definitions.
 proto sub llm-tool-definition(|) is export {*}
+
+multi sub llm-tool-definition(&sub, Str:D :$format = 'json') {
+    return llm-tool-definition(sub-info(&sub), :$format);
+}
+
+multi sub llm-tool-definition(@subs where @subs.all ~~ Callable:D, Str:D :$format = 'json') {
+    return llm-tool-definition(@subs.map({ sub-info($_) }), :$format);
+}
+
+multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
+    my %parameters;
+    my @required;
+
+    %parameters = do for |%info<arguments> -> %r {
+
+        die 'The arugment spec has no type' unless %r<type>:exists;
+
+        my $type = do given %r<type> {
+            when Num | Numeric { 'number' }
+            when Int | UInt { 'integer' }
+            when Str { 'string' }
+            default {
+                die 'Do not know how to represent argument type in JSON schema.'
+            }
+        }
+
+        my %schema = :$type, description => %r<description>;
+        if %r<enum> { %schema<enum> = %r<enum> }
+        if !%r<named> && !%r<default>.defined { @required.push(%r<name>) }
+        %r<name> => %schema
+    }
+
+    if %parameters {
+        %parameters<type> = 'object';
+        if @required { %parameters<required> = @required }
+    }
+
+    return llm-tool-definition(
+            name => %info<name>,
+            description => %info<description> // '',
+            :%parameters,
+            strict => %info<strict> // True,
+            type => %info<type> // 'function',
+            :$format);
+}
+
+multi sub llm-tool-definition(@infos where @infos.all ~~ Map:D, Str:D :$format = 'json') {
+    return @infos.map({ llm-tool-definition($_, :$format) });
+}
 
 multi sub llm-tool-definition(
         Str:D :$name!,
         Str:D :$description = '',
         :%parameters = Empty,
         Bool:D :$strict = True,
-        Str:D :$type = 'function'
+        Str:D :$type = 'function',
+        Str:D :$format = 'json'
                                        ) {
 
+    my %res =
+    :$type,
+    function => {
+        :$name,
+        :$description,
+        :%parameters,
+        :$strict
+    };
 
+    return $format.lc eq 'json' ?? to-json(%res) !! %res;
 }
