@@ -38,7 +38,7 @@ subtest {
 
     is-deeply
             sub-info(&duel)<arguments>[0],
-            ${:default(Any), :description("First magician"), :name("\$a"), :named(Bool::False), :type("(Magician)")}
+            ${:default(Any), :description("First magician"), :name("\$a"), :named(Bool::False), :type((Magician))}
             'parameters are given in an array';
 
 }, 'Magician duel sub';

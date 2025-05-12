@@ -818,7 +818,7 @@ our sub sub-info(&sub --> Hash) is export {
     %sub-info{'arguments'} =
             do for $signature.params -> $param {
                 my $name = $param.name;
-                my $type = $param.type.gist;
+                my $type = $param.type;
                 my $named = $param.named;
                 my $default = $param.default ~~ Callable:D ?? $param.default.() !! Nil;
                 my $description = do if $param.WHY {
@@ -832,4 +832,21 @@ our sub sub-info(&sub --> Hash) is export {
             }
 
     return %sub-info;
+}
+
+#===========================================================
+# LLM function calling definition
+#===========================================================
+
+proto sub llm-tool-definition(|) is export {*}
+
+multi sub llm-tool-definition(
+        Str:D :$name!,
+        Str:D :$description = '',
+        :%parameters = Empty,
+        Bool:D :$strict = True,
+        Str:D :$type = 'function'
+                                       ) {
+
+
 }
