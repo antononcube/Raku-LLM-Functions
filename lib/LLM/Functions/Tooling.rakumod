@@ -131,11 +131,16 @@ multi sub llm-tool-definition(
 #===========================================================
 
 class LLM::Tool {
-    has Str:D $.spec = '';
+    has Str:D $.spec is required;
     has &.function is required;
 
-    multi method new(Str:D :s(:$!spec), :f(:&!function)) {
-        my $jsonSpec = try from-json($!spec);
+    submethod BUILD(Str:D :$!spec, :&!function) {
+        die 'Defined function is expected. (Not a just a Callable type.)'
+        unless &!function ~~ Callable:D;
+    }
+
+    multi method new(Str:D $spec, &function) {
+        my $jsonSpec = try from-json($spec);
         if $! {
             die 'The argument :$spec is expected to be a valid JSON string.'
         }
@@ -143,20 +148,22 @@ class LLM::Tool {
         # Further validation
         die 'The argument :$spec is expected to be JSON dictionary with keys "type" and "function".'
         unless $jsonSpec ~~ Map:D && ($jsonSpec<type>:exists) && ($jsonSpec<function>:exists);
+
+        self.bless(:$spec, :&function);
     }
 
-    multi method new(Map:D :s(:%spec), Callable:D :f(:&function)) {
+    multi method new(%spec, &function) {
         my $spec = llm-tool-definition(%spec, format => 'json');
-        self.new(:$spec, :&function)
+        self.bless(:$spec, :&function)
     }
 
-    multi method new(Callable:D :f(:&function)) {
-        my $spec = llm-tool-definition(&function);
-        self.new(:$spec, :&function)
+    multi method new(Whatever, &function) {
+        my $spec = llm-tool-definition(&function, format => 'json');
+        self.bless(:$spec, :&function)
     }
 
-    multi method new(Callable:D &func) {
-        self.new(function => &func)
+    multi method new(&func) {
+        self.new(Whatever, &func)
     }
 
     #--------------------------------------------------------
@@ -186,10 +193,10 @@ class LLM::ToolRequest {
     has Str:D $.request = '';
 
     #--------------------------------------------------------
-    multi method new(:t(:$!tool), :p(:parameters(:%!params)), :r(:$!request) = '') {}
+    submethod BUILD(:t(:$!tool), :p(:parameters(:%!params)), :r(:$!request) = '') {}
 
     multi method new($tool, %params, $request = '') {
-        self.new(:$tool, :%params, :$request)
+        self.bless(:$tool, :%params, :$request)
     }
 
     #--------------------------------------------------------
@@ -219,10 +226,10 @@ class LLM::ToolResponse {
     has LLM::ToolRequest $.request is required;
 
     #--------------------------------------------------------
-    multi method new(:t(:$!tool), :p(:parameters(:%!params)), :r(:$!request)) {}
+    submethod BUILD(:t(:$!tool), :p(:parameters(:%!params)), :r(:$!request)) {}
 
     multi method new($tool, %params, $request) {
-        self.new(:$tool, :%params, :$request)
+        self.bless(:$tool, :%params, :$request)
     }
 
     #--------------------------------------------------------

@@ -1,0 +1,39 @@
+use v6.d;
+use Test;
+
+use lib <. lib>;
+use LLM::Tooling;
+use JSON::Fast;
+
+plan *;
+
+## 1
+subtest {
+    # See https://docs.raku.org/language/pod#Declarator_blocks
+
+    #| Base class for magicians
+    class Magician {
+        has Int $.level;
+        has Str @.spells;
+    }
+
+    #| Fight mechanics.
+    sub duel(
+            Str:D $a, #= First magician
+            Str:D $b, #= Second magician
+            --> Int
+             ) {
+        return (rand > 0.5) + 1;
+    }
+    #= Magicians only, no mortals.
+
+    isa-ok LLM::Tool.new(&duel), LLM::Tool, 'expected type';
+
+    isa-ok LLM::Tool.new(&duel).spec, Str:D, 'spec retrievable';
+
+    isa-ok from-json(LLM::Tool.new(&duel).spec), Map:D, 'spec is a valid JSON';
+
+}, 'Magician duel sub';
+
+
+done-testing;
