@@ -29,7 +29,8 @@
     "LLM::Functions::Evaluator": "lib/LLM/Functions/Evaluator.rakumod",
     "LLM::Functions::EvaluatorChat": "lib/LLM/Functions/EvaluatorChat.rakumod",
     "LLM::Functions::EvaluatorChatGemini": "lib/LLM/Functions/EvaluatorChatGemini.rakumod",
-    "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod"
+    "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod",
+    "LLM::Tooling": "lib/LLM/Functions/Tooling.rakumod"
   },
   "resources": [],
   "license": "Artistic-2.0",
