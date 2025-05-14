@@ -11,12 +11,6 @@ plan *;
 subtest {
     # See https://docs.raku.org/language/pod#Declarator_blocks
 
-    #| Base class for magicians
-    class Magician {
-        has Int $.level;
-        has Str @.spells;
-    }
-
     #| Fight mechanics.
     sub duel(
             Str:D $a, #= First magician
