@@ -69,10 +69,12 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
     my @required;
 
     %parameters = do for |%info<arguments> -> %r {
-
-        die 'The arugment spec has no type' unless %r<type>:exists;
+        note (:%r);
+        die 'The argument spec has no name.' unless %r<name>:exists;
+        die "The argument spec for {%r<name>} has no type." unless %r<type>:exists;
 
         my $type = do given %r<type> {
+            when $_ ~~ Str:D && $_.lc ∈ <number integer string> { $_.lc }
             when Num | Numeric { 'number' }
             when Int | UInt { 'integer' }
             when Str { 'string' }
@@ -193,9 +195,13 @@ class LLM::ToolRequest {
     has Str:D $.request = '';
 
     #--------------------------------------------------------
-    submethod BUILD(:t(:$!tool), :p(:parameters(:%!params)), :r(:$!request) = '') {}
+    submethod BUILD(Str:D :$!tool, :%!params, Str:D :$!request = '') {}
 
-    multi method new($tool, %params, $request = '') {
+    multi method new(Str:D :$tool, :%params, Str:D :$request = '') {
+        self.bless(:$tool, :%params, :$request)
+    }
+
+    multi method new(Str:D $tool, %params, Str:D $request = '') {
         self.bless(:$tool, :%params, :$request)
     }
 
@@ -224,18 +230,24 @@ class LLM::ToolResponse {
     has Str:D $.tool is required;
     has %.params is required;
     has LLM::ToolRequest $.request is required;
+    has $.output = Whatever;
+    # has $.response-string = '';
 
     #--------------------------------------------------------
-    submethod BUILD(:t(:$!tool), :p(:parameters(:%!params)), :r(:$!request)) {}
+    submethod BUILD(:$!tool, :%!params, :$!request, :$!output = Whatever) {}
 
-    multi method new($tool, %params, $request) {
-        self.bless(:$tool, :%params, :$request)
+    multi method new($tool, %params, $request, $output = Whatever) {
+        self.bless(:$tool, :%params, :$request, :$output)
+    }
+
+    multi method new(:t(:$tool), :p(:parameters(:%params)), :r(:$request), :o(:$output) = Whatever) {
+        self.bless(:$tool, :%params, :$request, :$output)
     }
 
     #--------------------------------------------------------
     #| To Hash
     multi method Hash(::?CLASS:D:-->Hash) {
-        return %(:$!tool, :%!params, :$!request);
+        return %(:$!tool, :%!params, :$!request, :$!output);
     }
 
     #| To string
@@ -247,4 +259,43 @@ class LLM::ToolResponse {
     multi method gist(::?CLASS:D:-->Str) {
         return self.Hash.gist;
     }
+}
+
+#===========================================================
+# Generate LLM tool response
+#===========================================================
+
+#| Generate answers for request by a list of tools.
+proto sub generate-llm-tool-response($tool, $request) is export {*}
+multi sub generate-llm-tool-response(LLM::Tool:D $tool, LLM::ToolRequest:D $request) {
+    generate-llm-tool-response([$tool,], $request)
+}
+
+multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
+    die 'The first argument is expected to be an LLM::Tool object or a list of such objects.'
+    unless @tools.all ~~ LLM::Tool:D;
+
+    # Scan the tools that apply to the request.
+    my $tool = try @tools.grep({ from-json($_.spec)<function><name> eq $request.tool }).head;
+
+    # Give errors for non-existent tools.
+    if $! {
+        # Is ad hoc failure better?
+        die "No tool with name { $request.tool } found from tool list."
+    }
+
+    # Fill-in the parameter values for the applicable tools and evaluate the tool functions.
+    my %args = |from-json($tool.spec)<function><parameters>;
+
+#    note (:%args);
+#    note ('$request.params' => $request.params);
+#    note (required => $request.params{%args<required>});
+    # TODO:
+    # 1. Fill in the positional arguments and the named arguments.
+    # 2. Make sure the required arguments are filled in or give error.
+    # 3. Check the type of the values given in the request object.
+    my $output = $tool.function.(|$request.params{%args<required>});
+
+    # Return LLM::ToolResponse object.
+    return LLM::ToolResponse.new( tool => $request.tool, params => %args, :$request, :$output)
 }

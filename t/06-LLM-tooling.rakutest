@@ -9,8 +9,6 @@ plan *;
 
 ## 1
 subtest {
-    # See https://docs.raku.org/language/pod#Declarator_blocks
-
     #| Fight mechanics.
     sub duel(
             Str:D $a, #= First magician
@@ -21,13 +19,43 @@ subtest {
     }
     #= Magicians only, no mortals.
 
-    isa-ok LLM::Tool.new(&duel), LLM::Tool, 'expected type';
+    isa-ok LLM::Tool.new(&duel), LLM::Tool:D, 'expected type';
 
-    isa-ok LLM::Tool.new(&duel).spec, Str:D, 'spec retrievable';
+    isa-ok LLM::Tool.new(&duel).spec, Str:D, 'spec is retrievable';
 
     isa-ok from-json(LLM::Tool.new(&duel).spec), Map:D, 'spec is a valid JSON';
 
 }, 'Magician duel sub';
+
+## 1
+#subtest {
+    my %info = name => 'charscount', arguments => [{name => '$x', type => 'string', description => 'a string'}, ];
+    isa-ok
+            LLM::Tool.new(%info, -> Str:D $x { $x.chars} ),
+            LLM::Tool:D,
+            'expected type for creation on the spot';
+
+    my $tool = LLM::Tool.new(%info, -> Str:D $x { $x.chars} );
+
+    isa-ok $tool.spec, Str:D, 'spec is retrievable';
+
+    isa-ok
+            LLM::ToolRequest.new('charscount', {'$x' => 'more raccoons!'}),
+            LLM::ToolRequest:D,
+            'expected request creation type';
+
+    my $request = LLM::ToolRequest.new('charscount', %('$x' => 'more raccoons!'));
+    note (:$request);
+    isa-ok
+            generate-llm-tool-response($tool, $request),
+            LLM::ToolResponse:D,
+            'expected generation with tools result';
+
+    my $res = generate-llm-tool-response($tool, $request);
+
+    say $res.output;
+
+#}, 'string characters counting';
 
 
 done-testing;
