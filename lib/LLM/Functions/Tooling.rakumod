@@ -69,7 +69,6 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
     my @required;
 
     %parameters = do for |%info<arguments> -> %r {
-        note (:%r);
         die 'The argument spec has no name.' unless %r<name>:exists;
         die "The argument spec for {%r<name>} has no type." unless %r<type>:exists;
 
@@ -280,8 +279,12 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
 
     # Give errors for non-existent tools.
     if $! {
-        # Is ad hoc failure better?
-        die "No tool with name { $request.tool } found from tool list."
+        # Is ad hoc failure instead of just using die
+        my %result =
+                request => $request.gist,
+                llm-tools => @tools».gist,
+                error => "No tool with name { $request.tool } found from tool list.";
+        fail %result;
     }
 
     # Fill-in the parameter values for the applicable tools and evaluate the tool functions.
@@ -297,5 +300,5 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
     my $output = $tool.function.(|$request.params{%args<required>});
 
     # Return LLM::ToolResponse object.
-    return LLM::ToolResponse.new( tool => $request.tool, params => %args, :$request, :$output)
+    return LLM::ToolResponse.new(tool => $request.tool, params => %args, :$request, :$output)
 }
