@@ -74,8 +74,8 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
 
         my $type = do given %r<type> {
             when $_ ~~ Str:D && $_.lc ∈ <number integer string> { $_.lc }
-            when Num | Numeric { 'number' }
             when Int | UInt { 'integer' }
+            when Num | Numeric { 'number' }
             when Str { 'string' }
             default {
                 die 'Do not know how to represent argument type in JSON schema.'
@@ -292,12 +292,13 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
 
 #    note (:%args);
 #    note ('$request.params' => $request.params);
-#    note (required => $request.params{%args<required>});
+#    note %args<required>;
+#    note (required => $request.params{|%args<required>});
     # TODO:
     # 1. Fill in the positional arguments and the named arguments.
     # 2. Make sure the required arguments are filled in or give error.
     # 3. Check the type of the values given in the request object.
-    my $output = $tool.function.(|$request.params{%args<required>});
+    my $output = $tool.function.(|$request.params{|%args<required>});
 
     # Return LLM::ToolResponse object.
     return LLM::ToolResponse.new(tool => $request.tool, params => %args, :$request, :$output)
