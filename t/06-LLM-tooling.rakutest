@@ -27,8 +27,8 @@ subtest {
 
 }, 'Magician duel sub';
 
-## 1
-#subtest {
+## 2
+subtest {
     my %info = name => 'charscount', arguments => [{name => '$x', type => 'string', description => 'a string'}, ];
     isa-ok
             LLM::Tool.new(%info, -> Str:D $x { $x.chars} ),
@@ -53,9 +53,9 @@ subtest {
 
     my $res = generate-llm-tool-response($tool, $request);
 
-    say $res.output;
+    is $res.output, 'more raccoons!'.chars, 'expected output';
 
-#}, 'string characters counting';
+}, 'String characters counting';
 
 
 done-testing;
