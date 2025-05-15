@@ -40,12 +40,12 @@ subtest {
     isa-ok $tool.spec, Str:D, 'spec is retrievable';
 
     isa-ok
-            LLM::ToolRequest.new('charscount', {'$x' => 'more raccoons!'}),
+            LLM::ToolRequest.new('charscount', %('$x' => 'more raccoons!')),
             LLM::ToolRequest:D,
             'expected request creation type';
 
     my $request = LLM::ToolRequest.new('charscount', %('$x' => 'more raccoons!'));
-    note (:$request);
+
     isa-ok
             generate-llm-tool-response($tool, $request),
             LLM::ToolResponse:D,
@@ -55,7 +55,50 @@ subtest {
 
     is $res.output, 'more raccoons!'.chars, 'expected output';
 
-}, 'String characters counting';
+}, 'String characters counting (simple one argument pure function)';
 
+
+## 3
+subtest {
+    #| Another predator duel.
+    sub duel(
+            Str:D $p,                 #= Predator name
+            Str:D $y,                 #= Yakuza name
+            Int:D :$n = 5,            #= Number of attacks
+            Numeric:D :$prob = 0.8,   #= Probability the predator to win
+            Int:D :$film-year = 2010, #= Film year
+            --> Str:D
+             ) {
+        return "The predator $p {rand ≤ $prob ?? 'wins over' !! 'loses to'} $y after $n attacks.";
+    }
+
+    isa-ok
+            LLM::Tool.new(&duel),
+            LLM::Tool:D,
+            'expected type for creation on the spot';
+
+    my $tool = LLM::Tool.new(&duel);
+
+    isa-ok $tool.spec, Str:D, 'spec is retrievable';
+
+    #note (spec => $tool.spec);
+
+    isa-ok
+            LLM::ToolRequest.new('duel', {'$y' => 'Hanzo', '$p' => 'Falconer', '$n' => 3, '$prob' => 1}),
+            LLM::ToolRequest:D,
+            'expected request creation type';
+
+    my $request = LLM::ToolRequest.new('duel', {'$y' => 'Hanzo', '$p' => 'Falconer', '$n' => 3, '$prob' => 1}),
+
+    isa-ok
+            generate-llm-tool-response($tool, $request),
+            LLM::ToolResponse:D,
+            'expected generation with tools result';
+
+    my $res = generate-llm-tool-response($tool, $request);
+
+    is $res.output, 'The predator Falconer wins over Hanzo after 3 attacks.', 'expected output';
+
+}, 'Two positional arguments and three named arguments sub';
 
 done-testing;
