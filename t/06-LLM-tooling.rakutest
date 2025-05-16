@@ -104,7 +104,8 @@ subtest {
 
     my $res = generate-llm-tool-response($tool, $request);
 
-    #is $res.output, 'The predator Falconer wins over Hanzo after 3 attacks.', 'expected output';
+    note $res.output;
+    is $res.output, 'The predator Falconer wins over Hanzo after 3 attacks.', 'expected output';
 
 }, 'Two positional arguments and three named arguments sub';
 

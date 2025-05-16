@@ -327,7 +327,16 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
     # 1. Fill in the positional arguments and the named arguments.
     # 2. Make sure the required arguments are filled in or give error.
     # 3. Check the type of the values given in the request object.
-    my $output = $tool.function.(|$request.params{|$tool.info<required>});
+    my @reqArgs = $request.params{|$tool.info<required>};
+    my @posArgs;
+    my %namedArgs;
+    for $request.params.kv -> $k, $r {
+        if !%args{$k}<named> && !%args{$k}<default>.defined && $k ∉ $tool.info<required> { @posArgs.push($r) }
+        if %args{$k}<named> { %namedArgs{$k.subst(/ ^ <[$%@]> /)} = $r}
+    }
+    # Passing positional arguments with non-default values is complicated.
+    #say [|@reqArgs, |@posArgs, |%namedArgs].raku;
+    my $output = $tool.function.(|@reqArgs, |%namedArgs);
 
     # Return LLM::ToolResponse object.
     return LLM::ToolResponse.new(tool => $request.tool, params => %args, :$request, :$output)
