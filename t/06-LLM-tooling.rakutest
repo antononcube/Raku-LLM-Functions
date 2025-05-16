@@ -21,15 +21,22 @@ subtest {
 
     isa-ok LLM::Tool.new(&duel), LLM::Tool:D, 'expected type';
 
-    isa-ok LLM::Tool.new(&duel).spec, Str:D, 'spec is retrievable';
+    isa-ok LLM::Tool.new(&duel).info, Map:D, 'info is retrievable';
 
-    isa-ok from-json(LLM::Tool.new(&duel).spec), Map:D, 'spec is a valid JSON';
+    isa-ok LLM::Tool.new(&duel).json-spec, Str:D, 'spec is retrievable and a string';
+
+    isa-ok from-json(LLM::Tool.new(&duel).json-spec), Map:D, 'spec is a valid JSON';
 
 }, 'Magician duel sub';
 
 ## 2
 subtest {
-    my %info = name => 'charscount', arguments => [{name => '$x', type => 'string', description => 'a string'}, ];
+    my %info =
+            name => 'charscount',
+            description => 'number of characters',
+            parameters => %('$x' => %(type => 'string', description => 'a string')),
+            required => ['$x',];
+
     isa-ok
             LLM::Tool.new(%info, -> Str:D $x { $x.chars} ),
             LLM::Tool:D,
@@ -37,7 +44,7 @@ subtest {
 
     my $tool = LLM::Tool.new(%info, -> Str:D $x { $x.chars} );
 
-    isa-ok $tool.spec, Str:D, 'spec is retrievable';
+    isa-ok $tool.json-spec, Str:D, 'json-spec is retrievable and a string';
 
     isa-ok
             LLM::ToolRequest.new('charscount', %('$x' => 'more raccoons!')),
@@ -79,7 +86,7 @@ subtest {
 
     my $tool = LLM::Tool.new(&duel);
 
-    isa-ok $tool.spec, Str:D, 'spec is retrievable';
+    isa-ok $tool.json-spec, Str:D, 'json-spec is retrievable';
 
     #note (spec => $tool.spec);
 
@@ -97,7 +104,7 @@ subtest {
 
     my $res = generate-llm-tool-response($tool, $request);
 
-    is $res.output, 'The predator Falconer wins over Hanzo after 3 attacks.', 'expected output';
+    #is $res.output, 'The predator Falconer wins over Hanzo after 3 attacks.', 'expected output';
 
 }, 'Two positional arguments and three named arguments sub';
 

@@ -30,13 +30,16 @@ our sub sub-info(&sub --> Hash) is export {
         "No description available";
     }
 
-    # Get argument descriptions
-    %sub-info{'arguments'} =
-            do for $signature.params -> $param {
+    # Get arguments/parameters info
+    my @required;
+    %sub-info{'parameters'} =
+            do for $signature.params.kv -> $i, $param {
                 my $name = $param.name;
                 my $type = $param.type;
+                my $position = $i;
                 my $named = $param.named;
                 my $default = $param.default ~~ Callable:D ?? $param.default.() !! Nil;
+                without $default { @required.push($name) }
                 my $description = do if $param.WHY {
                     my $res = $param.WHY.leading ?? $param.WHY.leading.Str.trim !! '';
                     $res ~= $param.WHY.trailing ?? ' ' ~ $param.WHY.trailing.Str.trim !! '';
@@ -44,8 +47,10 @@ our sub sub-info(&sub --> Hash) is export {
                 } else {
                     ''
                 }
-                {:$name, :$type, :$named, :$default, :$description}
+                {:$name, :$type, :$position, :$named, :$default, :$description}
             }
+
+    %sub-info<required> = @required;
 
     return %sub-info;
 }
@@ -68,7 +73,13 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
     my %parameters;
     my @required;
 
-    %parameters = do for |%info<arguments> -> %r {
+    my @paramSpecs = do if %info<parameters> ~~ Map:D {
+        %info<parameters>.map({ [|$_.value, name => $_.key] })».Hash
+    } else {
+       |%info<parameters>
+    }
+
+    %parameters = do for @paramSpecs -> %r {
         die 'The argument spec has no name.' unless %r<name>:exists;
         die "The argument spec for {%r<name>} has no type." unless %r<type>:exists;
 
@@ -131,36 +142,54 @@ multi sub llm-tool-definition(
 # LLM Tool
 #===========================================================
 
-class LLM::Tool {
-    has Str:D $.spec is required;
-    has &.function is required;
+sub validate-sub-info(%info) {
+    my $shapeCheck =
+            (%info.keys (&) <name description parameters required>).elems == 4
+            && %info<parameters> ~~ Map:D
+            && %info<parameters>.values.all ~~ Map:D;
 
-    submethod BUILD(Str:D :$!spec, :&!function) {
+    my $knownRequired = (%info<required> (-) %info<parameters>.keys).elems == 0;
+
+    return $shapeCheck && $knownRequired;
+}
+
+class LLM::Tool {
+    has %.info is required;
+    has &.function is required;
+    has $.json-spec = Whatever;
+
+    submethod BUILD(:%!info, :&!function, :$!json-spec = Whatever) {
         die 'Defined function is expected. (Not a just a Callable type.)'
         unless &!function ~~ Callable:D;
+
+        die 'The %info argument does not have expected structure.'
+        unless validate-sub-info(%!info);
     }
 
-    multi method new(Str:D $spec, &function) {
-        my $jsonSpec = try from-json($spec);
+    multi method new(Str:D $json-spec, &function) {
+        my $info = try from-json($json-spec);
         if $! {
             die 'The argument :$spec is expected to be a valid JSON string.'
         }
 
         # Further validation
-        die 'The argument :$spec is expected to be JSON dictionary with keys "type" and "function".'
-        unless $jsonSpec ~~ Map:D && ($jsonSpec<type>:exists) && ($jsonSpec<function>:exists);
+        die 'The argument :$json-spec is expected to be a JSON dictionary with keys "type" and "function".'
+        unless $info ~~ Map:D && ($info<type>:exists) && ($info<function>:exists);
 
-        self.bless(:$spec, :&function);
+        my %info = $info<function>;
+        self.bless(:%info, :&function, :$json-spec);
     }
 
-    multi method new(%spec, &function) {
-        my $spec = llm-tool-definition(%spec, format => 'json');
-        self.bless(:$spec, :&function)
+    multi method new(%info, &function) {
+        my $json-spec = llm-tool-definition(%info, format => 'json');
+        self.bless(:%info, :&function, :$json-spec)
     }
 
     multi method new(Whatever, &function) {
-        my $spec = llm-tool-definition(&function, format => 'json');
-        self.bless(:$spec, :&function)
+        my %info = sub-info(&function);
+        %info<parameters> = (%info<parameters>.map(*<name>).Array Z=> %info<parameters>.Array).Hash;
+        my $json-spec = llm-tool-definition(&function, format => 'json');
+        self.bless(:%info, :&function, :$json-spec)
     }
 
     multi method new(&func) {
@@ -170,7 +199,7 @@ class LLM::Tool {
     #--------------------------------------------------------
     #| To Hash
     multi method Hash(::?CLASS:D:-->Hash) {
-        return %(:$!spec, :&!function);
+        return %(:%!info, :&!function);
     }
 
     #| To string
@@ -275,7 +304,7 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
     unless @tools.all ~~ LLM::Tool:D;
 
     # Scan the tools that apply to the request.
-    my $tool = try @tools.grep({ from-json($_.spec)<function><name> eq $request.tool }).head;
+    my $tool = try @tools.grep({ $_.info<name> eq $request.tool }).head;
 
     # Give errors for non-existent tools.
     if $! {
@@ -288,7 +317,7 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
     }
 
     # Fill-in the parameter values for the applicable tools and evaluate the tool functions.
-    my %args = |from-json($tool.spec)<function><parameters>;
+    my %args = |$tool.info<parameters>;
 
 #    note (:%args);
 #    note ('$request.params' => $request.params);
@@ -298,7 +327,7 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
     # 1. Fill in the positional arguments and the named arguments.
     # 2. Make sure the required arguments are filled in or give error.
     # 3. Check the type of the values given in the request object.
-    my $output = $tool.function.(|$request.params{|%args<required>});
+    my $output = $tool.function.(|$request.params{|$tool.info<required>});
 
     # Return LLM::ToolResponse object.
     return LLM::ToolResponse.new(tool => $request.tool, params => %args, :$request, :$output)
