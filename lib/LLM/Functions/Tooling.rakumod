@@ -209,7 +209,7 @@ class LLM::Tool {
 
     #| To gist
     multi method gist(::?CLASS:D:-->Str) {
-        return self.Hash.gist;
+        return "LLMTool({self.info<name>}, {self.info<description>})";
     }
 }
 
@@ -218,6 +218,7 @@ class LLM::Tool {
 #===========================================================
 
 class LLM::ToolRequest {
+    has $.id = Whatever;
     has Str:D $.tool is required;
     has %.params is required;
     has Str:D $.request = '';
@@ -246,7 +247,7 @@ class LLM::ToolRequest {
 
     #| To gist
     multi method gist(::?CLASS:D:-->Str) {
-        return self.Hash.gist;
+        return "LLMToolRequest({self.tool}, {self.params.map({ ":{$_.key}({$_.value.gist})" }).join(', ')}, :id({self.id.raku}))";
     }
 }
 
@@ -285,7 +286,7 @@ class LLM::ToolResponse {
 
     #| To gist
     multi method gist(::?CLASS:D:-->Str) {
-        return self.Hash.gist;
+        return "LLMToolResponse({self.tool}, {self.params.map({ ":{$_.key}({$_.value.gist})" }).join(', ')}, :output({self.output.gist}))";
     }
 }
 

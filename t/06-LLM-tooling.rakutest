@@ -44,6 +44,8 @@ subtest {
 
     my $tool = LLM::Tool.new(%info, -> Str:D $x { $x.chars} );
 
+    is $tool.gist, 'LLMTool(charscount, number of characters)', 'expected tool gist';
+
     isa-ok $tool.json-spec, Str:D, 'json-spec is retrievable and a string';
 
     isa-ok
@@ -52,6 +54,8 @@ subtest {
             'expected request creation type';
 
     my $request = LLM::ToolRequest.new('charscount', %('$x' => 'more raccoons!'));
+
+    is $request.gist, 'LLMToolRequest(charscount, :$x(more raccoons!), :id(Whatever))', 'expected request gist';
 
     isa-ok
             generate-llm-tool-response($tool, $request),
