@@ -65,7 +65,7 @@ class LLM::Functions::Evaluator {
         # before sending the evaluation request to LLM service.
         my $confLocal = self.conf.clone;
 
-        note "Configuration : { $confLocal.Hash.raku }" if $echo;
+        note "Configuration : { $confLocal.raku }" if $echo;
 
         # Load module
         my $packageName = $confLocal.module;
