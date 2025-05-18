@@ -71,6 +71,7 @@ multi sub llm-tool-definition(@subs where @subs.all ~~ Callable:D, Str:D :$forma
 
 multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
     my %parameters;
+    my %properties;
     my @required;
 
     my @paramSpecs = do if %info<parameters> ~~ Map:D {
@@ -79,7 +80,7 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
        |%info<parameters>
     }
 
-    %parameters = do for @paramSpecs -> %r {
+    %properties = do for @paramSpecs -> %r {
         die 'The argument spec has no name.' unless %r<name>:exists;
         die "The argument spec for {%r<name>} has no type." unless %r<type>:exists;
 
@@ -99,9 +100,13 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
         %r<name> => %schema
     }
 
-    if %parameters {
-        %parameters<type> = 'object';
+    %parameters<type> = 'object';
+    %parameters<properties> = %properties;
+    if %properties {
         if @required { %parameters<required> = @required }
+        if strict => %info<strict> // True {
+            %parameters<additionalProperties> = False
+        }
     }
 
     return llm-tool-definition(
@@ -129,6 +134,7 @@ multi sub llm-tool-definition(
     my %res =
             :$type,
             function => {
+                :$type,
                 :$name,
                 :$description,
                 :%parameters,
