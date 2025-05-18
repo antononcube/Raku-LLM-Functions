@@ -224,14 +224,14 @@ class LLM::ToolRequest {
     has Str:D $.request = '';
 
     #--------------------------------------------------------
-    submethod BUILD(Str:D :$!tool, :%!params, Str:D :$!request = '') {}
+    submethod BUILD(Str:D :$!tool, :%!params, Str:D :$!request = '', :$!id = Whatever) {}
 
-    multi method new(Str:D :$tool, :%params, Str:D :$request = '') {
-        self.bless(:$tool, :%params, :$request)
+    multi method new(Str:D :$tool, :%params, Str:D :$request = '', :$id = Whatever) {
+        self.bless(:$tool, :%params, :$request, :$id)
     }
 
-    multi method new(Str:D $tool, %params, Str:D $request = '') {
-        self.bless(:$tool, :%params, :$request)
+    multi method new(Str:D $tool, %params, Str:D $request = '', $id = Whatever) {
+        self.bless(:$tool, :%params, :$request, :$id)
     }
 
     #--------------------------------------------------------
@@ -286,7 +286,7 @@ class LLM::ToolResponse {
 
     #| To gist
     multi method gist(::?CLASS:D:-->Str) {
-        return "LLMToolResponse({self.tool}, {self.params.map({ ":{$_.key}({$_.value.gist})" }).join(', ')}, :output({self.output.gist}))";
+        return "LLMToolResponse({self.tool}, {self.request.params.map({ ":{$_.key}({$_.value.gist})" }).join(', ')}, :output({self.output.gist}))";
     }
 }
 
