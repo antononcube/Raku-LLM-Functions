@@ -325,20 +325,71 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
 #    note %args<required>;
 #    note (required => $request.params{|%args<required>});
     # TODO:
-    # 1. Fill in the positional arguments and the named arguments.
-    # 2. Make sure the required arguments are filled in or give error.
-    # 3. Check the type of the values given in the request object.
+    # 1. [X] Make sure the required arguments are filled in or give error.
+    # 2. [X] Fill in the positional arguments and the named arguments.
+    # 3. [ ] Pass non-required positional arguments in the correct order
+    # 4. [ ] Check the type of the values given in the request object.
     my @reqArgs = $request.params{|$tool.info<required>};
+
+    # Verify required arguments
+    if @reqArgs.elems < $tool.info<required>.elems {
+        my %result =
+                required => $tool.info<required>,
+                llm-tools => $tool.gist,
+                error => "Not enough required argument values are supplied.";
+        fail %result;
+    }
+
+    # Positional and named arguments
     my @posArgs;
     my %namedArgs;
     for $request.params.kv -> $k, $r {
         if !%args{$k}<named> && !%args{$k}<default>.defined && $k ∉ $tool.info<required> { @posArgs.push($r) }
         if %args{$k}<named> { %namedArgs{$k.subst(/ ^ <[$%@]> /)} = $r}
     }
+
     # Passing positional arguments with non-default values is complicated.
     #say [|@reqArgs, |@posArgs, |%namedArgs].raku;
     my $output = $tool.function.(|@reqArgs, |%namedArgs);
 
     # Return LLM::ToolResponse object.
     return LLM::ToolResponse.new(tool => $request.tool, params => %args, :$request, :$output)
+}
+
+#===========================================================
+# Make LLM tool requests
+#===========================================================
+# This is very OpenAI protocol "inspired".
+proto sub llm-tool-requests($resp) is export {*}
+
+multi sub llm-tool-requests(Str:D $resp) {
+    return try from-json($resp);
+}
+
+multi sub llm-tool-requests(@resp) {
+    if @resp.all ~~ Map:D {
+        return llm-tool-requests(@resp.head)
+    } else {
+        die 'A JSON string, a hashmap, or an array of hashmaps is expected as a first argument.'
+    }
+}
+
+multi sub llm-tool-requests(%resp) {
+    my @toolCalls;
+    if (%resp<finish_reason> // 'unknown') eqv 'tool_calls' {
+        @toolCalls = |%resp<message><tool_calls>
+    }
+
+    die 'Unknown structure of tool calls.'
+    unless @toolCalls.all ~~ Map:D;
+
+    my @tools = do for @toolCalls -> %spec {
+       LLM::ToolRequest.new(
+                tool => %spec<function><name>,
+                params => from-json(%spec<function><arguments>),
+                id => %spec<id> // Whatever
+                )
+    }
+
+    return @tools;
 }
