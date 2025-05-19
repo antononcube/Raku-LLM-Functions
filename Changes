@@ -1,8 +1,13 @@
 Revision history for "LLM::Functions"
 
-0.3.1 2025-05-11
-    - Added &sub-info for metadata extraction of a given sub.
-    - Added &llm-tool-definition for easier making LLM-tool specs.
+0.3.1 2025-05-19
+    - Added the namespace "LLM::Tooling" with classes that facilitate LLM function calling.
+        - LLM::Tool, LLM::ToolRequest, LLM::ToolResponse.
+    - Added:
+        - &sub-info for metadata extraction of a given sub
+        - &llm-tool-definition for easier making LLM-tool specs
+        - &generate-llm-tool-response for the tool responses to LLM requests
+        - &llm-tool-request for making LLM::ToolRequest object from LLM "tool_calls" output
 
 0.3.0 2025-05-04
     - Made the LLaMA configurations explicitly use "WWW::LLaMA".
