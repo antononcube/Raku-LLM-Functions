@@ -15,7 +15,7 @@
     "WWW::Gemini:ver<0.0.17+>",
     "WWW::LLaMA:ver<0.1.3+>",
     "WWW::MistralAI:ver<0.1.3+>",
-    "WWW::OpenAI:ver<0.3.6+>",
+    "WWW::OpenAI:ver<0.3.8+>",
     "WWW::PaLM:ver<0.1.9+>"
   ],
   "build-depends": [],
