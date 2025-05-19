@@ -51,11 +51,11 @@ class LLM::Functions::Chat {
         return self.eval(message => @message.join(' '), :$role, |%args);
     }
 
-    multi method eval(Str $message, $role = Whatever, *%args) {
+    multi method eval($message, $role = Whatever, *%args) {
         return self.eval(:$message, :$role, |%args);
     }
 
-    multi method eval(Str :$message!, :$role is copy = Whatever, *%args) {
+    multi method eval(:$message! is copy, :$role is copy = Whatever, *%args) {
 
         # Process role argument
         if $role.isa(Whatever) {
@@ -67,8 +67,19 @@ class LLM::Functions::Chat {
         die 'The argument $role is expected to be a string or Whatever.'
         unless $role ~~ Str:D;
 
-        # Make and store message struct
-        @!messages.push(self.make-message(:$role, :$message));
+        if $message ~~ Str:D {
+            $message = self.make-message(:$role, :$message);
+        }
+
+        die 'The argument $message is expected to be a string, a list of strings, or a hashmap.'
+        unless $message ~~ Map:D;
+
+        if $message<role>:!exists {
+            $message<role> = $role
+        }
+
+        # Store message struct
+        @!messages.push($message);
 
         # Get LLM result
         my $res;
@@ -144,8 +155,10 @@ class LLM::Functions::Chat {
 
         for self.messages -> %h {
             $res ~= "\n" ~ $delim;
-            for <role content timestamp>.map({ $_ => %h{$_} }) {
-                $res ~= "\n" ~ $_;
+            for <role content tool_calls tool_call_id timestamp> -> $prop {
+                if %h{$prop}:exists {
+                    $res ~= "\n" ~ $prop ~ ' : ' ~ %h{$prop}.gist;
+                }
             }
         }
 
