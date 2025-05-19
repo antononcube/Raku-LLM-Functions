@@ -369,7 +369,11 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
 proto sub llm-tool-requests($resp) is export {*}
 
 multi sub llm-tool-requests(Str:D $resp) {
-    return try from-json($resp);
+    my $spec = try from-json($resp);
+    if $! {
+        die 'Cannot convert JSON string.'
+    }
+    return llm-tool-requests($spec);
 }
 
 multi sub llm-tool-requests(@resp) {
@@ -382,14 +386,14 @@ multi sub llm-tool-requests(@resp) {
 
 multi sub llm-tool-requests(%resp) {
     my @toolCalls;
-    if (%resp<finish_reason> // 'unknown') eqv 'tool_calls' {
+    if (%resp<finish_reason> // 'unknown') eq 'tool_calls' {
         @toolCalls = |%resp<message><tool_calls>
     }
 
     die 'Unknown structure of tool calls.'
     unless @toolCalls.all ~~ Map:D;
 
-    my @tools = do for @toolCalls -> %spec {
+    my @toolReqs = do for @toolCalls -> %spec {
        LLM::ToolRequest.new(
                 tool => %spec<function><name>,
                 params => from-json(%spec<function><arguments>),
@@ -397,5 +401,5 @@ multi sub llm-tool-requests(%resp) {
                 )
     }
 
-    return @tools;
+    return @toolReqs;
 }
