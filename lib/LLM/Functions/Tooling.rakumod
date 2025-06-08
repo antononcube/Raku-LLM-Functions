@@ -232,7 +232,7 @@ class LLM::ToolRequest {
     #--------------------------------------------------------
     submethod BUILD(Str:D :$!tool, :%!params, Str:D :$!request = '', :$!id = Whatever) {}
 
-    multi method new(Str:D :$tool, :%params, Str:D :$request = '', :$id = Whatever) {
+    multi method new(Str:D :name(:$tool), :args(:%params), Str:D :$request = '', :$id = Whatever) {
         self.bless(:$tool, :%params, :$request, :$id)
     }
 
@@ -283,6 +283,23 @@ class LLM::ToolResponse {
     #| To Hash
     multi method Hash(::?CLASS:D:-->Hash) {
         return %(:$!tool, :%!params, :$!request, :$!output);
+    }
+
+    multi method Hash(::?CLASS:D: $format is copy = Whatever-->Hash) {
+
+        if $format.isa(Whatever) { $format = 'raku'}
+        die 'The first argument is expected to be a string or Whatever.'
+        unless $format ~~ Str:D;
+
+        return do given $format.lc {
+            when $_ eq 'raku' { %(:$!tool, :%!params, :$!request, :$!output) }
+            when $_ (elem) <openai chatgpt> { %(role => 'tool', content => $!output, tool_call_id => '') }
+            when $_ eq 'gemini' { %(functionResponse => %('name' => $!tool, response => %( content => $!output))) }
+            default {
+                note 'Unknown format. The implemented formats are "OpenAI", "Gemini", "Raku", and Whatever. Continuing with Whatever.';
+                self.Hash(Whatever)
+            }
+        }
     }
 
     #| To string
