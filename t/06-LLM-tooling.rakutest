@@ -111,6 +111,16 @@ subtest {
     note $res.output;
     is $res.output, 'The predator Falconer wins over Hanzo after 3 attacks.', 'expected output';
 
+    is $res.Hash.keys.sort, <output params request tool>, "Expeted .Hash keys";
+    isa-ok $res.Hash(Whatever), Hash:D, "OpenAI style hashmap";
+    isa-ok $res.Hash('OpenAI'), Hash:D, "OpenAI style hashmap";
+    isa-ok $res.Hash('Gemini'), Hash:D, "OpenAI style hashmap";
+
+    note $res.Hash('Gemini');
+
+    is $res.Hash('OpenAI').keys.sort, <content role tool_call_id>, "OpenAI style hashmap keys";
+    is $res.Hash('Gemini').keys, <functionResponse>, "Gemini style hashmap keys";
+
 }, 'Two positional arguments and three named arguments sub';
 
 done-testing;
