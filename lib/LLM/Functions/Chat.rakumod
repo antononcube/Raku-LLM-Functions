@@ -95,7 +95,7 @@ class LLM::Functions::Chat {
         # Try to convert LLM response into a message
         my Str $msgRes;
         try {
-            $msgRes = $res.Str;
+            $msgRes = $res.deepmap({ $_.defined ?? $_ !! '(Any)' }).Str;
         }
 
         if $! {
