@@ -89,6 +89,10 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
             when Int | UInt { 'integer' }
             when Num | Numeric { 'number' }
             when Str { 'string' }
+            when !$_.defined {
+                note "Undefined type of parameter ⎡{%r<name>}⎦; continue assuming it is a string.";
+                'string'
+            }
             default {
                 die 'Do not know how to represent argument type in JSON schema.'
             }
