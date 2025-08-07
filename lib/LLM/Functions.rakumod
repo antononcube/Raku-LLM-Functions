@@ -71,7 +71,7 @@ multi sub llm-configuration($spec, *%args) {
                             embedding-model => 'text-embedding-3-small',
                             embedding-function => &OpenAIEmbeddings,
                             temperature => 0.8,
-                            max-tokens => 300,
+                            max-tokens => 4096,
                             total-probability-cutoff => 0.03,
                             prompts => Empty,
                             prompt-delimiter => ' ',
@@ -124,7 +124,7 @@ multi sub llm-configuration($spec, *%args) {
                             embedding-model => 'embedding-gecko-001',
                             embedding-function => &PaLMEmbedText,
                             temperature => 0.4,
-                            max-tokens => 300,
+                            max-tokens => 4096,
                             total-probability-cutoff => 0,
                             prompts => Empty,
                             prompt-delimiter => ' ',
@@ -132,7 +132,8 @@ multi sub llm-configuration($spec, *%args) {
                             stop-tokens => Empty,
                             argument-renames => %('api-key' => 'auth-key',
                                                   'max-tokens' => 'max-output-tokens',
-                                                  'stop-tokens' => 'stop-sequences'),
+                                                  'stop-tokens' => 'stop-sequences',
+                                                  'tool-config' => 'toolConfig'),
                             format => 'values');
                 }
 
@@ -158,7 +159,7 @@ multi sub llm-configuration($spec, *%args) {
                             embedding-model => 'embedding-001',
                             embedding-function => &GeminiEmbedContent,
                             temperature => 0.4,
-                            max-tokens => 300,
+                            max-tokens => 4096,
                             total-probability-cutoff => 0,
                             prompts => Empty,
                             prompt-delimiter => ' ',
@@ -167,7 +168,8 @@ multi sub llm-configuration($spec, *%args) {
                             base-url => 'https://generativelanguage.googleapis.com/v1beta/models',
                             argument-renames => %('api-key' => 'auth-key',
                                                   'max-tokens' => 'max-output-tokens',
-                                                  'stop-tokens' => 'stop-sequences'),
+                                                  'stop-tokens' => 'stop-sequences',
+                                                  'tool-config' => 'toolConfig'),
                             format => 'values');
                 }
 
