@@ -65,6 +65,9 @@ class LLM::Functions::Configuration {
     # "Tools" list of LLMTool objects to make available
     has @.tools;
 
+    # Tool configuration
+    has %.tool-config;
+
     # "ToolPrompt" prompt specifying tool format
     has $.tool-prompt = '';
 
