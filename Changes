@@ -1,5 +1,9 @@
 Revision history for "LLM::Functions"
 
+0.3.2 2025-08-07
+    - Minor tweaks &llm-tool-definition.
+    - Better max-tokens default values.
+
 0.3.1 2025-05-19
     - Added the namespace "LLM::Tooling" with classes that facilitate LLM function calling.
         - LLM::Tool, LLM::ToolRequest, LLM::ToolResponse.
