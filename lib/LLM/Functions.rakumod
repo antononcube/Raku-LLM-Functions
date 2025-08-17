@@ -71,7 +71,7 @@ multi sub llm-configuration($spec, *%args) {
                             embedding-model => 'text-embedding-3-small',
                             embedding-function => &OpenAIEmbeddings,
                             temperature => 0.8,
-                            max-tokens => 4096,
+                            max-tokens => 2048, # 4096 - assumed prompt max-length, 2048. (Model dependent, it seems.)
                             total-probability-cutoff => 0.03,
                             prompts => Empty,
                             prompt-delimiter => ' ',
@@ -86,7 +86,7 @@ multi sub llm-configuration($spec, *%args) {
                     my $obj = llm-configuration('openai',
                             name => 'chatgpt',
                             function => &OpenAIChatCompletion,
-                            model => 'gpt-3.5-turbo',
+                            model => 'gpt-4.1-mini',
                             |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
 
                     $obj.evaluator = LLM::Functions::EvaluatorChat.new(conf => $obj);
@@ -186,7 +186,7 @@ multi sub llm-configuration($spec, *%args) {
                             embedding-model => 'mistral-embed',
                             embedding-function => &MistralAIEmbeddings,
                             temperature => 0.6,
-                            max-tokens => 300,
+                            max-tokens => 1024,
                             total-probability-cutoff => 0.03,
                             prompts => Empty,
                             prompt-delimiter => ' ',
