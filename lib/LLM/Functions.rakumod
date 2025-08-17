@@ -395,7 +395,9 @@ multi sub llm-function(@prompts where @prompts.all ~~ Str:D,
     $llm-evaluator.conf.prompts.append(@prompts.Slip);
     $llm-evaluator.formatron = $formatron;
 
-    return -> $text, *%args { $llm-evaluator.eval($text, |%args) };
+    # For consistence, we define the function to have a positional and named arguments.
+    # Note that ultimately $text is appended to the (combined) prompt.
+    return -> $text = '', *%args { $llm-evaluator.eval($text, |%args) };
 }
 
 # Using a function
