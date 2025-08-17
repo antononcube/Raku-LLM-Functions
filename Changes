@@ -2,6 +2,7 @@ Revision history for "LLM::Functions"
 
 0.3.3 2025-08-17
     - Using a default text argument value ('') if the argument of &llm-function is a string or a list of strings.
+    - Better default models and max-tokens default values.
 
 0.3.2 2025-08-07
     - Minor tweaks &llm-tool-definition.
