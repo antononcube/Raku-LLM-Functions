@@ -25,6 +25,9 @@ ok ($prompt3 ==> llm-function(llm-evaluator => 'openai'))("greek salad");
 
 ## 5
 my $res = llm-synthesize(['Give the GDP of the top 10 countries in 2020. Give the results as a JSON dictionary.'], e=>'chatgpt', form => sub-parser('JSON'):drop);
-isa-ok $res, Hash;
+is
+        $res ~~ Map:D || $res ~~ (Array:D | List:D) && $res.all ~~ (Pair:D | Numeric:D),
+        True,
+        'expected result from JSON dictionary reequest';
 
 done-testing;
