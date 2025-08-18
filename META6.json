@@ -23,6 +23,7 @@
     "Image::Markup::Utilities:ver<0.1.1+>:auth<zef:antononcube>"
   ],
   "provides": {
+    "LLM::Function": "lib/LLM/Functions/Function.rakumod",
     "LLM::Functions": "lib/LLM/Functions.rakumod",
     "LLM::Functions::Chat": "lib/LLM/Functions/Chat.rakumod",
     "LLM::Functions::Configuration": "lib/LLM/Functions/Configuration.rakumod",
@@ -30,6 +31,7 @@
     "LLM::Functions::EvaluatorChat": "lib/LLM/Functions/EvaluatorChat.rakumod",
     "LLM::Functions::EvaluatorChatGemini": "lib/LLM/Functions/EvaluatorChatGemini.rakumod",
     "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod",
+    "LLM::Functions::Function": "lib/LLM/Functions/Function.rakumod",
     "LLM::Tooling": "lib/LLM/Functions/Tooling.rakumod"
   },
   "resources": [],
