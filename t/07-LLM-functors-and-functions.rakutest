@@ -1,0 +1,30 @@
+use v6.d;
+use Test;
+
+## use lib <. lib>;
+use LLM::Functions;
+
+plan *;
+
+## 1
+subtest {
+    my $f = llm-function('Tell me a recipe for making vibrant colors palette.');
+    isa-ok $f, LLM::Function:D;
+    #say $f();
+}, 'No-arguments functor: color palette';
+
+## 2
+subtest {
+    my $f = llm-function({"What is the GDP of $^a in $^b."});
+    isa-ok $f, LLM::Function:D;
+    #say $f('China', "2020");
+    isa-ok $f.query-func, Callable:D;
+}, 'Two rguments functor: GDP';
+
+## 3
+subtest {
+    isa-ok llm-function('Tell me a recipe for making vibrant colors palette.', type => 'Block'), Block:D;
+    isa-ok llm-function({"What is the GDP of $^a in $^b."}, type => 'Block'), Block:D;
+}, 'Block results';
+
+done-testing;
