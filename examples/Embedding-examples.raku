@@ -1,7 +1,7 @@
 #!/usr/bin/env raku
 use v6.d;
 
-use lib <. lib>;
+# use lib <. lib>;
 use LLM::Functions;
 
 my @queries = [
