@@ -1,6 +1,6 @@
 use v6.d;
 
-# use lib <. lib>;
+# # use lib <. lib>;
 
 use LLM::Functions;
 use Text::SubParsers;
@@ -21,7 +21,7 @@ ok ($prompt2 ==> llm-function(llm-evaluator => 'openai'))("greek salad");
 
 ## 4
 my $prompt3 = 'Write a tragical-comical short story with no more than 40 words.';
-ok ($prompt3 ==> llm-function(llm-evaluator => 'openai'))("greek salad");
+ok ($prompt3 ==> llm-function(llm-evaluator => 'openai'))();
 
 ## 5
 my $res = llm-synthesize(['Give the GDP of the top 10 countries in 2020. Give the results as a JSON dictionary.'], e=>'chatgpt', form => sub-parser('JSON'):drop);
