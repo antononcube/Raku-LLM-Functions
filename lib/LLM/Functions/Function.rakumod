@@ -15,4 +15,3 @@ class LLM::Function does Callable {
     };
     method CALL-ME(|c) { &!func(|c) }
 }
-
