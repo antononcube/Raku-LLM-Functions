@@ -31,6 +31,14 @@ use LLM::Functions::EvaluatorChat;
 use LLM::Functions::EvaluatorChatGemini;
 use LLM::Functions::EvaluatorChatPaLM;
 
+use LLM::Function;
+
+sub EXPORT {
+    use LLM::Function;
+    Map.new:
+            'LLM::Function' => LLM::Functions
+}
+
 unit module LLM::Functions;
 
 #===========================================================
@@ -360,7 +368,6 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
     return $llm-evaluator;
 }
 
-
 #===========================================================
 # LLM Function
 #===========================================================
@@ -374,21 +381,24 @@ our proto llm-function(|) is export {*}
 
 # No positional args
 multi sub llm-function(:form(:$formatron) = 'Str',
-                       :e(:$llm-evaluator) is copy = Whatever) {
-    return llm-function('', :$formatron, :$llm-evaluator);
+                       :e(:$llm-evaluator) is copy = Whatever,
+                       :t(:$type) = Whatever)  {
+    return llm-function('', :$formatron, :$llm-evaluator, :$type);
 }
 
 # Using a string
 multi sub llm-function(Str $prompt,
                        :form(:$formatron) = 'Str',
-                       :e(:$llm-evaluator) is copy = Whatever) {
-    return llm-function([$prompt,], :$formatron, :$llm-evaluator);
+                       :e(:$llm-evaluator) is copy = Whatever,
+                       :t(:$type) = Whatever) {
+    return llm-function([$prompt,], :$formatron, :$llm-evaluator, :$type);
 }
 
 # Using an array of strings
 multi sub llm-function(@prompts where @prompts.all ~~ Str:D,
                        :form(:$formatron) = 'Str',
-                       :e(:$llm-evaluator) is copy = Whatever) {
+                       :e(:$llm-evaluator) is copy = Whatever,
+                       :t(:$type) = Whatever) {
 
     $llm-evaluator = llm-evaluator($llm-evaluator);
 
@@ -397,13 +407,15 @@ multi sub llm-function(@prompts where @prompts.all ~~ Str:D,
 
     # For consistence, we define the function to have a positional and named arguments.
     # Note that ultimately $text is appended to the (combined) prompt.
-    return -> $text = '', *%args { $llm-evaluator.eval($text, |%args) };
+    my &func = -> $text = '', *%args { $llm-evaluator.eval($text, |%args) };
+    return $type ~~ Str:D && $type.lc eq 'block' ?? &func !! LLM::Function.new(:&func, :$llm-evaluator);
 }
 
 # Using a function
 multi sub llm-function(&queryFunc,
                        :form(:$formatron) = 'Str',
-                       :e(:$llm-evaluator) is copy = Whatever) {
+                       :e(:$llm-evaluator) is copy = Whatever,
+                       :t(:$type) = Whatever) {
 
     $llm-evaluator = llm-evaluator($llm-evaluator);
     $llm-evaluator.formatron = $formatron;
@@ -412,7 +424,7 @@ multi sub llm-function(&queryFunc,
     my @queryFuncParamNames = &queryFunc.signature.params.map({ $_.usage-name });
 
     # Make the pure function
-    return -> **@args, *%args {
+    my &func = -> **@args, *%args {
         # Get the named arguments for the query function
         my %args2 = %args.grep({ $_.key ∉ <prompts> && $_.key ∈ @queryFuncParamNames }).Hash;
 
@@ -425,6 +437,7 @@ multi sub llm-function(&queryFunc,
         # LMM-evaluate
         $llm-evaluator.eval($text, |%args3)
     };
+    return $type ~~ Str:D && $type.lc eq 'block' ?? &func !! LLM::Function.new(:&func, :$llm-evaluator, query-func => &queryFunc);
 }
 
 
