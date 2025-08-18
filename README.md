@@ -149,28 +149,30 @@ use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 ```
-# :evaluator(Whatever)
-# :module("WWW::OpenAI")
-# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*})
-# :max-tokens(300)
-# :temperature(0.8)
-# :prompts($[])
-# :name("openai")
-# :images($[])
-# :tools($[])
-# :api-key(Whatever)
-# :api-user-id("user:109176182730")
-# :base-url("https://api.openai.com/v1")
-# :tool-prompt("")
-# :tool-response-insertion-function(WhateverCode)
-# :argument-renames(${:api-key("auth-key"), :stop-tokens("stop")})
-# :stop-tokens($[])
-# :examples($[])
-# :format("values")
 # :tool-request-parser(WhateverCode)
+# :tool-prompt("")
+# :evaluator(Whatever)
+# :max-tokens(2048)
+# :stop-tokens($[])
+# :base-url("https://api.openai.com/v1")
+# :tools($[])
+# :format("values")
 # :total-probability-cutoff(0.03)
+# :name("openai")
+# :examples($[])
+# :images($[])
+# :embedding-model("text-embedding-3-small")
+# :prompts($[])
+# :module("WWW::OpenAI")
+# :api-user-id("user:371724609582")
+# :argument-renames(${:api-key("auth-key"), :stop-tokens("stop")})
+# :api-key(Whatever)
 # :model("gpt-3.5-turbo-instruct")
+# :tool-response-insertion-function(WhateverCode)
 # :prompt-delimiter(" ")
+# :temperature(0.8)
+# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*})
+# :embedding-function(proto sub OpenAIEmbeddings ($prompt, :$model = Whatever, :$encoding-format = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*})
 ```
 
 Here is the ChatGPT-based configuration:
@@ -179,28 +181,30 @@ Here is the ChatGPT-based configuration:
 .say for llm-configuration('ChatGPT').Hash;
 ```
 ```
-# tool-request-parser => (WhateverCode)
-# total-probability-cutoff => 0.03
-# model => gpt-3.5-turbo
-# api-user-id => user:475496933842
+# prompt-delimiter =>  
+# embedding-model => text-embedding-3-small
+# name => chatgpt
+# embedding-function => &OpenAIEmbeddings
+# tools => []
+# tool-response-insertion-function => (WhateverCode)
+# evaluator => (my \LLM::Functions::EvaluatorChat_5624267951272 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assistant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:434846167946", module => "WWW::OpenAI", base-url => "https://api.openai.com/v1", model => "gpt-4.1-mini", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :@images is copy = Empty, :$reasoning-effort = Whatever, :$verbosity = Whatever, :@tools = Empty, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str:D :$method = "tiny", Str:D :$base-url = "https://api.openai.com/v1", Str:D :$path = "chat/completions") {*}, embedding-model => "text-embedding-3-small", embedding-function => proto sub OpenAIEmbeddings ($prompt, :$model = Whatever, :$encoding-format = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 2048, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-config => {}, tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, images => [], argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_5624267951272), formatron => "Str"))
 # images => []
+# max-tokens => 2048
 # argument-renames => {api-key => auth-key, stop-tokens => stop}
-# max-tokens => 300
-# module => WWW::OpenAI
-# tool-prompt => 
-# format => values
-# stop-tokens => []
+# prompts => []
+# function => &OpenAIChatCompletion
+# tool-request-parser => (WhateverCode)
 # examples => []
 # temperature => 0.8
-# prompts => []
-# tool-response-insertion-function => (WhateverCode)
-# tools => []
-# function => &OpenAIChatCompletion
-# prompt-delimiter =>  
-# api-key => (Whatever)
+# tool-prompt => 
 # base-url => https://api.openai.com/v1
-# name => chatgpt
-# evaluator => (my \LLM::Functions::EvaluatorChat_6288007030840 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assistant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:475496933842", module => "WWW::OpenAI", base-url => "https://api.openai.com/v1", model => "gpt-3.5-turbo", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :@images is copy = Empty, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 300, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, images => [], argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_6288007030840), formatron => "Str"))
+# format => values
+# model => gpt-4.1-mini
+# api-key => (Whatever)
+# total-probability-cutoff => 0.03
+# api-user-id => user:434846167946
+# module => WWW::OpenAI
+# stop-tokens => []
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -217,28 +221,30 @@ Here is the default PaLM configuration:
 .say for llm-configuration('PaLM').Hash;
 ```
 ```
-# tool-request-parser => (WhateverCode)
-# stop-tokens => []
-# images => []
 # format => values
 # name => palm
-# api-user-id => user:948311569993
-# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens, stop-tokens => stop-sequences}
-# examples => []
-# api-key => (Whatever)
-# prompt-delimiter =>  
-# model => text-bison-001
-# prompts => []
-# temperature => 0.4
-# function => &PaLMGenerateText
-# tool-response-insertion-function => (WhateverCode)
+# tool-request-parser => (WhateverCode)
 # tool-prompt => 
+# embedding-function => &PaLMEmbedText
+# model => text-bison-001
+# tool-response-insertion-function => (WhateverCode)
+# max-tokens => 4096
+# base-url => 
+# embedding-model => embedding-gecko-001
+# prompts => []
+# examples => []
 # tools => []
-# evaluator => (Whatever)
-# module => WWW::PaLM
-# max-tokens => 300
+# temperature => 0.4
+# images => []
+# api-user-id => user:850418340811
+# prompt-delimiter =>  
+# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens, stop-tokens => stop-sequences, tool-config => toolConfig}
 # total-probability-cutoff => 0
-# base-url =>
+# stop-tokens => []
+# module => WWW::PaLM
+# evaluator => (Whatever)
+# function => &PaLMGenerateText
+# api-key => (Whatever)
 ```
 
 -----
@@ -253,7 +259,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# -> $text, *%args { #`(Block|6288098091184) ... }
+# LLM::Function.new(func => -> $text = "", *%args { #`(Block|5624377215256) ... }, llm-evaluator => LLM::Functions::Evaluator.new(conf => (my \LLM::Functions::Configuration_5624474894568 = LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:770424318781", module => "WWW::OpenAI", base-url => "https://api.openai.com/v1", model => "gpt-4.1-mini", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :@images is copy = Empty, :$reasoning-effort = Whatever, :$verbosity = Whatever, :@tools = Empty, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str:D :$method = "tiny", Str:D :$base-url = "https://api.openai.com/v1", Str:D :$path = "chat/completions") {*}, embedding-model => "text-embedding-3-small", embedding-function => proto sub OpenAIEmbeddings ($prompt, :$model = Whatever, :$encoding-format = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 2048, format => "values", prompts => ["Show a recipe for:"], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-config => {}, tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, images => [], argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assistant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration_5624474894568, formatron => "Str"))), formatron => "Str"), query-func => WhateverCode)
 ```
 
 Here we evaluate over a message: 
@@ -262,24 +268,35 @@ Here we evaluate over a message:
 say &func('greek salad');
 ```
 ```
-# Ingredients:
-# - 1 large cucumber, diced
-# - 1 bell pepper, diced
-# - 1 red onion, thinly sliced
-# - 2-3 tomatoes, diced
-# - 1 cup Kalamata olives, pitted
-# - 1 cup feta cheese, crumbled
-# - 1/4 cup extra virgin olive oil
-# - 2 tablespoons red wine vinegar
-# - 1 teaspoon dried oregano
-# - Salt and pepper to taste
+# Certainly! Here's a classic recipe for a Greek Salad:
 # 
-# Instructions:
-# 1. In a large salad bowl, combine the cucumber, bell pepper, red onion, tomatoes, and olives.
-# 2. In a small bowl, whisk together the olive oil, red wine vinegar, oregano, salt, and pepper.
-# 3. Pour the dressing over the vegetables and toss to combine.
-# 4. Add the feta cheese on top of the salad.
-# 5. Serve immediately or refrigerate for 1-2 hours to allow the flavors to meld together before serving. Enjoy your delicious Greek salad!
+# ### Greek Salad Recipe
+# 
+# **Ingredients:**
+# 
+# - 4 ripe tomatoes, cut into wedges  
+# - 1 cucumber, peeled (optional) and sliced into half-moons  
+# - 1 green bell pepper, thinly sliced  
+# - 1 small red onion, thinly sliced  
+# - 200g (7 oz) feta cheese, cut into cubes or crumbled  
+# - A handful of Kalamata olives  
+# - 1 tsp dried oregano  
+# - Salt and freshly ground black pepper, to taste  
+# - 3 tbsp extra virgin olive oil  
+# - 1 tbsp red wine vinegar or lemon juice  
+# - Optional: fresh parsley or mint for garnish  
+# 
+# **Instructions:**
+# 
+# 1. In a large salad bowl, combine the tomatoes, cucumber, green pepper, and red onion.  
+# 2. Add the Kalamata olives and feta cheese on top.  
+# 3. Sprinkle with dried oregano, salt, and freshly ground black pepper.  
+# 4. Drizzle the olive oil and red wine vinegar (or lemon juice) over the salad.  
+# 5. Toss gently to combine all ingredients without breaking up the feta too much.  
+# 6. Garnish with fresh parsley or mint if desired.  
+# 7. Serve immediately with crusty bread or as a side dish.  
+# 
+# Enjoy your fresh and flavorful Greek salad!
 ```
 
 ### Positional arguments
@@ -290,10 +307,10 @@ Here we make a LLM function with a function-prompt and numeric interpreter of th
 my &func2 = llm-function(
         {"How many $^a can fit inside one $^b?"},
         form => Numeric,
-        llm-evaluator => 'palm');
+        llm-evaluator => 'chatgpt');
 ```
 ```
-# -> **@args, *%args { #`(Block|6288154113224) ... }
+# LLM::Function.new(func => -> **@args, *%args { #`(Block|5624507187920) ... }, llm-evaluator => (my \LLM::Functions::EvaluatorChat_5624366312104 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assistant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:948863042787", module => "WWW::OpenAI", base-url => "https://api.openai.com/v1", model => "gpt-4.1-mini", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :@images is copy = Empty, :$reasoning-effort = Whatever, :$verbosity = Whatever, :@tools = Empty, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str:D :$method = "tiny", Str:D :$base-url = "https://api.openai.com/v1", Str:D :$path = "chat/completions") {*}, embedding-model => "text-embedding-3-small", embedding-function => proto sub OpenAIEmbeddings ($prompt, :$model = Whatever, :$encoding-format = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 2048, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-config => {}, tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, images => [], argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_5624366312104), formatron => Numeric)), query-func => -> $a, $b { #`(Block|5624507187992) ... })
 ```
 
 Here were we apply the function:
@@ -302,7 +319,46 @@ Here were we apply the function:
 my $res2 = &func2("tennis balls", "toyota corolla 2010");
 ```
 ```
-# 48
+# Let's estimate how many tennis balls can fit inside a 2010 Toyota Corolla by approximating the interior volume and the volume of a tennis ball.
+# 
+# ### Step 1: Estimate the interior volume of the car
+# 
+# - The 2010 Toyota Corolla's **interior passenger volume** is approximately **97 cubic feet**.
+# - To simplify calculations, convert cubic feet to cubic inches:
+#   - 1 cubic foot = 12 inches × 12 inches × 12 inches = 1,728 cubic inches
+#   - So, 97 cubic feet × 1,728 cubic inches/cubic foot ≈ 167,616 cubic inches
+# 
+# ### Step 2: Calculate the volume of one tennis ball
+# 
+# - A standard tennis ball has a diameter of about 2.7 inches.
+# - Radius \( r = \frac{2.7}{2} = 1.35 \) inches
+# - Volume of sphere: \( V = \frac{4}{3} \pi r^3 \)
+#   \[
+#   V = \frac{4}{3} \pi (1.35)^3 \approx \frac{4}{3} \times 3.1416 \times 2.46 \approx 10.96 \ \text{cubic inches}
+#   \]
+# 
+# ### Step 3: Account for packing efficiency
+# 
+# - Spheres can't fill all space perfectly due to gaps.
+# - The densest packing of spheres (face-centered cubic or hexagonal close packing) has a packing efficiency of about 74%.
+# - Realistically, if you just toss tennis balls in a car, the packing might be less efficient, say 60-65%.
+# - We'll use a conservative packing efficiency of 65%.
+# 
+# ### Step 4: Calculate how many tennis balls fit
+# 
+# - Usable volume = 167,616 cubic inches × 0.65 ≈ 108,850 cubic inches
+# - Number of tennis balls = usable volume / volume of one ball
+#   \[
+#   \frac{108,850}{10.96} \approx 9,930 \ \text{balls}
+#   \]
+# 
+# ### Final estimate:
+# 
+# **Approximately 9,900 to 10,000 tennis balls** can fit inside the interior of a 2010 Toyota Corolla.
+# 
+# ---
+# 
+# **Note:** This is a rough estimate that assumes the entire interior volume can be filled with tennis balls, ignoring seats, dashboard, and other interior components that take up space. If you consider only the trunk volume (~13 cubic feet) or more realistic space inside the car (removing space occupied by seats and controls), the number will be lower.
 ```
 
 Here we show that we got a number:
@@ -320,10 +376,10 @@ $res2 ~~ Numeric
 Here the first argument is a template with two named arguments: 
 
 ```perl6
-my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
+my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'chatgpt');
 ```
 ```
-# -> **@args, *%args { #`(Block|6288120035248) ... }
+# LLM::Function.new(func => -> **@args, *%args { #`(Block|5624429821536) ... }, llm-evaluator => (my \LLM::Functions::EvaluatorChat_5624366315624 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assistant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:755919164890", module => "WWW::OpenAI", base-url => "https://api.openai.com/v1", model => "gpt-4.1-mini", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :@images is copy = Empty, :$reasoning-effort = Whatever, :$verbosity = Whatever, :@tools = Empty, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str:D :$method = "tiny", Str:D :$base-url = "https://api.openai.com/v1", Str:D :$path = "chat/completions") {*}, embedding-model => "text-embedding-3-small", embedding-function => proto sub OpenAIEmbeddings ($prompt, :$model = Whatever, :$encoding-format = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 2048, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-config => {}, tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, images => [], argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_5624366315624), formatron => "Str")), query-func => -> :$dish, :$cuisine { #`(Block|5624429821608) ... })
 ```
 
 Here is an invocation:
@@ -332,29 +388,35 @@ Here is an invocation:
 &func3(dish => 'salad', cuisine => 'Russian', max-tokens => 300);
 ```
 ```
-# **Ingredients:**
+# Certainly! One classic salad from Russian cuisine is **"Olivier Salad"** (also known as Russian Salad). It's very popular in Russia and often served during celebrations.
 # 
-# * 1 head of cabbage (chopped)
-# * 2 carrots (grated)
-# * 1 cucumber (chopped)
-# * 1/2 red onion (chopped)
-# * 1/2 cup of mayonnaise
-# * 1/4 cup of sour cream
-# * Salt and pepper to taste
+# ### Olivier Salad Recipe
 # 
-# **Instructions:**
+# #### Ingredients:
+# - 4 medium potatoes
+# - 3 medium carrots
+# - 4 eggs
+# - 200 grams (about 7 oz) cooked chicken breast or boiled bologna (you can also use ham or boiled beef)
+# - 1 cup canned peas (drained)
+# - 3-4 pickles (dill or sweet, depending on preference)
+# - 1 small onion (optional)
+# - 1 cup mayonnaise
+# - Salt and black pepper to taste
 # 
-# 1. In a large bowl, combine the cabbage, carrots, cucumber, and onion.
-# 2. In a small bowl, whisk together the mayonnaise, sour cream, salt, and pepper.
-# 3. Pour the dressing over the salad and toss to coat.
-# 4. Serve immediately or chill for later.
+# #### Instructions:
+# 1. **Boil the vegetables and eggs**:
+#    - Boil potatoes and carrots until tender but firm (about 20-25 minutes). Let them cool.
+#    - Hard boil the eggs (about 10 minutes), then cool and peel.
 # 
-# **Tips:**
+# 2. **Chop ingredients**:
+#    - Dice the boiled potatoes, carrots, eggs, and pickles into small cubes.
+#    - Cut the cooked chicken or bologna into small cubes as well.
+#    - Finely chop the onion if using.
 # 
-# * For a more flavorful salad, add some chopped fresh herbs, such as dill or parsley.
-# * You can also add some protein to the salad, such as shredded chicken or crumbled bacon.
-# * If you don't have any sour cream on hand, you can use yogurt or even just milk to thin out the mayonnaise.
-# * This salad is best served cold, so make sure to chill it for at least a few hours before serving.
+# 3. **Mix the salad**:
+#    - In a large bowl, combine the diced potatoes, carrots, eggs, pickles, chicken, peas, and onion.
+#    - Add mayonnaise and mix gently but thoroughly until all ingredients are coated.
+#    - Season with salt and pepper to taste.
 ```
 
 --------
@@ -370,7 +432,7 @@ Here a LLM is asked to produce a generalization:
 llm-example-function([ 'finger' => 'hand', 'hand' => 'arm' ])('foot')
 ```
 ```
-# leg
+# Output: leg
 ```
 
 Here is an array of training pairs is used:
@@ -379,7 +441,7 @@ Here is an array of training pairs is used:
 'Oppenheimer' ==> (["Einstein" => "14 March 1879", "Pauli" => "April 25, 1900"] ==> llm-example-function)()
 ```
 ```
-# April 22, 1904
+# Output: April 22, 1904
 ```
 
 Here is defined a LLM function for translating WL associations into Python dictionaries:
@@ -389,7 +451,7 @@ my &fea = llm-example-function( '<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }');
 &fea('<| 23->3, G->33, T -> R5|>');
 ```
 ```
-# { 23:3, G:33, T:R5 }
+# Output: { 23:3, G:33, T:R5 }
 ```
 
 The function `llm-example-function` takes as a first argument:
@@ -410,7 +472,45 @@ my &fec = llm-example-function(
 say &fec('raccoon');
 ```
 ```
-# panda
+# Let's analyze the pattern from the examples:
+# 
+# - Input: crocodile  
+#   Output: grasshopper
+# 
+# - Input: fox  
+#   Output: cardinal
+# 
+# Looking at these, it seems the output is an animal whose primary color is similar to the main color associated with the input animal.
+# 
+# - Crocodile is typically greenish (green/brown), grasshopper is green.
+# - Fox is reddish-orange, cardinal is bright red.
+# 
+# So the output animal matches the input animal by color.
+# 
+# Now, given the input:
+# 
+# - raccoon
+# 
+# Raccoons have a grayish-black and white coloration.
+# 
+# We need to find an animal whose color matches raccoon's gray/black/white.
+# 
+# Animals with similar colors:
+# 
+# - Skunk (black and white)
+# - Penguin (black and white)
+# - Orca (black and white)
+# - Magpie (black and white)
+# 
+# Given the pattern, probably an animal with a dominant black/white coloration.
+# 
+# Among these, "magpie" is a bird with black and white colors, or "skunk".
+# 
+# Since previous outputs are birds (cardinal is a bird), grasshopper is an insect, maybe either is fine.
+# 
+# Let's pick "magpie".
+# 
+# **Output: magpie**
 ```
 
 --------
@@ -461,14 +561,14 @@ my $chat = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatGPT', :$prompt);
 $chat.eval('What is the most transparent gem?');
 ```
 ```
-# Diamond is the most transparent gem.
+# The most transparent gem is typically **diamond**, known for its exceptional clarity and brilliance. However, other gems like **white sapphire** and **topaz** can also be highly transparent depending on their quality.
 ```
 
 ```perl6
 $chat.eval('Ok. What are the second and third most transparent gems?');
 ```
 ```
-# The second most transparent gem is sapphire, and the third most transparent gem is emerald.
+# After diamond, the second most transparent gem is usually **white sapphire**, followed by **colorless topaz** as third. Both exhibit high clarity and excellent light transmission.
 ```
 
 Here are the prompt(s) and all messages of the chat object:
@@ -481,21 +581,21 @@ $chat.say
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # Prompts: You are a gem expert and you give concise answers.
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role	user
-# content	What is the most transparent gem?
-# timestamp	2024-03-17T15:35:54.133613-04:00
+# role : user
+# content : What is the most transparent gem?
+# timestamp : 2025-08-18T12:49:42.245950-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role	assistant
-# content	Diamond is the most transparent gem.
-# timestamp	2024-03-17T15:35:54.831745-04:00
+# role : assistant
+# content : The most transparent gem is typically **diamond**, known for its exceptional clarity and brilliance. However, other gems like **white sapphire** and **topaz** can also be highly transparent depending on their quality.
+# timestamp : 2025-08-18T12:49:43.244139-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role	user
-# content	Ok. What are the second and third most transparent gems?
-# timestamp	2024-03-17T15:35:54.846413-04:00
+# role : user
+# content : Ok. What are the second and third most transparent gems?
+# timestamp : 2025-08-18T12:49:43.255854-04:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
-# role	assistant
-# content	The second most transparent gem is sapphire, and the third most transparent gem is emerald.
-# timestamp	2024-03-17T15:35:56.018877-04:00
+# role : assistant
+# content : After diamond, the second most transparent gem is usually **white sapphire**, followed by **colorless topaz** as third. Both exhibit high clarity and excellent light transmission.
+# timestamp : 2025-08-18T12:49:44.263353-04:00
 ```
 
 --------
@@ -518,36 +618,19 @@ $img.substr(^100)
 # ![](data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAArwAAAK8CAIAAACC2PsUAAAA1XpUWHRSYXcgcHJvZmlsZSB0e
 ```
 
-Here we apply OpenAI's AI vision model `gpt-4-vision-preview` (which is the default one) over the ***URL of the image***:
+Here we apply one of OpenAI's AI omni models (which is the default one) over the ***URL of the image***:
 
 ```perl6
 llm-vision-synthesize('Describe the image.', $url);
 ```
 ```
-# The image is an infographic titled "Cyber Week Spending Set to Hit New Highs in 2023". It shows estimated online spending on Thanksgiving weekend in the United States for the years 2019 through 2023, with 2023 being a forecast. The data is presented in a bar chart format, with different colored bars representing each year.
+# The image is a bar chart titled "Cyber Week Spending Set to Hit New Highs in 2023," showing estimated online spending on Thanksgiving weekend in the United States. It compares spending from 2019 to 2023 across three days: Thanksgiving Day, Black Friday, and Cyber Monday.
 # 
-# There are three categories on the horizontal axis: Thanksgiving Day, Black Friday, and Cyber Monday. The vertical axis represents spending in billions of dollars, ranging from $0B to $12B.
+# - **Thanksgiving Day**: Spending increases gradually each year, with 2023 showing the highest at around $6 billion.
+# - **Black Friday**: Spending is relatively stable from 2019 to 2022, with a noticeable increase in 2023 to about $10 billion.
+# - **Cyber Monday**: Spending consistently rises each year, reaching approximately $12 billion in 2023.
 # 
-# The bars show an increasing trend in spending over the years for each of the three days. For Thanksgiving Day, the spending appears to have increased from just over $4B in 2019 to a forecast of around $6B in 2023. Black Friday shows a rise from approximately $7B in 2019 to a forecast of nearly $10B in 2023. Cyber Monday exhibits the highest spending, with an increase from around $9B in 2019 to a forecast of over $11B in 2023.
-# 
-# There is an icon of a computer monitor with a shopping tag, indicating the focus on online spending. At the bottom of the image, the source of the data is credited to Adobe Analytics, and the logo of Statista is present, indicating that they have produced or distributed the infographic. There are also two icons, one resembling a Creative Commons license and the other a share or export button.
-```
-
-Here we apply Gemini's AI vision model `gemini-pro-vision` over the image:
-
-```perl6
-llm-vision-synthesize('Describe the image.', $img, e => 'Gemini');
-```
-```
-# The image shows the estimated online spending on Thanksgiving weekend in the United States from 2019 to 2023. The y-axis shows the spending amount in billions of dollars, while the x-axis shows the year. The data is presented in four bars, each representing a different year. The colors of the bars are blue, orange, green, and yellow, respectively. The values for each year are shown below:
-# 
-# * 2019: $7.4 billion
-# * 2020: $9.0 billion
-# * 2021: $10.7 billion
-# * 2022: $11.3 billion
-# * 2023: $12.2 billion (estimated)
-# 
-# The image shows that online spending on Thanksgiving weekend has increased steadily over the years. In 2023, online spending is expected to reach $12.2 billion, up from $7.4 billion in 2019.
+# The data source is Adobe Analytics, and the 2023 figures are forecasts. The bars are color-coded by year: 2019 (light blue), 2020 (medium blue), 2021 (dark blue), 2022 (navy blue), and 2023 (yellow).
 ```
 
 **Remark:** Currently, Gemini works with (Base64) images only (and does not with URLs.) OpenAI's vision works with both URLs and images.
@@ -588,7 +671,7 @@ error => {code => 400, message => Messages must alternate between authors., stat
         - Topics: "Advisor bot", "AI Guidance", "For Fun", ...
           - See: https://resources.wolframcloud.com/PromptRepository/
     - [X] DONE Most likely, there would be a separate package "LLM::Prompts", [AAp8].
-  - [ ] MAYBE Random selection of LLM-evaluator
+  - [X] CANCELED Random selection of LLM-evaluator
     - Currently, the LLM-evaluator of the LLM-functions and LLM-chats is static, assigned at creation.
     - This is easily implemented at "top-level." 
   - [X] DONE Chat class / object
@@ -610,7 +693,15 @@ error => {code => 400, message => Messages must alternate between authors., stat
     - See the `formatron` attribute of `LLM::Functions::Evaluator`.
   - [X] DONE Adding `form` option to chat objects evaluator
   - [X] DONE Implement `llm-embedding` function
-    - Generic, universal function for accessing the embeddings of different providers/models.
+    - Generic, universal function for accessing the embeddings of different providers/models. 
+  - [X] DONE Implement LLM-functor class `LLM::Function`
+    - [X] DONE Class design & implementation
+    - [X] DONE Make `&llm-function` return functors
+      - And Block-functions based on the option `:$type`.
+  - [X] DONE Implement LLM-tooling infrastructure
+  - [ ] TODO Hook-up LLM-tooling for/in: 
+    - [ ] TODO `&llm-synthesize`
+    - [ ] TODO `&llm-function`
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
   - [ ] TODO Storage and retrieval of chats

@@ -195,7 +195,7 @@ Here we make a LLM function with a function-prompt and numeric interpreter of th
 my &func2 = llm-function(
         {"How many $^a can fit inside one $^b?"},
         form => Numeric,
-        llm-evaluator => 'palm');
+        llm-evaluator => 'chatgpt');
 ```
 
 Here were we apply the function:
@@ -216,7 +216,7 @@ $res2 ~~ Numeric
 Here the first argument is a template with two named arguments: 
 
 ```perl6
-my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'palm');
+my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'chatgpt');
 ```
 
 Here is an invocation:
@@ -338,17 +338,12 @@ my $img = image-import($url);
 $img.substr(^100)
 ```
 
-Here we apply OpenAI's AI vision model `gpt-4-vision-preview` (which is the default one) over the ***URL of the image***:
+Here we apply one of OpenAI's AI omni models (which is the default one) over the ***URL of the image***:
 
 ```perl6
 llm-vision-synthesize('Describe the image.', $url);
 ```
 
-Here we apply Gemini's AI vision model `gemini-pro-vision` over the image:
-
-```perl6
-llm-vision-synthesize('Describe the image.', $img, e => 'Gemini');
-```
 
 **Remark:** Currently, Gemini works with (Base64) images only (and does not with URLs.) OpenAI's vision works with both URLs and images.
 
@@ -388,7 +383,7 @@ error => {code => 400, message => Messages must alternate between authors., stat
         - Topics: "Advisor bot", "AI Guidance", "For Fun", ...
           - See: https://resources.wolframcloud.com/PromptRepository/
     - [X] DONE Most likely, there would be a separate package "LLM::Prompts", [AAp8].
-  - [ ] MAYBE Random selection of LLM-evaluator
+  - [X] CANCELED Random selection of LLM-evaluator
     - Currently, the LLM-evaluator of the LLM-functions and LLM-chats is static, assigned at creation.
     - This is easily implemented at "top-level." 
   - [X] DONE Chat class / object
@@ -411,6 +406,14 @@ error => {code => 400, message => Messages must alternate between authors., stat
   - [X] DONE Adding `form` option to chat objects evaluator
   - [X] DONE Implement `llm-embedding` function
     - Generic, universal function for accessing the embeddings of different providers/models. 
+  - [X] DONE Implement LLM-functor class `LLM::Function`
+    - [X] DONE Class design & implementation
+    - [X] DONE Make `&llm-function` return functors
+      - And Block-functions based on the option `:$type`.
+  - [X] DONE Implement LLM-tooling infrastructure
+  - [ ] TODO Hook-up LLM-tooling for/in: 
+    - [ ] TODO `&llm-synthesize`
+    - [ ] TODO `&llm-function`
 - [ ] TODO CLI
   - [ ] TODO Based on Chat objects
   - [ ] TODO Storage and retrieval of chats
