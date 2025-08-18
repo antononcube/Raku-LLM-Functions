@@ -3,6 +3,9 @@ Revision history for "LLM::Functions"
 0.3.3 2025-08-17
     - Using a default text argument value ('') if the argument of &llm-function is a string or a list of strings.
     - Better default models and max-tokens default values.
+    - Making &llm-function to produce functors by default.
+        - I.e. callable LLM::Function objects.
+    - The old Block functions can be also produced using :$type = 'Block'.
 
 0.3.2 2025-08-07
     - Minor tweaks &llm-tool-definition.
