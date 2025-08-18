@@ -31,7 +31,6 @@
     "LLM::Functions::EvaluatorChat": "lib/LLM/Functions/EvaluatorChat.rakumod",
     "LLM::Functions::EvaluatorChatGemini": "lib/LLM/Functions/EvaluatorChatGemini.rakumod",
     "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod",
-    "LLM::Functions::Function": "lib/LLM/Functions/Function.rakumod",
     "LLM::Tooling": "lib/LLM/Functions/Tooling.rakumod"
   },
   "resources": [],
