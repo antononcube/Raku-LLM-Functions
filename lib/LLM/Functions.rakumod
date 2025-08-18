@@ -36,7 +36,7 @@ use LLM::Function;
 sub EXPORT {
     use LLM::Function;
     Map.new:
-            'LLM::Function' => LLM::Functions
+            'LLM::Function' => LLM::Function
 }
 
 unit module LLM::Functions;
