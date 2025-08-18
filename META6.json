@@ -23,7 +23,7 @@
     "Image::Markup::Utilities:ver<0.1.1+>:auth<zef:antononcube>"
   ],
   "provides": {
-    "LLM::Function": "lib/LLM/Functions/Function.rakumod",
+    "LLM::Function": "lib/LLM/Function.rakumod",
     "LLM::Functions": "lib/LLM/Functions.rakumod",
     "LLM::Functions::Chat": "lib/LLM/Functions/Chat.rakumod",
     "LLM::Functions::Configuration": "lib/LLM/Functions/Configuration.rakumod",
