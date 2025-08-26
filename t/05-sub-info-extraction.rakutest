@@ -38,7 +38,7 @@ subtest {
 
     is-deeply
             sub-info(&duel)<parameters>[0],
-            ${:default(Any), :description("First magician"), :name("\$a"), :named(Bool::False), :position(0), :type((Magician))},
+            ${:default(Any), :description("First magician"), :name("\$a"), :named(Bool::False), :optional(Bool::False), :position(0), :slurpy(Bool::False), :type((Magician))},
             'parameters are given in an array';
 
     is-deeply sub-info(&duel)<required>, ['$a', '$b'], 'expected value for the key "required"';

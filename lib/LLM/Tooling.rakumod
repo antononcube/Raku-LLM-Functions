@@ -38,6 +38,8 @@ our sub sub-info(&sub --> Hash) is export {
                 my $type = $param.type;
                 my $position = $i;
                 my $named = $param.named;
+                my $slurpy = $param.slurpy;
+                my $optional = $param.optional;
                 my $default = $param.default ~~ Callable:D ?? $param.default.() !! Nil;
                 without $default { @required.push($name) }
                 my $description = do if $param.WHY {
@@ -47,7 +49,7 @@ our sub sub-info(&sub --> Hash) is export {
                 } else {
                     ''
                 }
-                {:$name, :$type, :$position, :$named, :$default, :$description}
+                {:$name, :$type, :$position, :$named, :$default, :$optional, :$slurpy, :$description}
             }
 
     %sub-info<required> = @required;
