@@ -1,7 +1,7 @@
 {
   "name": "LLM::Functions",
   "description": "LLM::Functions provides functions and function objects to access, interact, and utilize LLMs",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "perl": "6.d",
   "authors": [
     "Anton Antonov"
@@ -31,6 +31,8 @@
     "LLM::Functions::EvaluatorChat": "lib/LLM/Functions/EvaluatorChat.rakumod",
     "LLM::Functions::EvaluatorChatGemini": "lib/LLM/Functions/EvaluatorChatGemini.rakumod",
     "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod",
+    "LLM::Functions::Tooled": "lib/LLM/Functions/Tooled.rakumod",
+    "LLM::Functions::TooledGemini": "lib/LLM/Functions/TooledGemini.rakumod",
     "LLM::Tooling": "lib/LLM/Tooling.rakumod"
   },
   "resources": [],
