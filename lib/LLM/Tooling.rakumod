@@ -298,8 +298,8 @@ class LLM::ToolResponse {
         unless $format ~~ Str:D;
 
         return do given $format.lc {
-            when $_ eq 'raku' { %(:$!tool, :%!params, :$!request, :$!output) }
-            when $_ (elem) <openai chatgpt> { %(role => 'tool', content => $!output, tool_call_id => '') }
+            when $_ (elem) <hash raku> { %(:$!tool, :%!params, :$!request, :$!output) }
+            when $_ (elem) <openai chatgpt> { %(role => 'tool', content => $!output, tool_call_id => $!request.id // '') }
             when $_ eq 'gemini' { %(functionResponse => %('name' => $!tool, response => %( content => $!output))) }
             default {
                 note 'Unknown format. The implemented formats are "OpenAI", "Gemini", "Raku", and Whatever. Continuing with Whatever.';
