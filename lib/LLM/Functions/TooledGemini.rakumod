@@ -1,7 +1,6 @@
 use v6.d;
 
 use LLM::Tooling;
-use LLM::Functions;
 use LLM::Functions::Tooled;
 use WWW::Gemini;
 use JSON::Fast;
@@ -61,7 +60,7 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
             $iterations++;
             note "LLM invocation : $iterations" if $echo;
 
-            die "llm-synthesize-with-tools: exceeded max loops ($max-iterations)."
+            die "LLM execution with tools exceeded max loops, ($max-iterations)."
             if $iterations > $max-iterations;
 
             note (:$response) if $echo;
