@@ -32,6 +32,7 @@
     "LLM::Functions::EvaluatorChatGemini": "lib/LLM/Functions/EvaluatorChatGemini.rakumod",
     "LLM::Functions::EvaluatorChatPaLM": "lib/LLM/Functions/EvaluatorChatPaLM.rakumod",
     "LLM::Functions::Tooled": "lib/LLM/Functions/Tooled.rakumod",
+    "LLM::Functions::TooledChatGPT": "lib/LLM/Functions/TooledChatGPT.rakumod",
     "LLM::Functions::TooledGemini": "lib/LLM/Functions/TooledGemini.rakumod",
     "LLM::Tooling": "lib/LLM/Tooling.rakumod"
   },
