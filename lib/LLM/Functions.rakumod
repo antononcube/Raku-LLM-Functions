@@ -33,6 +33,10 @@ use LLM::Functions::EvaluatorChatPaLM;
 
 use LLM::Function;
 
+use LLM::Functions::Tooled;
+use LLM::Functions::TooledChatGPT;
+use LLM::Functions::TooledGemini;
+
 sub EXPORT {
     use LLM::Function;
     Map.new:
@@ -363,7 +367,7 @@ multi sub llm-evaluator($llm-evaluator is copy, *%args) {
     }
 
     die 'The first argument is expected to be Whatever, or one of the types Str:D, LLM::Functions::Evaluator, or LLM::Functions::Configuration.'
-    unless $llm-evaluator ~~ LLM::Functions::Evaluator;
+    unless $llm-evaluator ~~ LLM::Functions::Evaluator:D;
 
     return $llm-evaluator;
 }
@@ -507,6 +511,50 @@ multi sub llm-example-function(@pairs,
 }
 
 #===========================================================
+# LLM Synthesise with tools
+#===========================================================
+
+sub llm-synthesize-with-tools($prompt,
+                              $prop = Whatever,
+                              :@tool-objects where { .all ~~ LLM::Tool:D },
+                              :form(:$formatron) = 'Str',
+                              :e(:$llm-evaluator) is copy = Whatever,
+                              *%args) is export {
+
+    # Not specifying the formatron here for now
+    # $llm-evaluator = llm-evaluator($llm-evaluator, :$formatron);
+    $llm-evaluator = llm-evaluator($llm-evaluator);
+
+    # The first three checks are redundant
+    my $service-style = do given $llm-evaluator {
+        when $_ ~~ LLM::Functions::Configuration:D { $_.name }
+        when $_ ~~ LLM::Functions::Evaluator:D && $_.conf ~~ LLM::Functions::Configuration {
+            $_.conf.name
+        }
+        default {
+            "ChatGPT"
+        }
+    }
+
+    if !($service-style ~~ Str:D && $service-style.lc ∈ <chatgpt gemini>) {
+        note "Do not know how to determine the LLM-tool API style. Continuing by using 'ChatGPT'.";
+        $service-style = 'ChatGPT';
+    }
+
+    my %args2 = %args;
+    %args2<llm-evaluator> = $llm-evaluator;
+
+    my $res = do if $service-style.lc eq 'chatgpt' {
+        LLM::Functions::TooledChatGPT.synthesize($prompt, @tool-objects, |%args2)
+    } else {
+        LLM::Functions::TooledGemini.synthesize($prompt, @tool-objects, |%args2)
+    }
+
+    # Note the result is not processed with the $formatron
+    return $res;
+}
+
+#===========================================================
 # LLM Synthesise
 #===========================================================
 
@@ -576,7 +624,7 @@ multi sub llm-synthesize(@prompts is copy,
     my $sep = $evlr.conf.prompt-delimiter;
     my $prompt = @processed.join($sep);
 
-    # Post process
+    # Delegate
     return do given $prop {
         when 'FullText' {
             my $res = llm-function(:$formatron, :$llm-evaluator)($prompt);
