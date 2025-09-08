@@ -6,7 +6,11 @@ class LLM::Functions::Tooled {
 
     submethod bless(:$!service-style, :@!tools) {}
 
-    method new(:$service-style = Whatever, :@tools = Empty) {
+    multi method new($service-style = Whatever, @tools = Empty) {
+        self.bless(:$service-style, :@tools)
+    }
+
+    multi method new(:s(:style(:$service-style)) = Whatever, :t(:@tools) = Empty) {
         self.bless(:$service-style, :@tools)
     }
 

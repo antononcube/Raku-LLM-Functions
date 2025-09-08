@@ -7,6 +7,10 @@ use JSON::Fast;
 
 class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
 
+    submethod TWEAK {
+        self.service-style = 'ChatGPT'
+    }
+
     # Helper: extract ToolRequests from a Gemini candidate content
     sub extract-tool-requests(%assistant-content) {
         my @requestObjects;
@@ -27,7 +31,7 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
     #| Arg 2 (@tool-objects): Array of LLM::Tool objects (callable tool implementations).
     multi method synthesize(
             Str:D $prompt,
-            @tool-objects where { .all ~~ LLM::Tool:D },
+            :@tool-objects where { .all ~~ LLM::Tool:D },
             :$model = "gpt-4.1-mini",
             :@tool-specs is copy = Empty,
             :%tool-config = { functionCallingConfig => { mode => "ANY" } },
