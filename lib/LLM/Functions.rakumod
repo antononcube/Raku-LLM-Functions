@@ -542,14 +542,16 @@ sub llm-synthesize-with-tools($prompt,
     }
 
     my %args2 = %args;
-    %args2<llm-evaluator> = $llm-evaluator;
+    # Evaluator should be used, not just model
+    # %args2<llm-evaluator> = $llm-evaluator;
+    %args2<model> = $llm-evaluator.conf.model;
 
     my LLM::Functions::Tooled:D $obj = do if $service-style.lc eq 'chatgpt' {
         LLM::Functions::TooledChatGPT.new()
     } else {
         LLM::Functions::TooledGemini.new()
     }
-    my $res =$obj.synthesize($prompt, :@tool-objects, |%args2);
+    my $res = $obj.synthesize($prompt, :@tool-objects, |%args2);
 
     # Note the result is not processed with the $formatron
     return $llm-evaluator.post-process($res, form => $formatron);
