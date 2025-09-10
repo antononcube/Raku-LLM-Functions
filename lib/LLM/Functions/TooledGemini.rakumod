@@ -64,8 +64,10 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
             $iterations++;
             note "LLM invocation : $iterations" if $echo;
 
-            die "LLM execution with tools exceeded max loops, ($max-iterations)."
-            if $iterations > $max-iterations;
+            if $iterations > $max-iterations {
+                note "LLM execution with tools exceeded max loops, ($max-iterations). Returning the last response.";
+                return $response;
+            }
 
             note (:$response) if $echo;
 
@@ -78,6 +80,11 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
             if @requests.elems {
                 # 4.1–4.3 Compute with the tools and add functionResponse messages
                 my @funcParts = @requests.map({ generate-llm-tool-response(@tool-objects, $_) })».Hash('Gemini');
+
+                if $echo {
+                    note 'Tool responses:';
+                    .note for @funcParts;
+                }
 
                 # Make and add the user response
                 my %function-response =

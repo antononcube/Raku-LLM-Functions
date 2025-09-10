@@ -67,8 +67,10 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
             $iterations++;
             note "LLM invocation : $iterations" if $echo;
 
-            die "LLM execution with tools exceeded max loops, ($max-iterations)."
-            if $iterations > $max-iterations;
+            if $iterations > $max-iterations {
+                note "LLM execution with tools exceeded max loops, ($max-iterations). Returning the last response.";
+                return $response;
+            }
 
             note (:$response) if $echo;
 
