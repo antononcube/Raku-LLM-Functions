@@ -1,0 +1,79 @@
+use v6.d;
+use Test;
+
+use LLM::Functions;
+use Text::SubParsers;
+
+# This the result of llm-prompt('NothingElse')('JSON')
+my $nothingElsePrompt = q:to/PROMPT_END/;
+ONLY give output in the form of a JSON.
+Never explain, suggest, or converse. Only return output in the specified form.
+If code is requested, give only code, no explanations or accompanying text.
+If a table is requested, give only a table, no other explanations or accompanying text.
+Do not describe your output.
+Do not explain your output.
+Do not suggest anything.
+Do not respond with anything other than the singularly demanded output.
+Do not apologize if you are incorrect, simply try again, never apologize or add text.
+Do not add anything to the output, give only the output as requested.
+Your outputs can take any form as long as requested.
+PROMPT_END
+
+#| Convert chemical compound formula into molecule mass.
+sub molecular-mass(
+        $m, #= A molecule formula or list
+                   ) { 64.058 }
+
+#| Balance the given chemical equation.
+sub balance-chemical-equation(
+        Str:D $eq, #= A chemical equation
+                              ) {"[[$eq]]"}
+
+#my @tool-objects =
+#        LLM::Tool.new(&molecular-mass),
+#        LLM::Tool.new(&balance-chemical-equation)
+#        ;
+
+my @tool-objects = LLM::Tool.new(&molecular-mass);
+
+# Optional: If your LLM::Tool objects don’t expose .Hash('Gemini'),
+# pass @toolspecs explicitly (same structure as your notebook’s @tools):
+my @tool-specs = (
+{
+    :name("molecular-mass"),
+    :description("Convert chemical compound formula into molecule mass."),
+    :parameters({
+        :type("object"),
+        :properties( {"\$spec" => { :description("A molecule formula or list"), :type("string") }} ),
+        :required(["\$spec"]),
+    }),
+},
+#{
+#    :name("balance-chemical-equation"),
+#    :description("Balance the given chemical equation."),
+#    :parameters({
+#        :type("object"),
+#        :properties( {"\$spec" => { :description("A chemical equation"), :type("string") }} ),
+#        :required(["\$spec"]),
+#    }),
+#},
+);
+
+#my $input = "What are the masses of SO2, O3, and C2H5OH?";
+my $input = "What is the molecular mass of SO2?";
+
+my $final = llm-synthesize-with-tools(
+        [$input, $nothingElsePrompt],
+        llm-evaluator => llm-configuration('Gemini', model => 'gemini-2.0-flash'),
+        :1max-iterations,
+        :@tool-objects,
+        :@tool-specs,
+       ):echo;
+#  form => sub-parser('JSON'):drop
+
+isa-ok $final, Map:D, 'expected result type';
+
+#is-deeply $final, {:14SO2, :14O3, :14C2H5OH}, 'expected result values';
+is-deeply $final, {:14SO2}, 'expected result values';
+
+done-testing;
