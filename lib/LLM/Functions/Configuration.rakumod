@@ -99,6 +99,35 @@ class LLM::Functions::Configuration {
     }
 
     #--------------------------------------------------------
+    #| Gives the known params of the LLM access function.
+    #| Like &OpenAITextCompletion or &GeminiGenerateContent.
+    method known-params() {
+        # Find known parameters
+        my @knownParamNames = self.function.candidates.map({ $_.signature.params.map({ $_.usage-name }) }).flat;
+        return @knownParamNames
+    }
+
+    #| Modifies the hashmap of named arguments by using
+    #| the known params of the LLM access function and removing (excluding)
+    #| specified parameter names.
+    method normalize-params(%args, @exclude = ['prompts', ]) {
+        # Find known parameters
+        my @knownParamNames = self.known-params();
+
+        # Make all named parameters hash
+        my %args2 = self.Hash , %args;
+
+        # Handling the argument renaming in a more bureaucratic manner
+        for self.argument-renames.kv -> $k, $v {
+            %args2{$v} = %args2{$v} // %args2{$k} // Whatever;
+        }
+
+        %args2 = %args2.grep({ $_.key ∉ @exclude && $_.key ∈ @knownParamNames }).Hash;
+
+        return %args2;
+    }
+
+    #--------------------------------------------------------
     #| To Hash
     multi method Hash(::?CLASS:D:-->Hash) {
         return
