@@ -121,7 +121,7 @@ class LLM::Functions::Evaluator {
 
         if $! {
             note 'LLM response was failure : ', $!.raku if $echo;
-            fail $!.payload;
+            fail $!.payload.defined ?? $!.payload !! $!.raku;
         }
 
         note 'LLM response : ', $res if $echo;
@@ -202,7 +202,7 @@ class LLM::Functions::Evaluator {
 
         if $! {
             note 'LLM embedding response was failure : ', $!.raku if $echo;
-            fail $!.payload;
+            fail $!.payload.defined ?? $!.payload !! $!.raku;
         }
 
         note 'LLM embedding response : ', @res if $echo;

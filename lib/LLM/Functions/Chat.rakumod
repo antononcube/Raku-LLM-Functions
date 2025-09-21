@@ -89,7 +89,7 @@ class LLM::Functions::Chat {
 
         if $! {
             note 'Failure while evaluating the message. Message and response are not logged.';
-            fail $!.payload;
+            fail $!.payload.defined ?? $!.payload !! $!.raku;
         }
 
         # Try to convert LLM response into a message
