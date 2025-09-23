@@ -515,14 +515,12 @@ multi sub llm-example-function(@pairs,
 #===========================================================
 
 sub llm-synthesize-with-tools($prompt,
-                              $prop = Whatever,
-                              :@tool-objects where { .all ~~ LLM::Tool:D },
+                              @tool-objects where { .all ~~ LLM::Tool:D },
                               :form(:$formatron) = 'Str',
                               :e(:$llm-evaluator) is copy = Whatever,
                               *%args) is export {
 
-    # Not specifying the formatron here for now
-    # $llm-evaluator = llm-evaluator($llm-evaluator, :$formatron);
+    # Make sure we have an LLM-evaluator object
     $llm-evaluator = llm-evaluator($llm-evaluator);
 
     # The first three checks are redundant
@@ -531,9 +529,7 @@ sub llm-synthesize-with-tools($prompt,
         when $_ ~~ LLM::Functions::Evaluator:D && $_.conf ~~ LLM::Functions::Configuration {
             $_.conf.name
         }
-        default {
-            "ChatGPT"
-        }
+        default { Whatever }
     }
 
     if !($service-style ~~ Str:D && $service-style.lc ∈ <chatgpt gemini>) {
@@ -541,19 +537,17 @@ sub llm-synthesize-with-tools($prompt,
         $service-style = 'ChatGPT';
     }
 
-    my %args2 = %args;
-    # Evaluator should be used, not just model
-    # %args2<llm-evaluator> = $llm-evaluator;
-    %args2<model> = $llm-evaluator.conf.model;
-
+    # Make appropriate LLM-tools invoking object
     my LLM::Functions::Tooled:D $obj = do if $service-style.lc eq 'chatgpt' {
-        LLM::Functions::TooledChatGPT.new()
+        LLM::Functions::TooledChatGPT.new(conf => $llm-evaluator.conf);
     } else {
-        LLM::Functions::TooledGemini.new()
+        LLM::Functions::TooledGemini.new(conf => $llm-evaluator.conf);
     }
-    my $res = $obj.synthesize($prompt, :@tool-objects, |%args2);
 
-    # Note the result is not processed with the $formatron
+    # Compute with tools
+    my $res = $obj.eval($prompt, :@tool-objects, |%args);
+
+    # Post process with formatron
     return $llm-evaluator.post-process($res, form => $formatron);
 }
 
