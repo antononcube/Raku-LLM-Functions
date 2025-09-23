@@ -1,5 +1,17 @@
 Revision history for "LLM::Functions"
 
+0.5.0 2025-09-24
+    - Unified handling of LLM-tools evaluation using &llm-synthesize.
+
+0.4.2 2025-09-23
+    - More proper support and evaluation of LLM-tools.
+        - Simpler interface.
+    - Declaring dependency on "WWW::Gemini:ver<0.0.21+>".
+        - See: https://github.com/antononcube/Raku-LLM-Functions/issues/4
+
+0.4.1 2025-09-10
+    - Support and evaluation of LLM-tools for ChatGPT and Gemini "flavors."
+
 0.4.0 2025-08-18
     - Using a default text argument value ('') if the argument of &llm-function is a string or a list of strings.
     - Better default models and max-tokens default values.
