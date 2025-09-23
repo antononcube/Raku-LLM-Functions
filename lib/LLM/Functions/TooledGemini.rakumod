@@ -77,7 +77,7 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
         # 2) Get tool specs for Gemini (either provided or derived from tool objects)
 
         if !@tool-specs.elems {
-            @tool-specs = @tool-objects.map({ llm-tool-definition($_.info, format => 'hash') });
+            @tool-specs = @tool-objects.map({ llm-tool-definition($_.info, format => 'hash', :!warn) });
         }
 
         @tool-specs .= map({ normalize-tool-spec($_) });

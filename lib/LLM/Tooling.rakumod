@@ -63,15 +63,15 @@ our sub sub-info(&sub --> Hash) is export {
 #| Make LLM tool (function calling) definitions.
 proto sub llm-tool-definition(|) is export {*}
 
-multi sub llm-tool-definition(&sub, Str:D :$format = 'json') {
-    return llm-tool-definition(sub-info(&sub), :$format);
+multi sub llm-tool-definition(&sub, Str:D :$format = 'json', Bool:D :$warn = True) {
+    return llm-tool-definition(sub-info(&sub), :$format, :$warn);
 }
 
-multi sub llm-tool-definition(@subs where @subs.all ~~ Callable:D, Str:D :$format = 'json') {
-    return llm-tool-definition(@subs.map({ sub-info($_) }), :$format);
+multi sub llm-tool-definition(@subs where @subs.all ~~ Callable:D, Str:D :$format = 'json', Bool:D :$warn = True) {
+    return llm-tool-definition(@subs.map({ sub-info($_) }), :$format, :$warn);
 }
 
-multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
+multi sub llm-tool-definition(%info, Str:D :$format = 'json', Bool:D :$warn = True) {
     my %parameters;
     my %properties;
     my @required;
@@ -92,7 +92,7 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
             when Num | Numeric { 'number' }
             when Str { 'string' }
             when !$_.defined {
-                note "Undefined type of parameter ⎡{%r<name>}⎦; continue assuming it is a string.";
+                note "Undefined type of parameter ⎡{%r<name>}⎦; continue assuming it is a string." if $warn;
                 'string'
             }
             default {
@@ -124,8 +124,8 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json') {
             :$format);
 }
 
-multi sub llm-tool-definition(@infos where @infos.all ~~ Map:D, Str:D :$format = 'json') {
-    return @infos.map({ llm-tool-definition($_, :$format) });
+multi sub llm-tool-definition(@infos where @infos.all ~~ Map:D, Str:D :$format = 'json', Bool:D :$warn = True) {
+    return @infos.map({ llm-tool-definition($_, :$format, :$warn) });
 }
 
 multi sub llm-tool-definition(

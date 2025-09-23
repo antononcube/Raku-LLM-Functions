@@ -62,7 +62,7 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
         # 2) Get tool specs for Gemini (either provided or derived from tool objects)
 
         if !@tool-specs.elems {
-            @tool-specs = @tool-objects.map({ llm-tool-definition($_.info, format => 'hash') });
+            @tool-specs = @tool-objects.map({ llm-tool-definition($_.info, format => 'hash', :!warn) });
         }
 
         if !(@tool-specs.head<type>:exists) || !(@tool-specs.head<function>:exists) {
