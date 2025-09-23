@@ -62,7 +62,6 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
         my @tool-specs = %args<tool-specs> // Empty;
         my %tool-config = %args<tool-config> // { functionCallingConfig => { mode => "ANY" } };
         my $max-iterations = %args<max-iterations> // 8,
-        my $format = %args<format> // Whatever,
 
         # Make "full" prompt
         my $prompt = $confLocal.prompts.join($confLocal.prompt-delimiter).trim;
@@ -146,12 +145,8 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
             }
 
             # 5) No tool calls — return the last LLM result (entire candidate content)
-
-            return do if $format ~~ Str:D && $format.lc ∈ <text values> {
-                $response<candidates>[0]<content><parts>».<text>.join("\n");
-            } else {
-                $response<candidates>
-            }
+            my @processed = $response<candidates>.map({ $_<content><parts>.map({ $_<text> }) });
+            return @processed.elems == 1 ?? @processed.head !! @processed;
         }
     }
 }

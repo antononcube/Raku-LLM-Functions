@@ -131,11 +131,7 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
 
             # 5) No tool calls — return the last LLM result (entire candidate content)
 
-            return do if $format ~~ Str:D && $format.lc ∈ <text values> {
-                $response[0]<message><content>.join("\n");
-            } else {
-                %assistant-message<content>
-            }
+            return %assistant-message<content>
         }
     }
 }
