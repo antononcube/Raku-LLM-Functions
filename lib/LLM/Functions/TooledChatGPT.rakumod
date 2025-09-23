@@ -44,9 +44,8 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
 
         my @tool-specs = %args<tool-specs> // Empty;
         # ChatGPT does not have tool configuration argument
-        # my %tool-config = %args<tool-config> // { functionCallingConfig => { mode => "ANY" } };
-        my $max-iterations = %args<max-iterations> // 8,
-        my $format = %args<format> // Whatever,
+        # my %tool-config = %args<tool-config> // $confLocal.tool-config //  { functionCallingConfig => { mode => "ANY" } };
+        my $max-iterations = %args<max-iterations> // 8;
 
         # Make "full" prompt
         my $prompt = $confLocal.prompts.join($confLocal.prompt-delimiter).trim;

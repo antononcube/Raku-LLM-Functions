@@ -60,8 +60,8 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
         unless @tool-objects.all ~~ LLM::Tool:D;
 
         my @tool-specs = %args<tool-specs> // Empty;
-        my %tool-config = %args<tool-config> // { functionCallingConfig => { mode => "ANY" } };
-        my $max-iterations = %args<max-iterations> // 8,
+        my %tool-config = %args<tool-config> // $confLocal.tool-config // { functionCallingConfig => { mode => "ANY" } };
+        my $max-iterations = %args<max-iterations> // 8;
 
         # Make "full" prompt
         my $prompt = $confLocal.prompts.join($confLocal.prompt-delimiter).trim;
@@ -89,7 +89,6 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
                 tools => @tool-specs,
                 :%tool-config,
                 format => 'hash');
-
 
         # Safety loop
         my $iterations = 0;
