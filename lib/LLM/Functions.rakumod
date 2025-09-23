@@ -587,10 +587,13 @@ multi sub llm-synthesize(@prompts is copy,
     # Get evaluator
     my $evlr = llm-evaluator($llm-evaluator);
 
+    # Delegate
     with $evlr.conf.tools {
         my @tool-objects = $evlr.conf.tools;
         die 'The tools in an LLM configuration are expected LLM::Tool objects.' unless @tool-objects.all ~~ LLM::Tool:D;
-        return llm-synthesize-with-tools(@prompts, @tool-objects);
+
+        # For now not $prop handling
+        return llm-synthesize-with-tools(@prompts, @tool-objects, :$llm-evaluator, :$formatron);
     }
 
     # Add configuration prompts
