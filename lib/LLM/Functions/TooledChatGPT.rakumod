@@ -7,10 +7,6 @@ use JSON::Fast;
 
 class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
 
-    submethod TWEAK {
-        self.service-style = 'ChatGPT'
-    }
-
     # Helper: extract ToolRequests from a Gemini candidate content
     sub extract-tool-requests(%assistant-content) {
         my @requestObjects;
@@ -29,15 +25,35 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
     #| Synthesize with tools in a loop until the LLM returns a final, non-tool response.
     #| Arg 1 ($prompt): Str with the user messages.
     #| Arg 2 (@tool-objects): Array of LLM::Tool objects (callable tool implementations).
-    multi method synthesize(
-            Str:D $prompt,
-            :@tool-objects where { .all ~~ LLM::Tool:D },
-            :$model = "gpt-4.1-mini",
-            :@tool-specs is copy = Empty,
-            :%tool-config = { functionCallingConfig => { mode => "ANY" } },
-            :$max-iterations = 8,
-            :$format = Whatever,
-            Bool:D :$echo = False) {
+    multi method eval(@texts, *%args) {
+
+        # To echo or not
+        my $echo = %args<echo> // False;
+
+        # Clone configuration
+        my $confLocal = self.conf.clone;
+
+        note "Configuration : { $confLocal.raku }" if $echo;
+
+        # Get parameters
+        my $model = $confLocal.model // "gemini-2.0-flash";
+
+        my @tool-objects = |%args<tool-objects>;
+        die 'The value of :@tool-objects is expected to be a list of LLM::Tool objects.'
+        unless @tool-objects.all ~~ LLM::Tool:D;
+
+        my @tool-specs = %args<tool-specs> // Empty;
+        my %tool-config = %args<tool-config> // { functionCallingConfig => { mode => "ANY" } };
+        my $max-iterations = %args<max-iterations> // 8,
+        my $format = %args<format> // Whatever,
+
+        # Make "full" prompt
+        my $prompt = $confLocal.prompts.join($confLocal.prompt-delimiter).trim;
+
+        # This likely should use the method
+        # LLM::Functions::EvaluatorChatGemini.prompt-texts-combiner,
+        # not the generic one
+        $prompt = self.prompt-texts-combiner($prompt, @texts);
 
         # 1) Normalize initial user messages -> ChatGTPT "messages"
         my @messages = [%( role => 'user', content => $prompt ), ];

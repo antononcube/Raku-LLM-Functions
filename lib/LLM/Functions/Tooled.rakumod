@@ -1,21 +1,18 @@
 use v6.d;
 
-class LLM::Functions::Tooled {
-    has $.service-style is rw = Whatever;
+use LLM::Functions::Evaluator;
+
+class LLM::Functions::Tooled
+        is LLM::Functions::Evaluator {
     has @.tools is rw = [];
 
-    submethod bless(:$!service-style, :@!tools) {}
-
-    multi method new($service-style = Whatever, @tools = Empty) {
-        self.bless(:$service-style, :@tools)
+    submethod bless(:$conf, :$formatron, :@!tools) {
+        nextwith(:$conf, :$formatron)
     }
 
-    multi method new(:s(:style(:$service-style)) = Whatever, :t(:@tools) = Empty) {
-        self.bless(:$service-style, :@tools)
+    method new(:c(:$conf) = Whatever, :f(:form(:$formatron)) = 'Str', :t(:@tools) = Empty) {
+        self.bless(:$conf, :$formatron, :@tools)
     }
 
-    multi method synthesize(Str:D $prompt, *%args) {!!!}
-    multi method synthesize(@prompts where @prompts.all ~~ Str:D, *%args) {
-        self.synthesize(@prompts.join("\n"), |%args)
-    }
+    multi method eval(@texts, *%args) {!!!}
 }
