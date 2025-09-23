@@ -43,7 +43,8 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
         unless @tool-objects.all ~~ LLM::Tool:D;
 
         my @tool-specs = %args<tool-specs> // Empty;
-        my %tool-config = %args<tool-config> // { functionCallingConfig => { mode => "ANY" } };
+        # ChatGPT does not have tool configuration argument
+        # my %tool-config = %args<tool-config> // { functionCallingConfig => { mode => "ANY" } };
         my $max-iterations = %args<max-iterations> // 8,
         my $format = %args<format> // Whatever,
 
@@ -61,7 +62,7 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
         # 2) Get tool specs for Gemini (either provided or derived from tool objects)
 
         if !@tool-specs.elems {
-            @tool-specs = @tool-objects».json-spec
+            @tool-specs = @tool-objects.map({ llm-tool-definition($_.info, format => 'hash') });
         }
 
         if !(@tool-specs.head<type>:exists) || !(@tool-specs.head<function>:exists) {

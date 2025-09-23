@@ -7,6 +7,23 @@ use JSON::Fast;
 
 class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
 
+    sub normalize-tool-spec(%spec is copy) {
+        if %spec<function>:exists { %spec = %spec<function> }
+
+        # Just calling :delete should be fine, but I want be explicit
+        if %spec<type>:exists { %spec<type>:delete }
+        if %spec<strict>:exists { %spec<strict>:delete }
+
+        # Clean
+        if %spec<parameters>:exists {
+            %spec<parameters><additionalProperties>:delete;
+            %spec<parameters><type>:delete;
+            %spec<parameters><type> = 'object';
+        }
+
+        return %spec;
+    }
+
     # Helper: extract ToolRequests from a Gemini candidate content
     sub extract-tool-requests(%assistant-content) {
         my @requestObjects;
@@ -61,9 +78,10 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
         # 2) Get tool specs for Gemini (either provided or derived from tool objects)
 
         if !@tool-specs.elems {
-            @tool-specs = @tool-objects».json-spec.map({ from-json($_)<function>.grep({ $_.key ∈ <name description parameters> }).Hash }).map({ to-json($_) });
-            .say for @tool-specs;
+            @tool-specs = @tool-objects.map({ llm-tool-definition($_.info, format => 'hash') });
         }
+
+        @tool-specs .= map({ normalize-tool-spec($_) });
 
         # First call
         my $response = gemini-generate-content(
