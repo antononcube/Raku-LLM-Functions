@@ -127,9 +127,8 @@ class LLM::Functions::Configuration {
             %args2{$v} = %args2{$v} // %args2{$k} // Whatever;
         }
 
-        say (:@exclude);
         %args2 = %args2.grep({ $_.key ∉ @exclude && $_.key ∈ @knownParamNames }).Hash;
-        say (:%args2);
+
         return %args2;
     }
 
