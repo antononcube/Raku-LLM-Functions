@@ -110,7 +110,12 @@ class LLM::Functions::Configuration {
     #| Modifies the hashmap of named arguments by using
     #| the known params of the LLM access function and removing (excluding)
     #| specified parameter names.
-    method normalize-params(%args, @exclude = ['prompts', ]) {
+    proto method normalize-params(%args, |) {*}
+    multi method normalize-params(%args, @exclude = ['prompts', ]) {
+        self.normalize-params(%args, :@exclude)
+    }
+
+    multi method normalize-params(%args, :@exclude = ['prompts', ]) {
         # Find known parameters
         my @knownParamNames = self.known-params();
 
@@ -122,8 +127,9 @@ class LLM::Functions::Configuration {
             %args2{$v} = %args2{$v} // %args2{$k} // Whatever;
         }
 
+        say (:@exclude);
         %args2 = %args2.grep({ $_.key ∉ @exclude && $_.key ∈ @knownParamNames }).Hash;
-
+        say (:%args2);
         return %args2;
     }
 
