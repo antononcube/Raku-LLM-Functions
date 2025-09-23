@@ -68,12 +68,18 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
             @tool-specs .= map({ %(type => 'function', function => $_ ) })
         }
 
+        # Normalize and exclude parameters
+        my %args2 = $confLocal.normalize-params(%args, <prompt prompts tools format echo tool-config tool-objects>);
+
+        # Proclaim
+        note "Normalized additional parameters => {%args2.raku}" if $echo;
+
         # First call
         my $response = openai-chat-completion(
                 @messages,
-                :$model,
                 tools => @tool-specs,
-                format => 'hash');
+                format => 'hash',
+                |%args2);
 
 
         # Safety loop
@@ -121,9 +127,9 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
                 # Send the second request with function result
                 $response = openai-chat-completion(
                         @messages,
-                        :$model,
                         tools => @tool-specs,
-                        format => "hash");
+                        format => 'hash',
+                        |%args2);
 
                 next;
             }

@@ -82,13 +82,19 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
 
         @tool-specs .= map({ normalize-tool-spec($_) });
 
+        # Normalize and exclude parameters
+        my %args2 = $confLocal.normalize-params(%args, <prompt prompts tools format echo tool-config tool-objects>);
+
+        # Proclaim
+        note "Normalized additional parameters => {%args2.raku}" if $echo;
+
         # First call
         my $response = gemini-generate-content(
                 @messages,
-                :$model,
                 tools => @tool-specs,
                 :%tool-config,
-                format => 'hash');
+                format => 'hash',
+                |%args2);
 
         # Safety loop
         my $iterations = 0;
@@ -137,8 +143,8 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
                 $response = gemini-generate-content(
                         @messages,
                         tools => @tool-specs,
-                        :$model,
-                        format => "hash");
+                        format => 'hash',
+                        |%args2);
 
                 next;
             }
