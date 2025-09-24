@@ -590,7 +590,8 @@ multi sub llm-synthesize(@prompts is copy,
     # Delegate
     with $evlr.conf.tools {
         my @tool-objects = $evlr.conf.tools;
-        die 'The tools in an LLM configuration are expected LLM::Tool objects.' unless @tool-objects.all ~~ LLM::Tool:D;
+        die 'The tools in an LLM configuration are expected to be LLM::Tool objects.'
+        unless @tool-objects.all ~~ LLM::Tool:D;
 
         # For now not $prop handling
         return llm-synthesize-with-tools(@prompts, @tool-objects, :$llm-evaluator, :$formatron);
