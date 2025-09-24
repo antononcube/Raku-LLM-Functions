@@ -109,7 +109,8 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json', Bool:D :$warn = Tr
     %parameters<type> = 'object';
     %parameters<properties> = %properties;
     if %properties {
-        if @required { %parameters<required> = @required }
+        # "required" has to be always present
+        %parameters<required> = @required ?? @required !! [];
         if strict => %info<strict> // True {
             %parameters<additionalProperties> = False
         }
@@ -168,7 +169,7 @@ sub validate-sub-info(%info) {
 class LLM::Tool {
     has %.info is required;
     has &.function is required;
-    has $.json-spec = Whatever;
+    has $.json-spec is rw = Whatever;
 
     submethod BUILD(:%!info, :&!function, :$!json-spec = Whatever) {
         die 'Defined function is expected. (Not a just a Callable type.)'
