@@ -41,7 +41,10 @@ our sub sub-info(&sub --> Hash) is export {
                 my $slurpy = $param.slurpy;
                 my $optional = $param.optional;
                 my $default = $param.default ~~ Callable:D ?? $param.default.() !! Nil;
-                without $default { @required.push($name) }
+                if !($default.defined || $default.isa(Whatever) || $default.isa(WhateverCode) || $param.slurpy) {
+                    # Is this check better? : $default ~~ Any
+                    @required.push($name)
+                }
                 my $description = do if $param.WHY {
                     my $res = $param.WHY.leading ?? $param.WHY.leading.Str.trim !! '';
                     $res ~= $param.WHY.trailing ?? ' ' ~ $param.WHY.trailing.Str.trim !! '';
@@ -373,13 +376,20 @@ multi sub generate-llm-tool-response(@tools, LLM::ToolRequest:D $request) {
     # Positional and named arguments
     my @posArgs;
     my %namedArgs;
+    my %namedSlurpyArgs;
     for $request.params.kv -> $k, $r {
         if !%args{$k}<named> && !%args{$k}<default>.defined && $k ∉ $tool.info<required> { @posArgs.push($r) }
-        if %args{$k}<named> { %namedArgs{$k.subst(/ ^ <[$%@]> /)} = $r}
+        if %args{$k}<named> {
+            my $param = $k.subst(/ ^ <[$%@]> /);
+            %namedArgs{$param} = $r;
+            %namedSlurpyArgs{$param} = %args{$k}<slurpy>;
+        }
     }
 
+    %namedArgs .= map({ %namedSlurpyArgs{$_.key} ?? $_ !! ($_.key.subst(/ ^ <[$%@]> /) => $_.value) });
+
     # Passing positional arguments with non-default values is complicated.
-    #say [|@reqArgs, |@posArgs, |%namedArgs].raku;
+    # say [|@reqArgs, |@posArgs, |%namedArgs].raku;
     my $output = $tool.function.(|@reqArgs, |%namedArgs);
 
     # Return LLM::ToolResponse object.
