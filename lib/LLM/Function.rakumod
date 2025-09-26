@@ -14,4 +14,14 @@ class LLM::Function does Callable {
         self.bless(:&func, :$llm-evaluator, :&query-func)
     };
     method CALL-ME(|c) { &!func(|c) }
+
+    #| To string
+    multi method Str(::?CLASS:D:-->Str) {
+        return self.gist;
+    }
+
+    #| To gist
+    multi method gist(::?CLASS:D:-->Str) {
+        return "LLM::Function({&!func.gist}, '{$!llm-evaluator.conf.name}')";
+    }
 }
