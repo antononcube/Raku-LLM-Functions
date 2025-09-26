@@ -561,22 +561,26 @@ sub llm-synthesize-with-tools($prompt,
 #| C<$prop> -- Property or properties to return, one of <FullText CompletionText PromptText>.
 #| C<:form(:$formatron)> -- Specification how the output to processed.
 #| C<:e(:$llm-evaluator)> -- Evaluator object specification.
+#| C<:$echo> -- Whether to echo the LLM interaction or not.
 our proto sub llm-synthesize($prompt,
                              $prop = Whatever,
                              :form(:$formatron) = 'Str',
-                             :e(:$llm-evaluator) is copy = Whatever) is export {*}
+                             :e(:$llm-evaluator) is copy = Whatever,
+                             Bool:D :$echo = False) is export {*}
 
 multi sub llm-synthesize($prompt,
                          $prop = Whatever,
                          :form(:$formatron) = 'Str',
-                         :e(:$llm-evaluator) is copy = Whatever) {
-    return llm-synthesize([$prompt,], $prop, :$formatron, :$llm-evaluator);
+                         :e(:$llm-evaluator) is copy = Whatever,
+                         Bool:D :$echo = False) {
+    return llm-synthesize([$prompt,], $prop, :$formatron, :$llm-evaluator, :$echo);
 }
 
 multi sub llm-synthesize(@prompts is copy,
                          $prop is copy = Whatever,
                          :form(:$formatron) = 'Str',
-                         :e(:$llm-evaluator) is copy = Whatever) {
+                         :e(:$llm-evaluator) is copy = Whatever,
+                         Bool:D :$echo = False) {
 
     # Process properties
     my @expectedProps = <FullText CompletionText PromptText>;
@@ -594,7 +598,7 @@ multi sub llm-synthesize(@prompts is copy,
         unless @tool-objects.all ~~ LLM::Tool:D;
 
         # For now not $prop handling
-        return llm-synthesize-with-tools(@prompts, @tool-objects, :$llm-evaluator, :$formatron);
+        return llm-synthesize-with-tools(@prompts, @tool-objects, :$llm-evaluator, :$formatron, :$echo);
     }
 
     # Add configuration prompts
@@ -634,7 +638,7 @@ multi sub llm-synthesize(@prompts is copy,
     # Delegate
     return do given $prop {
         when 'FullText' {
-            my $res = llm-function(:$formatron, :$llm-evaluator)($prompt);
+            my $res = llm-function(:$formatron, :$llm-evaluator)($prompt, :$echo);
             [|@processed, $res]
         }
 
@@ -643,7 +647,7 @@ multi sub llm-synthesize(@prompts is copy,
         }
 
         default {
-            llm-function(:$formatron, :$llm-evaluator)($prompt)
+            llm-function(:$formatron, :$llm-evaluator)($prompt, :$echo)
         }
     }
 }
