@@ -1,7 +1,9 @@
 Revision history for "LLM::Functions"
 
-0.5.0 2025-09-24
+0.5.0 2025-09-26
     - Unified handling of LLM-tools evaluation using &llm-synthesize.
+    - Boolean argument :echo for &llm-synthesize.
+    - (Concise) gist method for LLM::Function.
 
 0.4.2 2025-09-23
     - More proper support and evaluation of LLM-tools.
