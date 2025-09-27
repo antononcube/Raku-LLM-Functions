@@ -7,8 +7,26 @@ use JSON::Fast;
 
 class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
 
+    method normalize-tool-spec(%spec is copy) {
+
+        if !(%spec<type>:exists) || !(%spec<function>:exists) {
+            %spec = type => 'function', function => $_;
+        }
+
+        # Without normalization ChatGPT will return the message:
+        # > Invalid schema for function 'js-d3-random-mondrian': In context=(), 'required' is required to be supplied and to be an array including every key in properties.
+
+        if %spec<function><parameters>:exists {
+            if %spec<function><parameters><properties>.elems > %spec<function><parameters><required>.elems {
+                %spec<function><parameters><required> = %spec<function><parameters><properties>.keys.Array
+            }
+        }
+
+        return %spec;
+    }
+
     # Helper: extract ToolRequests from a Gemini candidate content
-    sub extract-tool-requests(%assistant-content) {
+    method extract-tool-requests(%assistant-content) {
         my @requestObjects;
         if %assistant-content<tool_calls> {
             for |%assistant-content<tool_calls> -> %part {
@@ -36,8 +54,6 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
         note "Configuration : { $confLocal.raku }" if $echo;
 
         # Get parameters
-        my $model = $confLocal.model // "gemini-2.0-flash";
-
         my @tool-objects = |%args<tool-objects>;
         die 'The value of :@tool-objects is expected to be a list of LLM::Tool objects.'
         unless @tool-objects.all ~~ LLM::Tool:D;
@@ -64,9 +80,8 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
             @tool-specs = @tool-objects.map({ llm-tool-definition($_.info, format => 'hash', :!warn) });
         }
 
-        if !(@tool-specs.head<type>:exists) || !(@tool-specs.head<function>:exists) {
-            @tool-specs .= map({ %(type => 'function', function => $_ ) })
-        }
+        # Adjust specs to OpenAI's peculiar format
+        @tool-specs .= map({ self.normalize-tool-spec($_) });
 
         # Normalize and exclude parameters
         my %args2 = $confLocal.normalize-params(%args, <prompt prompts tools format echo tool-config tool-objects>);
@@ -100,7 +115,7 @@ class LLM::Functions::TooledChatGPT is LLM::Functions::Tooled {
             my %assistant-message = $response[0]<message>;
 
             # 4) If the LLM returned tool-call(s), run them locally and continue
-            my @requests = extract-tool-requests(%assistant-message);
+            my @requests = self.extract-tool-requests(%assistant-message);
 
             if @requests.elems {
 
