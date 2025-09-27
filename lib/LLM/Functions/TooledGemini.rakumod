@@ -7,7 +7,7 @@ use JSON::Fast;
 
 class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
 
-    sub normalize-tool-spec(%spec is copy) {
+    method normalize-tool-spec(%spec is copy) {
         if %spec<function>:exists { %spec = %spec<function> }
 
         # Just calling :delete should be fine, but I want be explicit
@@ -25,7 +25,7 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
     }
 
     # Helper: extract ToolRequests from a Gemini candidate content
-    sub extract-tool-requests(%assistant-content) {
+    method extract-tool-requests(%assistant-content) {
         my @requestObjects;
         if %assistant-content<parts> {
             for |%assistant-content<parts> -> %part {
@@ -80,7 +80,7 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
             @tool-specs = @tool-objects.map({ llm-tool-definition($_.info, format => 'hash', :!warn) });
         }
 
-        @tool-specs .= map({ normalize-tool-spec($_) });
+        @tool-specs .= map({ self.normalize-tool-spec($_) });
 
         # Normalize and exclude parameters
         my %args2 = $confLocal.normalize-params(%args, <prompt prompts tools format echo tool-config tool-objects>);
@@ -114,7 +114,7 @@ class LLM::Functions::TooledGemini is LLM::Functions::Tooled {
             my %assistant-message = $response<candidates>[0]<content>;
 
             # 4) If the LLM returned tool-call(s), run them locally and continue
-            my @requests = extract-tool-requests(%assistant-message);
+            my @requests = self.extract-tool-requests(%assistant-message);
 
             if @requests.elems {
                 # 4.1–4.3 Compute with the tools and add functionResponse messages
