@@ -14,5 +14,9 @@ class LLM::Functions::Tooled
         self.bless(:$conf, :$formatron, :@tools)
     }
 
+    method normalize-tool-spec(%spec) {!!!}
+
+    method extract-tool-requests(%assistant-content) {!!!}
+
     multi method eval(@texts, *%args) {!!!}
 }
