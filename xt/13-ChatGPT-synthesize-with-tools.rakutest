@@ -26,8 +26,8 @@ sub molecular-mass(
 
 my @tool-objects = LLM::Tool.new(&molecular-mass);
 
-# Optional: If your LLM::Tool objects don’t expose .Hash('Gemini'),
-# pass @toolspecs explicitly (same structure as your notebook’s @tools):
+# Optional: If your LLM::Tool objects don’t expose .Hash('Gemini'), pass @toolspecs explicitly.
+# WARNING : Using this spec produces errors!
 my @tool-specs = [
 {
     :name("molecular-mass"),
@@ -44,10 +44,9 @@ subtest {
 
     my $final = llm-synthesize-with-tools(
             [$input, $nothingElsePrompt],
+            @tool-objects,
             llm-evaluator => llm-configuration('ChatGPT', model => 'gpt-4.1-mini'),
             :8max-iterations,
-            :@tool-objects,
-            :@tool-specs,
             form => sub-parser('JSON'):drop):echo;
 
     isa-ok $final, Map:D, 'expected result type';
