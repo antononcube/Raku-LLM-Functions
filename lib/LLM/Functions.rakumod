@@ -592,7 +592,7 @@ multi sub llm-synthesize(@prompts is copy,
     my $evlr = llm-evaluator($llm-evaluator);
 
     # Delegate
-    with $evlr.conf.tools {
+    if $evlr.conf.tools.defined && $evlr.conf.tools.elems > 0 {
         my @tool-objects = $evlr.conf.tools;
         die 'The tools in an LLM configuration are expected to be LLM::Tool objects.'
         unless @tool-objects.all ~~ LLM::Tool:D;
