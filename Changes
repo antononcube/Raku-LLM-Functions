@@ -1,5 +1,8 @@
 Revision history for "LLM::Functions"
 
+0.5.1 2025-10-07
+    - More robust tools presence check.
+
 0.5.0 2025-09-26
     - Unified handling of LLM-tools evaluation using &llm-synthesize.
     - Boolean argument :echo for &llm-synthesize.
