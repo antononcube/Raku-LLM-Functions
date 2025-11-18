@@ -1,5 +1,8 @@
 Revision history for "LLM::Functions"
 
+0.5.2 2025-11-17
+    - Added configuration attributes used by the OpenAI's "gpt-5*" models.
+
 0.5.1 2025-10-07
     - More robust tools presence check.
 
