@@ -25,6 +25,9 @@ class LLM::Functions::Configuration {
     # Base URL
     has Str $.base-url is rw = '';
 
+    # Path
+    has Str $.path is rw = '';
+
     # "Model" base model
     has Str $.model is rw;
 
@@ -79,6 +82,12 @@ class LLM::Functions::Configuration {
 
     # List of images URLs, file names, or Base64 strings
     has @.images;
+
+    # Reasoning effort gpt-5* models
+    has $.reasoning-effort = Whatever;
+
+    # Verbosity is a new argument for gpt-5* models
+    has $.verbosity = Whatever;
 
     # Argument remaps
     # Re-naming into arguments known by the LLM function &!function .
@@ -138,8 +147,9 @@ class LLM::Functions::Configuration {
         return
                 { :$!name,
                   :$!api-key, :$!api-user-id,
-                  :$!module, :$!base-url, :$!model, :&!function, :$!embedding-model, :&!embedding-function,
+                  :$!module, :$!base-url, :$!path, :$!model, :&!function, :$!embedding-model, :&!embedding-function,
                   :$!temperature, :$!total-probability-cutoff, :$!max-tokens,
+                  :$!reasoning-effort, :$!verbosity,
                   :$!format,
                   :@!prompts, :$!prompt-delimiter,
                   :@!examples,
