@@ -26,7 +26,7 @@ class LLM::Functions::Configuration {
     has Str $.base-url is rw = '';
 
     # Path
-    has Str $.path is rw = '';
+    has $.path is rw = Whatever;
 
     # "Model" base model
     has Str $.model is rw;
@@ -144,21 +144,26 @@ class LLM::Functions::Configuration {
     #--------------------------------------------------------
     #| To Hash
     multi method Hash(::?CLASS:D:-->Hash) {
-        return
-                { :$!name,
-                  :$!api-key, :$!api-user-id,
-                  :$!module, :$!base-url, :$!path, :$!model, :&!function, :$!embedding-model, :&!embedding-function,
-                  :$!temperature, :$!total-probability-cutoff, :$!max-tokens,
-                  :$!reasoning-effort, :$!verbosity,
-                  :$!format,
-                  :@!prompts, :$!prompt-delimiter,
-                  :@!examples,
-                  :@!stop-tokens,
-                  :@!tools, :$!tool-prompt, :&!tool-request-parser, :&!tool-response-insertion-function,
-                  :@!images,
-                  :%.argument-renames,
-                  :$.evaluator
-                };
+        my %res =
+                :$!name,
+                :$!api-key, :$!api-user-id,
+                :$!module, :$!base-url, :$!model, :&!function, :$!embedding-model, :&!embedding-function,
+                :$!temperature, :$!total-probability-cutoff, :$!max-tokens,
+                :$!reasoning-effort, :$!verbosity,
+                :$!format,
+                :@!prompts, :$!prompt-delimiter,
+                :@!examples,
+                :@!stop-tokens,
+                :@!tools, :$!tool-prompt, :&!tool-request-parser, :&!tool-response-insertion-function,
+                :@!images,
+                :%.argument-renames,
+                :$.evaluator
+                ;
+        # $!path is a Whatever it is not added:
+        # - The $path argument in the "WWW::*" packages is defined as a string with a certain default value.
+        # - Configurations are turned into hashmaps in the evaluator object
+        with $!path { %res = %res , {:$!path} }
+        return %res;
     }
 
     #| To string
