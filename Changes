@@ -1,5 +1,8 @@
 Revision history for "LLM::Functions"
 
+0.5.3 2025-11-18
+    - Bug fix -- have to be more cautious when passing configurations path arguments.
+
 0.5.2 2025-11-17
     - Added configuration attributes used by the OpenAI's "gpt-5*" models.
 
