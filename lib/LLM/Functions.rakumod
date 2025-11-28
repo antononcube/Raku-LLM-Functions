@@ -57,7 +57,7 @@ multi reallyflat(+@list) {
 # LLM configuration
 #===========================================================
 
-my @mustPassConfKeys = <name prompts examples temperature max-tokens stop-tokens api-key api-user-id base-url tools>;
+my @mustPassConfKeys = <name prompts examples temperature max-tokens stop-tokens api-key api-user-id base-url path tools>;
 my @mustPassConfKeysExt = @mustPassConfKeys.push('model');
 
 #| LLM configuration creation and retrieval.
@@ -226,7 +226,10 @@ multi sub llm-configuration(LLM::Functions::Configuration $conf, *%args) {
 
     # Make the corresponding configuration hash and modify it
     my %newConf = $conf.Hash;
-    my @knownKeys = %newConf.keys;
+
+    # I really do not like this -- hence, using introspection below
+    # my @knownKeys = [|%newConf.keys, 'path'];
+    my @knownKeys = $conf.^attributes.map(*.name.substr(2));
 
     # Nice and concise but does not work because Raku containerizes the array(s)
     %newConf = merge-hash(%newConf, %args);
