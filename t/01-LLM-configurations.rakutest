@@ -44,4 +44,17 @@ is-deeply
 ## 10
 ok llm-configuration("ChatGPT", model => "gpt-4");
 
+## 11
+subtest {
+        my $conf51 = llm-configuration('ChatGPT', model => 'gpt-5.1', reasoning-effort => 'none');
+        my $conf51-codex = llm-configuration('ChatGPT', path => 'responses', model => 'gpt-5.1-codex');
+
+        # If no path spec in the configuration, then no path key in the Hash
+        is $conf51.Hash<path>:exists, False, 'no path in Hash';
+
+        # If path spec in the configuration, then the Hash has 'path' key
+        is $conf51-codex.Hash<path>:exists, True, 'path in Hash';
+
+}, 'path handling';
+
 done-testing;
