@@ -12,26 +12,26 @@ my $echo = False;
 plan *;
 
 ## 1
-ok llm-configuration('palm');
+ok llm-configuration('ollama');
 
 ## 2
 my $prompt2 = "Make a recipe for the given phrase.";
-ok llm-function($prompt2, llm-evaluator => llm-configuration('palm'))("greek salad", :$echo);
+ok llm-function($prompt2, llm-evaluator => llm-configuration('ollama'))("greek salad", :$echo);
 
 ## 3
-isa-ok llm-function($prompt2, e => 'palm')("greek salad", :$echo),
+isa-ok llm-function($prompt2, e => 'ollama')("greek salad", :$echo),
         Str,
         'greek salad';
 
 ## 4
 my &prompt3 = { "How many $^a can fit inside one $^b?" };
-is llm-function(&prompt3, llm-evaluator => 'palm')('basket balls', 'toyota corolla 2010', :$echo).all ~~ Str,
+is llm-function(&prompt3, llm-evaluator => 'ollama')('basket balls', 'toyota corolla 2010', :$echo).all ~~ Str,
         True,
         'basket balls in toyota corolla 2010';
 
 ## 5
 my &prompt4 = -> :$dish, :$cuisine { "Give a recipe for $dish in the $cuisine cuisine." }
-is llm-function(&prompt4, llm-evaluator => 'palm')(dish => 'salad', cuisine => 'Russian', max-tokens => 300, :$echo).all ~~ Str,
+is llm-function(&prompt4, llm-evaluator => 'ollama')(dish => 'salad', cuisine => 'Russian', max-tokens => 300, :$echo).all ~~ Str,
         True,
         'recipe';
 
@@ -39,7 +39,7 @@ is llm-function(&prompt4, llm-evaluator => 'palm')(dish => 'salad', cuisine => '
 my &f6 = llm-function(
         { "What is the average speed of $_ ?" },
         form => sub-parser(Numeric),
-        llm-evaluator => 'PaLM');
+        llm-evaluator => 'Ollama');
 
 isa-ok &f6('a car on a USA highway', :$echo), Positional;
 
