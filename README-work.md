@@ -5,20 +5,21 @@
 [![Win64](https://github.com/antononcube/Raku-LLM-Functions/actions/workflows/windows.yml/badge.svg)](https://github.com/antononcube/Raku-LLM-Functions/actions/workflows/windows.yml)
 [![https://raku.land/zef:antononcube/LLM::Functions](https://raku.land/zef:antononcube/LLM::Functions/badges/version)](https://raku.land/zef:antononcube/LLM::Functions)
 
-## In brief
+## Introduction
 
 This Raku package provides functions and function objects to access, interact, and utilize 
 Large Language Models (LLMs), like 
 [OpenAI](https://platform.openai.com), [OAI1],
-[PaLM](https://developers.generativeai.google/products/palm), [ZG1],
+[Gemini](https://ai.google.dev/gemini-api/docs/models),
+[MistralAI](https://docs.mistral.ai), [MAI1],
 and
-[MistralAI](https://docs.mistral.ai), [MAI1].
+[Ollama](https://ollama.com/search).
 
 For more details how the concrete LLMs are accessed see the packages
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2],
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3],
-["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9], and
-["WWW::Gemini"](https://raku.land/zef:antononcube/WWW::Gemini), [AAp11].
+["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9],
+["WWW::Gemini"](https://raku.land/zef:antononcube/WWW::Gemini), [AAp11], and
+["WWW::Ollama"](https://raku.land/zef:antononcube/WWW::Ollama), [AAp12].
 
 The LLM functions built by this package can have evaluators that use "sub-parsers" -- see 
 ["Text::SubParsers"](https://raku.land/zef:antononcube/Text::SubParsers), [AAp4].
@@ -34,7 +35,7 @@ see the paclet
 
 For well curated and instructive examples of LLM prompts see the
 [Wolfram Prompt Repository](https://resources.wolframcloud.com/PromptRepository/).
-Many of those prompts (≈220) are available in Raku and Python --
+Many of those prompts (more than 220) are available in Raku and Python --
 see ["LLM::Prompts"](https://raku.land/zef:antononcube/LLM::Prompts), [AAp8], and
 ["LLMPrompts"](https://pypi.org/project/LLMPrompts/), [AAp10], respectively.
 
@@ -68,8 +69,9 @@ zef install https://github.com/antononcube/Raku-LLM-Functions.git
 "Out of the box"
 ["LLM::Functions"](https://raku.land/zef:antononcube/LLM::Functions) uses
 ["WWW::OpenAI"](https://raku.land/zef:antononcube/WWW::OpenAI), [AAp2],
-["WWW::PaLM"](https://raku.land/zef:antononcube/WWW::PaLM), [AAp3], and
-["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9].
+["WWW::MistralAI"](https://raku.land/zef:antononcube/WWW::MistralAI), [AAp9],
+["WWW::Gemini"](https://raku.land/zef:antononcube/WWW::Gemini), [AAp11], and
+["WWW::Ollama"](https://raku.land/zef:antononcube/WWW::Ollama), [AAp12],
 Other LLM access packages can be utilized via appropriate LLM configurations.
 
 Configurations:
@@ -144,14 +146,14 @@ sequenceDiagram
 
 Here is the default, OpenAI-based configuration:
 
-```perl6
+```raku
 use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
 
 Here is the ChatGPT-based configuration:
 
-```perl6
+```raku
 .say for llm-configuration('ChatGPT').Hash;
 ```
 
@@ -161,12 +163,12 @@ Here is the ChatGPT-based configuration:
 The "OpenAI" configuration is for text-completions;
 the "ChatGPT" configuration is for chat-completions. 
 
-### PaLM-based
+### Gemini-based
 
-Here is the default PaLM configuration:
+Here is the default Gemini configuration:
 
-```perl6
-.say for llm-configuration('PaLM').Hash;
+```raku
+.say for llm-configuration('Gemini').Hash;
 ```
 
 -----
@@ -177,36 +179,38 @@ Here is the default PaLM configuration:
 
 Here we make a LLM function with a simple (short, textual) prompt:
 
-```perl6
+```raku
 my &func = llm-function('Show a recipe for:');
 ```
 
 Here we evaluate over a message: 
 
-```perl6
+```raku
 say &func('greek salad');
 ```
 
 ### Positional arguments
 
-Here we make a LLM function with a function-prompt and numeric interpreter of the result:
+Here we make a LLM function with a function-prompt composed with a dedicated LLM numbers-only prompt and a numeric interpreter of the result:
 
-```perl6
+```raku
+use LLM::Prompts;
+
 my &func2 = llm-function(
-        {"How many $^a can fit inside one $^b?"},
+        {"How many $^a can fit inside one $^b?" ~ llm-prompt('NumericOnly')},
         form => Numeric,
         llm-evaluator => 'chatgpt');
 ```
 
 Here were we apply the function:
 
-```perl6
+```raku
 my $res2 = &func2("tennis balls", "toyota corolla 2010");
 ```
 
 Here we show that we got a number:
 
-```perl6
+```raku
 $res2 ~~ Numeric
 ```
 
@@ -215,13 +219,13 @@ $res2 ~~ Numeric
 
 Here the first argument is a template with two named arguments: 
 
-```perl6
+```raku
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'chatgpt');
 ```
 
 Here is an invocation:
 
-```perl6
+```raku
 &func3(dish => 'salad', cuisine => 'Russian', max-tokens => 300);
 ```
 
@@ -234,19 +238,19 @@ to generating results according to the "laws" implied by that training set.
 
 Here a LLM is asked to produce a generalization:
 
-```perl6
+```raku
 llm-example-function([ 'finger' => 'hand', 'hand' => 'arm' ])('foot')
 ```
 
 Here is an array of training pairs is used:
 
-```perl6
+```raku
 'Oppenheimer' ==> (["Einstein" => "14 March 1879", "Pauli" => "April 25, 1900"] ==> llm-example-function)()
 ```
 
 Here is defined a LLM function for translating WL associations into Python dictionaries:
 
-```perl6
+```raku
 my &fea = llm-example-function( '<| A->3, 4->K1 |>' => '{ A:3, 4:K1 }');
 &fea('<| 23->3, G->33, T -> R5|>');
 ```
@@ -261,7 +265,7 @@ The function `llm-example-function` takes as a first argument:
 
 Here is an example of using hints:
 
-```perl6
+```raku
 my &fec = llm-example-function(
         ["crocodile" => "grasshopper", "fox" => "cardinal"],
         hint => 'animal colors');
@@ -278,7 +282,7 @@ can be very convenient in certain (many) cases.
 
 Here is an example using "Fixed That For You" synthesis:
 
-```perl6
+```raku
 use LLM::Prompts;
 
 llm-synthesize([llm-prompt('FTFY'), 'Wha is ther population?'])
@@ -302,22 +306,22 @@ For detailed examples see the documents:
 
 Here we create chat object that uses OpenAI's ChatGPT:
 
-```perl6
+```raku
 my $prompt = 'You are a gem expert and you give concise answers.';
 my $chat = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatGPT', :$prompt);
 ```
 
-```perl6
+```raku
 $chat.eval('What is the most transparent gem?');
 ```
 
-```perl6
+```raku
 $chat.eval('Ok. What are the second and third most transparent gems?');
 ```
 
 Here are the prompt(s) and all messages of the chat object:
 
-```perl6
+```raku
 $chat.say
 ```
 
@@ -331,7 +335,7 @@ Consider [this image](https://raw.githubusercontent.com/antononcube/MathematicaF
 
 Here we import the image (as a Base64 string):
 
-```perl6
+```raku
 use Image::Markup::Utilities;
 my $url = 'https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/MarkdownDocuments/Diagrams/AI-vision-via-WL/0iyello2xfyfo.png';
 my $img = image-import($url);
@@ -340,7 +344,7 @@ $img.substr(^100)
 
 Here we apply one of OpenAI's AI omni models (which is the default one) over the ***URL of the image***:
 
-```perl6
+```raku
 llm-vision-synthesize('Describe the image.', $url);
 ```
 
@@ -354,7 +358,7 @@ The function `llm-vision-function` uses the same evaluators (configurations, mod
 
 ## Potential problems
 
-With PaLM with certain wrong configuration we get the error:
+With Gemini with certain wrong configuration we get the error:
 
 ```
 error => {code => 400, message => Messages must alternate between authors., status => INVALID_ARGUMENT}
@@ -400,7 +404,9 @@ error => {code => 400, message => Messages must alternate between authors., stat
       - [X] Hint option
     - [X] DONE Verify works with OpenAI 
     - [X] DONE Verify works with PaLM
+      - Removed in version 0.5.5 since PaLM is obsoleted. 
     - [X] DONE Verify works with Gemini
+    - [X] DONE Verify works with Ollama
   - [X] DONE Interpreter argument for `llm-function`
     - See the `formatron` attribute of `LLM::Functions::Evaluator`.
   - [X] DONE Adding `form` option to chat objects evaluator
@@ -460,58 +466,63 @@ error => {code => 400, message => Messages must alternate between authors., stat
 ### Packages, paclets
 
 [AAp1] Anton Antonov,
-[LLM::Functions Raku package](https://github.com/antononcube/Raku-LLM-Functions),
+[LLM::Functions, Raku package](https://github.com/antononcube/Raku-LLM-Functions),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp2] Anton Antonov,
-[WWW::OpenAI Raku package](https://github.com/antononcube/Raku-WWW-OpenAI),
+[WWW::OpenAI, Raku package](https://github.com/antononcube/Raku-WWW-OpenAI),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp3] Anton Antonov,
-[WWW::PaLM Raku package](https://github.com/antononcube/Raku-WWW-PaLM),
+[WWW::PaLM, Raku package](https://github.com/antononcube/Raku-WWW-PaLM),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp4] Anton Antonov,
-[Text::SubParsers Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
+[Text::SubParsers, Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp5] Anton Antonov,
-[Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
+[Text::CodeProcessing, Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
 (2021),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp6] Anton Antonov,
-[ML::FindTextualAnswer Raku package](https://github.com/antononcube/Raku-ML-FindTextualAnswer),
+[ML::FindTextualAnswer, Raku package](https://github.com/antononcube/Raku-ML-FindTextualAnswer),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp7] Anton Antonov,
-[ML::NLPTemplateEngine Raku package](https://github.com/antononcube/Raku-ML-NLPTemplateEngine),
+[ML::NLPTemplateEngine, Raku package](https://github.com/antononcube/Raku-ML-NLPTemplateEngine),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp8] Anton Antonov,
-[LLM::Prompts Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
+[LLM::Prompts, Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp9] Anton Antonov,
-[WWW::MistralAI Raku package](https://github.com/antononcube/Raku-WWW-MistralAI),
+[WWW::MistralAI, Raku package](https://github.com/antononcube/Raku-WWW-MistralAI),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp10] Anton Antonov,
-[LLMPrompts Python package](https://pypi.org/project/LLMPrompts/),
+[LLMPrompts, Python package](https://pypi.org/project/LLMPrompts/),
 (2023),
 [PyPI.org/antononcube](https://pypi.org/user/antononcube/).
 
 [AAp11] Anton Antonov,
-[WWW::Gemini Raku package](https://github.com/antononcube/Raku-WWW-Gemini),
+[WWW::Gemini, Raku package](https://github.com/antononcube/Raku-WWW-Gemini),
 (2024),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp12] Anton Antonov,
+[WWW::Ollama, Raku package](https://github.com/antononcube/Raku-WWW-Ollama),
+(2026),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [WRIp1] Wolfram Research, Inc.
