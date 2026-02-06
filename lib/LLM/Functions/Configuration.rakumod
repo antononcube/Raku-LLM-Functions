@@ -168,11 +168,6 @@ class LLM::Functions::Configuration {
 
     #| To string
     multi method Str(::?CLASS:D:-->Str) {
-        return self.gist;
-    }
-
-    #| To gist
-    multi method gist(::?CLASS:D:-->Str) {
         return self.Hash.map( -> $p {
             given $p.value {
                 when Whatever { $p.key => 'Whatever'}
@@ -181,5 +176,14 @@ class LLM::Functions::Configuration {
                 default { $p.key => $_.Str }
             }
         }).Str;
+    }
+
+    #| To gist
+    multi method gist(::?CLASS:D:-->Str) {
+        my @ks = <name model module max-tokens>;
+        my @vals = @ks Z=> self.Hash{@ks};
+        if @!prompts { @vals .= push((prompts-count => @!prompts.elems)) }
+        if @!examples { @vals .= push((examples-count => @!examples.elems)) }
+        return 'LLM::Configuration' ~ @vals.List.raku;
     }
 }
