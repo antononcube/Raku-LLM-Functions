@@ -180,6 +180,14 @@ llm-configuration('Gemini')
 # LLM::Configuration(:name("gemini"), :model("gemini-2.0-flash-lite"), :module("WWW::Gemini"), :max-tokens(4096))
 ```
 
+### All configuration elements
+
+**Remark:** To see all elements of an LLM configuration object use the method `.Hash`. For example:
+
+```raku
+.say for |llm-configuration('Gemini').Hash
+```
+
 -----
 
 ## Basic usage of LLM functions

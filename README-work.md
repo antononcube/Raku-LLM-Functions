@@ -171,6 +171,14 @@ Here is the default Gemini configuration:
 llm-configuration('Gemini')
 ```
 
+### All configuration elements
+
+**Remark:** To see all elements of an LLM configuration object use the method `.Hash`. For example:
+
+```raku
+.say for |llm-configuration('Gemini').Hash
+```
+
 -----
 
 ## Basic usage of LLM functions
