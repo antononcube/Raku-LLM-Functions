@@ -26,79 +26,79 @@ ok LLM::Functions::EvaluatorChat.new(conf => llm-configuration(Whatever));
 #===========================================================
 ## 4
 #===========================================================
-ok LLM::Functions::EvaluatorChat.new(conf => llm-configuration('PaLM'));
+ok LLM::Functions::EvaluatorChat.new(conf => llm-configuration('Gemini'));
 
 #===========================================================
 ## 5
 #===========================================================
 is-deeply
-        llm-evaluator(llm-configuration('PaLM', api-user-id => 'u5')),
-        LLM::Functions::Evaluator.new(conf => llm-configuration('PaLM', api-user-id => 'u5'));
+        llm-evaluator(llm-configuration('Gemini', api-user-id => 'u5')),
+        LLM::Functions::Evaluator.new(conf => llm-configuration('Gemini', api-user-id => 'u5'));
 
 #===========================================================
 ## 6
 #===========================================================
 is-deeply
-        llm-evaluator('PaLM', api-user-id => 'u6'),
-        llm-evaluator(llm-configuration('PaLM', api-user-id => 'u6'));
+        llm-evaluator('Gemini', api-user-id => 'u6'),
+        llm-evaluator(llm-configuration('Gemini', api-user-id => 'u6'));
 
 #===========================================================
 ## 7
 #===========================================================
 is-deeply
-        llm-evaluator('PaLM', api-user-id => 'BrandNewUser3233'),
-        llm-evaluator(llm-configuration('PaLM', api-user-id => 'BrandNewUser3233'));
+        llm-evaluator('Gemini', api-user-id => 'BrandNewUser3233'),
+        llm-evaluator(llm-configuration('Gemini', api-user-id => 'BrandNewUser3233'));
 
 #===========================================================
 ## 8
 #===========================================================
 is-deeply
-        llm-evaluator('PaLM', formatron => Numeric, api-user-id => 'u8'),
-        LLM::Functions::Evaluator.new(conf => llm-configuration('PaLM', api-user-id => 'u8'), formatron => Numeric);
+        llm-evaluator('Gemini', formatron => Numeric, api-user-id => 'u8'),
+        LLM::Functions::Evaluator.new(conf => llm-configuration('Gemini', api-user-id => 'u8'), formatron => Numeric);
 
 #===========================================================
 ## 9
 #===========================================================
 is-deeply
-        llm-evaluator('PaLM', api-user-id => 'u9'),
-        llm-evaluator(llm-evaluator('PaLM', api-user-id => 'u9'));
+        llm-evaluator('Gemini', api-user-id => 'u9'),
+        llm-evaluator(llm-evaluator('Gemini', api-user-id => 'u9'));
 
 #===========================================================
 ## 10
 #===========================================================
 is-deeply
-        llm-evaluator('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
+        llm-evaluator('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
         llm-evaluator(
                 Whatever,
-                conf => llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                conf => llm-configuration('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
                 formatron => 'JSON');
 
 #===========================================================
 ## 11
 #===========================================================
 is-deeply
-        llm-evaluator('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
+        llm-evaluator('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
         llm-evaluator(
-                conf => llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                conf => llm-configuration('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
                 formatron => 'JSON');
 
 #===========================================================
 ## 12
 #===========================================================
 is-deeply
-        llm-evaluator('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
+        llm-evaluator('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.', formatron => 'JSON'),
         llm-evaluator(
-                llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                llm-configuration('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
                 formatron => 'JSON');
 
 #===========================================================
 ## 13
 #===========================================================
 is-deeply
-        llm-evaluator(llm-evaluator('PaLM'), api-user-id => 'u9', prompts => 'You are the best data scientist.',
+        llm-evaluator(llm-evaluator('Gemini'), api-user-id => 'u9', prompts => 'You are the best data scientist.',
                 formatron => 'JSON'),
         llm-evaluator(
-                llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                llm-configuration('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
                 formatron => 'JSON');
 
 #===========================================================
@@ -107,23 +107,23 @@ is-deeply
 is-deeply
         llm-evaluator(
                 llm-evaluator(Whatever),
-                conf => llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                conf => llm-configuration('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
                 formatron => 'JSON'),
         llm-evaluator(
-                llm-configuration('PaLM', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
+                llm-configuration('Gemini', api-user-id => 'u9', prompts => 'You are the best data scientist.'),
                 formatron => 'JSON');
 
 #===========================================================
 ## 15
 #===========================================================
-isa-ok llm-evaluator(llm-configuration('ChatPaLM'), llm-evaluator-class => LLM::Functions::EvaluatorChatPaLM),
-        LLM::Functions::EvaluatorChatPaLM,
-        'Expected ChatPaLM type';
+isa-ok llm-evaluator(llm-configuration('ChatGemini'), llm-evaluator-class => LLM::Functions::EvaluatorChatGemini),
+        LLM::Functions::EvaluatorChatGemini,
+        'Expected ChatGemini type';
 
 #===========================================================
 ## 16-18
 #===========================================================
-my $evlr16 = llm-evaluator('PaLM', api-user-id => 'u16', prompts => 'You are the best data scientist.', formatron => 'JSON');
+my $evlr16 = llm-evaluator('Gemini', api-user-id => 'u16', prompts => 'You are the best data scientist.', formatron => 'JSON');
 
 isa-ok $evlr16.Hash, Hash;
 

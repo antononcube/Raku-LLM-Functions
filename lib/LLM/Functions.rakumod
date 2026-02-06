@@ -6,10 +6,8 @@ use WWW::OpenAI::TextCompletions;
 use WWW::OpenAI::ChatCompletions;
 use WWW::OpenAI::Embeddings;
 
-use WWW::PaLM;
-use WWW::PaLM::GenerateText;
-use WWW::PaLM::GenerateMessage;
-use WWW::PaLM::EmbedText;
+use WWW::Ollama;
+use WWW::Ollama::Client;
 
 use WWW::Gemini;
 use WWW::Gemini::GenerateContent;
@@ -106,7 +104,7 @@ multi sub llm-configuration($spec, *%args) {
                     $obj;
                 }
 
-                when $_ ~~ Str:D && $_.lc ∈ <llama llamafile> {
+                when $_ ~~ Str:D && $_.lc ∈ <llama llamafile llama-file> {
 
                     my $obj = llm-configuration('chatpgt',
                             name => 'llama',
@@ -123,42 +121,30 @@ multi sub llm-configuration($spec, *%args) {
                     $obj;
                 }
 
-                when $_ ~~ Str:D && $_.lc eq 'palm' {
+                when $_ ~~ Str:D && $_.lc ∈ <ollama chatollama chat-ollama> {
 
                     LLM::Functions::Configuration.new(
-                            name => 'palm',
+                            name => 'ollama',
                             api-key => Whatever,
                             api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
-                            module => 'WWW::PaLM',
-                            base-url => '',
-                            model => 'text-bison-001',
-                            function => &PaLMGenerateText,
-                            embedding-model => 'embedding-gecko-001',
-                            embedding-function => &PaLMEmbedText,
+                            module => 'WWW::Ollama',
+                            base-url => ollama-base-url,
+                            model => 'llama3.2:latest',
+                            function => &ollama-chat-completion,
+                            embedding-model => 'nomic-embed-text',
+                            embedding-function => &ollama-embedding,
                             temperature => 0.4,
-                            max-tokens => 4096,
+                            max-tokens => 8192,
                             total-probability-cutoff => 0,
                             prompts => Empty,
                             prompt-delimiter => ' ',
                             examples => Empty,
                             stop-tokens => Empty,
-                            argument-renames => %('api-key' => 'auth-key',
-                                                  'max-tokens' => 'max-output-tokens',
-                                                  'stop-tokens' => 'stop-sequences',
-                                                  'tool-config' => 'toolConfig'),
+                            argument-renames => %(),
                             format => 'values');
                 }
 
-                when $_ ~~ Str:D && $_.lc ∈ <chatpalm chat-palm palmchat palm-chat> {
-                    llm-configuration(
-                            'palm',
-                            name => 'chatpalm',
-                            function => &PaLMGenerateMessage,
-                            model => 'chat-bison-001',
-                            |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash)
-                }
-
-                when $_ ~~ Str:D && $_.lc ∈ <gemini chatgemini> {
+                when $_ ~~ Str:D && $_.lc ∈ <gemini chatgemini chat-gemini> {
 
                     LLM::Functions::Configuration.new(
                             name => 'gemini',

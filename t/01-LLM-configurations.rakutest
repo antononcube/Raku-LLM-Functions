@@ -23,8 +23,8 @@ ok llm-configuration('openai', prompts => [$pre3, ]);
 
 ## 5
 is-deeply
-        llm-configuration('PaLM').Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
-        llm-configuration('palm').Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
+        llm-configuration('Gemini').Hash.grep({ $_.key ∉ <api-user-id>}).Hash,
+        llm-configuration('gemini').Hash.grep({ $_.key ∉ <api-user-id>}).Hash;
 
 ## 6
 my $conf6 = llm-configuration('openai', prompts => [$pre3, ]);

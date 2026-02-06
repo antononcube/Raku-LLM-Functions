@@ -1,7 +1,7 @@
 {
   "name": "LLM::Functions",
   "description": "LLM::Functions provides functions and function objects to access, interact, and utilize LLMs",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "perl": "6.d",
   "authors": [
     "Anton Antonov"
@@ -16,7 +16,7 @@
     "WWW::LLaMA:ver<0.1.3+>",
     "WWW::MistralAI:ver<0.1.3+>",
     "WWW::OpenAI:ver<0.3.8+>",
-    "WWW::PaLM:ver<0.1.9+>"
+    "WWW::Ollama:ver<0.0.5+>"
   ],
   "build-depends": [],
   "test-depends": [

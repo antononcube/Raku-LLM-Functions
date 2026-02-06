@@ -1,5 +1,10 @@
 Revision history for "LLM::Functions"
 
+0.5.5 2026-02-06
+    - Removed PaLM configurations and the dependency of "WWW::PaLM".
+        - Obsoleted by Google.
+    - Added Ollama configurations and dependency on "WWW::Ollama".
+
 0.5.4 2025-11-28
     - Bug fix / refactor -- more robust configuration creation from a configuration object.
 
