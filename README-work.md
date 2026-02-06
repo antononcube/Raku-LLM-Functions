@@ -9,9 +9,9 @@
 
 This Raku package provides functions and function objects to access, interact, and utilize 
 Large Language Models (LLMs), like 
-[OpenAI](https://platform.openai.com), [OAI1],
+[OpenAI](https://platform.openai.com),
 [Gemini](https://ai.google.dev/gemini-api/docs/models),
-[MistralAI](https://docs.mistral.ai), [MAI1],
+[MistralAI](https://docs.mistral.ai),
 and
 [Ollama](https://ollama.com/search).
 
@@ -148,13 +148,13 @@ Here is the default, OpenAI-based configuration:
 
 ```raku
 use LLM::Functions;
-.raku.say for llm-configuration('OpenAI').Hash;
+llm-configuration('OpenAI');
 ```
 
 Here is the ChatGPT-based configuration:
 
 ```raku
-.say for llm-configuration('ChatGPT').Hash;
+llm-configuration('ChatGPT')
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -168,7 +168,7 @@ the "ChatGPT" configuration is for chat-completions.
 Here is the default Gemini configuration:
 
 ```raku
-.say for llm-configuration('Gemini').Hash;
+llm-configuration('Gemini')
 ```
 
 -----

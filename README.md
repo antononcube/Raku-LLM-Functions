@@ -9,9 +9,9 @@
 
 This Raku package provides functions and function objects to access, interact, and utilize 
 Large Language Models (LLMs), like 
-[OpenAI](https://platform.openai.com), [OAI1],
+[OpenAI](https://platform.openai.com),
 [Gemini](https://ai.google.dev/gemini-api/docs/models),
-[MistralAI](https://docs.mistral.ai), [MAI1],
+[MistralAI](https://docs.mistral.ai),
 and
 [Ollama](https://ollama.com/search).
 
@@ -148,13 +148,19 @@ Here is the default, OpenAI-based configuration:
 
 ```raku
 use LLM::Functions;
-.raku.say for llm-configuration('OpenAI').Hash;
+llm-configuration('OpenAI');
+```
+```
+# LLM::Configuration(:name("openai"), :model("gpt-3.5-turbo-instruct"), :module("WWW::OpenAI"), :max-tokens(2048))
 ```
 
 Here is the ChatGPT-based configuration:
 
 ```raku
-.say for llm-configuration('ChatGPT').Hash;
+llm-configuration('ChatGPT')
+```
+```
+# LLM::Configuration(:name("chatgpt"), :model("gpt-4.1-mini"), :module("WWW::OpenAI"), :max-tokens(2048))
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -168,7 +174,10 @@ the "ChatGPT" configuration is for chat-completions.
 Here is the default Gemini configuration:
 
 ```raku
-.say for llm-configuration('Gemini').Hash;
+llm-configuration('Gemini')
+```
+```
+# LLM::Configuration(:name("gemini"), :model("gemini-2.0-flash-lite"), :module("WWW::Gemini"), :max-tokens(4096))
 ```
 
 -----
@@ -183,7 +192,7 @@ Here we make a LLM function with a simple (short, textual) prompt:
 my &func = llm-function('Show a recipe for:');
 ```
 ```
-# LLM::Function(-> $text = "", *%args { #`(Block|6474941406888) ... }, 'chatgpt')
+# LLM::Function(-> $text = "", *%args { #`(Block|2351777762416) ... }, 'chatgpt')
 ```
 
 Here we evaluate over a message: 
@@ -192,31 +201,45 @@ Here we evaluate over a message:
 say &func('greek salad');
 ```
 ```
-# Certainly! Here's a classic recipe for a refreshing Greek Salad:
+# Certainly! Here's a classic recipe for a Greek Salad:
 # 
 # ### Greek Salad Recipe
 # 
 # **Ingredients:**
-# - 3 large ripe tomatoes, chopped
+# - 3 large tomatoes, chopped
 # - 1 cucumber, peeled and sliced
-# - 1 green bell pepper, sliced into rings
+# - 1 green bell pepper, sliced
 # - 1 small red onion, thinly sliced
 # - 1/2 cup Kalamata olives
 # - 200g (about 7 oz) feta cheese, cut into cubes or crumbled
 # - 2 tablespoons extra virgin olive oil
-# - 1 tablespoon red wine vinegar (optional)
+# - 1 tablespoon red wine vinegar or lemon juice
 # - 1 teaspoon dried oregano
 # - Salt and freshly ground black pepper, to taste
 # 
-# **Instructions:**
-# 1. In a large bowl, combine the chopped tomatoes, cucumber, green peppers, red onion, and olives.
-# 2. Add the feta cheese on top.
-# 3. Drizzle the olive oil and red wine vinegar over the salad.
-# 4. Sprinkle with dried oregano, salt, and black pepper.
-# 5. Gently toss everything together to combine, or serve it with the feta on top un-mixed as preferred.
-# 6. Serve immediately with crusty bread or as a side dish.
+# **Optional:**
+# - 1 tablespoon capers
+# - Fresh parsley or mint for garnish
 # 
-# Enjoy your fresh and delicious Greek salad!
+# ---
+# 
+# **Instructions:**
+# 
+# 1. **Prepare the vegetables:** Wash and chop the tomatoes into bite-sized pieces. Peel and slice the cucumber. Slice the green bell pepper and red onion thinly.
+# 
+# 2. **Combine:** In a large salad bowl, combine tomatoes, cucumber, green pepper, red onion, and Kalamata olives.
+# 
+# 3. **Add feta:** Add the feta cheese on top of the salad. You can either cube it or crumble it according to your preference.
+# 
+# 4. **Make the dressing:** In a small bowl, whisk together the olive oil, red wine vinegar (or lemon juice), oregano, salt, and pepper.
+# 
+# 5. **Dress the salad:** Pour the dressing over the salad and gently toss to combine all ingredients well.
+# 
+# 6. **Garnish and serve:** Optionally, sprinkle with capers and fresh herbs like parsley or mint. Serve immediately.
+# 
+# ---
+# 
+# Enjoy your fresh and flavorful Greek salad!
 ```
 
 ### Positional arguments
@@ -232,7 +255,7 @@ my &func2 = llm-function(
         llm-evaluator => 'chatgpt');
 ```
 ```
-# LLM::Function(-> **@args, *%args { #`(Block|6474967901528) ... }, 'chatgpt')
+# LLM::Function(-> **@args, *%args { #`(Block|2351796069520) ... }, 'chatgpt')
 ```
 
 Here were we apply the function:
@@ -241,7 +264,7 @@ Here were we apply the function:
 my $res2 = &func2("tennis balls", "toyota corolla 2010");
 ```
 ```
-# 2702700
+# 540000
 ```
 
 Here we show that we got a number:
@@ -262,7 +285,7 @@ Here the first argument is a template with two named arguments:
 my &func3 = llm-function(-> :$dish, :$cuisine {"Give a recipe for $dish in the $cuisine cuisine."}, llm-evaluator => 'chatgpt');
 ```
 ```
-# LLM::Function(-> **@args, *%args { #`(Block|6474967933384) ... }, 'chatgpt')
+# LLM::Function(-> **@args, *%args { #`(Block|2351796123616) ... }, 'chatgpt')
 ```
 
 Here is an invocation:
@@ -271,39 +294,37 @@ Here is an invocation:
 &func3(dish => 'salad', cuisine => 'Russian', max-tokens => 300);
 ```
 ```
-# Certainly! One classic Russian salad is **Olivier Salad**, also known as Russian Salad. It’s a popular dish in Russia, especially during celebrations and holidays.
+# Certainly! Here's a classic Russian salad recipe: **Olivier Salad**, also known as Russian Potato Salad. It's very popular in Russia, especially during holidays.
 # 
-# ### Olivier Salad Recipe
+# ### Olivier Salad (Russian Potato Salad)
 # 
 # #### Ingredients:
-# - 3 medium potatoes
-# - 2 medium carrots
+# - 4 medium potatoes
+# - 3 medium carrots
 # - 4 eggs
-# - 200 grams cooked chicken breast (or boiled ham or bologna)
-# - 150 grams peas (canned or boiled fresh)
-# - 3-4 pickled cucumbers
+# - 200 grams (about 7 oz) cooked chicken breast or bologna sausage (optional)
+# - 1 cup canned peas (drained)
+# - 3-4 pickled cucumbers (or fresh cucumbers if pickles are not available)
 # - 1 small onion (optional)
-# - 200 grams mayonnaise
-# - Salt to taste
-# - Freshly ground black pepper (optional)
+# - 1 cup mayonnaise
+# - Salt and black pepper to taste
 # 
 # #### Instructions:
-# 1. **Prepare the vegetables and eggs**:
-#    - Boil the potatoes and carrots in their skins until tender (about 20-25 minutes). Let them cool, then peel.
-#    - Hard boil the eggs (about 10 minutes), then cool and peel.
-#    
-# 2. **Chop all ingredients**:
-#    - Dice the potatoes, carrots, eggs, pickled cucumbers, and chicken into small cubes (about 1 cm).
+# 1. **Boil the vegetables and eggs:**
+#    - Place potatoes and carrots in a pot of water and boil until tender (about 20-25 minutes). Let them cool, then peel.
+#    - Hard boil the eggs (about 10 minutes), then peel and cool.
+# 
+# 2. **Chop ingredients:**
+#    - Dice potatoes, carrots, eggs, chicken or sausage, and pickled cucumbers into small cubes.
 #    - Finely chop the onion if using.
-#    
-# 3. **Combine**:
-#    - In a large bowl, mix the diced potatoes, carrots, eggs, chicken, peas, cucumbers, and onion.
-#    
-# 4. **Dress the salad**:
+# 
+# 3. **Mix the salad:**
+#    - In a large bowl, combine the diced ingredients and canned peas.
 #    - Add mayonnaise, salt, and pepper to taste.
 #    - Mix gently until everything is well coated.
-#    
-# 5. **Chill and serve**
+# 
+# 4. **Chill and serve:**
+#    - Cover the salad and refrigerate for at least
 ```
 
 --------
@@ -319,7 +340,7 @@ Here a LLM is asked to produce a generalization:
 llm-example-function([ 'finger' => 'hand', 'hand' => 'arm' ])('foot')
 ```
 ```
-# leg
+# Output: leg
 ```
 
 Here is an array of training pairs is used:
@@ -360,7 +381,7 @@ say &fec('raccoon');
 ```
 ```
 # Input: raccoon  
-# Output: panda
+# Output: skunk
 ```
 
 --------
@@ -411,17 +432,14 @@ my $chat = llm-chat(chat-id => 'gem-expert-talk', conf => 'ChatGPT', :$prompt);
 $chat.eval('What is the most transparent gem?');
 ```
 ```
-# The most transparent gem is typically **diamond**. It has excellent clarity and allows light to pass through with minimal distortion, making it highly transparent.
+# The most transparent gemstone is typically **diamond**, known for its exceptional clarity and brilliance.
 ```
 
 ```raku
 $chat.eval('Ok. What are the second and third most transparent gems?');
 ```
 ```
-# After diamond, the second and third most transparent gems are generally:
-# 
-# 2. **White sapphire** – known for its high clarity and good light transmission.  
-# 3. **Zircon** – prized for its brilliance and transparency, sometimes confused with diamond.
+# After diamond, the second most transparent gem is **white sapphire**, and the third is **white topaz**. Both are known for good clarity and light transmission.
 ```
 
 Here are the prompt(s) and all messages of the chat object:
@@ -436,22 +454,19 @@ $chat.say
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role : user
 # content : What is the most transparent gem?
-# timestamp : 2026-02-06T09:54:09.497688-05:00
+# timestamp : 2026-02-06T14:44:54.006446-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role : assistant
-# content : The most transparent gem is typically **diamond**. It has excellent clarity and allows light to pass through with minimal distortion, making it highly transparent.
-# timestamp : 2026-02-06T09:54:10.396412-05:00
+# content : The most transparent gemstone is typically **diamond**, known for its exceptional clarity and brilliance.
+# timestamp : 2026-02-06T14:44:54.978670-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role : user
 # content : Ok. What are the second and third most transparent gems?
-# timestamp : 2026-02-06T09:54:10.419407-05:00
+# timestamp : 2026-02-06T14:44:54.996726-05:00
 # ⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺⸺
 # role : assistant
-# content : After diamond, the second and third most transparent gems are generally:
-# 
-# 2. **White sapphire** – known for its high clarity and good light transmission.  
-# 3. **Zircon** – prized for its brilliance and transparency, sometimes confused with diamond.
-# timestamp : 2026-02-06T09:54:12.232754-05:00
+# content : After diamond, the second most transparent gem is **white sapphire**, and the third is **white topaz**. Both are known for good clarity and light transmission.
+# timestamp : 2026-02-06T14:44:55.999924-05:00
 ```
 
 --------
@@ -480,13 +495,13 @@ Here we apply one of OpenAI's AI omni models (which is the default one) over the
 llm-vision-synthesize('Describe the image.', $url);
 ```
 ```
-# The image is a bar chart titled "Cyber Week Spending Set to Hit New Highs in 2023." It shows estimated online spending on Thanksgiving weekend in the United States from 2019 to 2023. The data is divided into three categories: Thanksgiving Day, Black Friday, and Cyber Monday. Each year is represented by a different color: 2019 (light blue), 2020 (medium blue), 2021 (dark blue), 2022 (navy blue), and 2023 (yellow, marked as a forecast).
+# The image is a bar chart titled "Cyber Week Spending Set to Hit New Highs in 2023." It shows estimated online spending in the United States during Thanksgiving weekend for the years 2019 to 2023. 
 # 
-# - **Thanksgiving Day**: Spending increases steadily each year, with 2023 projected to be the highest.
-# - **Black Friday**: Spending remains relatively stable from 2020 to 2022, with a slight increase forecasted for 2023.
-# - **Cyber Monday**: Shows the highest spending overall, with a significant increase projected for 2023.
+# - **Thanksgiving Day**: Spending increases each year, with 2023 forecasted to be the highest.
+# - **Black Friday**: Spending remains relatively stable from 2019 to 2022, with a slight increase in 2023.
+# - **Cyber Monday**: Spending consistently rises each year, with 2023 projected to reach the highest level.
 # 
-# The source of the data is Adobe Analytics, and the chart is created by Statista.
+# The chart uses different shades of blue for 2019 to 2022 and yellow for the 2023 forecast. The source is Adobe Analytics.
 ```
 
 
