@@ -173,7 +173,7 @@ llm-configuration('Gemini')
 
 ### All configuration elements
 
-**Remark:** To see all elements of an LLM configuration object use the method `.Hash`. For example:
+To see all elements of an LLM configuration object use the method `.Hash`. For example:
 
 ```raku
 .say for |llm-configuration('Gemini').Hash
@@ -366,11 +366,13 @@ The function `llm-vision-function` uses the same evaluators (configurations, mod
 
 ## Potential problems
 
-With Gemini with certain wrong configuration we get the error:
+With Gemini with certain wrong configurations we get the error:
 
 ```
 error => {code => 400, message => Messages must alternate between authors., status => INVALID_ARGUMENT}
 ```
+
+Using the Boolean argument `:echo` while invoking `llm-synthesize` (and the other "llm-*" subs) can be useful to identify the sources of the problems.
 
 --------
 
