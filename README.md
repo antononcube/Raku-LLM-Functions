@@ -150,67 +150,11 @@ Here is the default, OpenAI-based configuration:
 use LLM::Functions;
 .raku.say for llm-configuration('OpenAI').Hash;
 ```
-```
-# :tools($[])
-# :images($[])
-# :temperature(0.8)
-# :argument-renames(${:api-key("auth-key"), :stop-tokens("stop")})
-# :embedding-model("text-embedding-3-small")
-# :evaluator(Whatever)
-# :examples($[])
-# :prompt-delimiter(" ")
-# :base-url("https://api.openai.com/v1")
-# :total-probability-cutoff(0.03)
-# :api-key(Whatever)
-# :prompts($[])
-# :embedding-function(proto sub OpenAIEmbeddings ($prompt, :$model = Whatever, :$encoding-format = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*})
-# :tool-prompt("")
-# :max-tokens(2048)
-# :stop-tokens($[])
-# :format("values")
-# :verbosity(Whatever)
-# :tool-response-insertion-function(WhateverCode)
-# :module("WWW::OpenAI")
-# :model("gpt-3.5-turbo-instruct")
-# :tool-request-parser(WhateverCode)
-# :name("openai")
-# :reasoning-effort(Whatever)
-# :function(proto sub OpenAITextCompletion ($prompt is copy, :$model is copy = Whatever, :$suffix is copy = Whatever, :$max-tokens is copy = Whatever, :$temperature is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, Bool :$echo = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :$best-of is copy = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*})
-# :api-user-id("user:714782766884")
-```
 
 Here is the ChatGPT-based configuration:
 
 ```raku
 .say for llm-configuration('ChatGPT').Hash;
-```
-```
-# evaluator => (my \LLM::Functions::EvaluatorChat_6474669042944 = LLM::Functions::EvaluatorChat.new(context => "", examples => Whatever, user-role => "user", assistant-role => "assistant", system-role => "system", conf => LLM::Functions::Configuration.new(name => "chatgpt", api-key => Whatever, api-user-id => "user:811123441248", module => "WWW::OpenAI", base-url => "https://api.openai.com/v1", path => Whatever, model => "gpt-4.1-mini", function => proto sub OpenAIChatCompletion ($prompt is copy, :$role is copy = Whatever, :$model is copy = Whatever, :$temperature is copy = Whatever, :$max-tokens is copy = Whatever, Numeric :$top-p = 1, Int :$n where { ... } = 1, Bool :$stream = Bool::False, :$stop = Whatever, Numeric :$presence-penalty = 0, Numeric :$frequency-penalty = 0, :@images is copy = Empty, :$reasoning-effort = Whatever, :$verbosity = Whatever, :@tools = Empty, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str:D :$method = "tiny", Str:D :$base-url = "https://api.openai.com/v1", Str:D :$path = "chat/completions") {*}, embedding-model => "text-embedding-3-small", embedding-function => proto sub OpenAIEmbeddings ($prompt, :$model = Whatever, :$encoding-format = Whatever, :api-key(:$auth-key) is copy = Whatever, Int :$timeout where { ... } = 10, :$format is copy = Whatever, Str :$method = "tiny", Str :$base-url = "https://api.openai.com/v1") {*}, temperature => 0.8, total-probability-cutoff => 0.03, max-tokens => 2048, format => "values", prompts => [], prompt-delimiter => " ", examples => [], stop-tokens => [], tools => [], tool-config => {}, tool-prompt => "", tool-request-parser => WhateverCode, tool-response-insertion-function => WhateverCode, images => [], reasoning-effort => Whatever, verbosity => Whatever, argument-renames => {:api-key("auth-key"), :stop-tokens("stop")}, evaluator => LLM::Functions::EvaluatorChat_6474669042944), formatron => "Str"))
-# prompt-delimiter =>  
-# reasoning-effort => (Whatever)
-# module => WWW::OpenAI
-# base-url => https://api.openai.com/v1
-# verbosity => (Whatever)
-# api-key => (Whatever)
-# embedding-model => text-embedding-3-small
-# api-user-id => user:811123441248
-# format => values
-# model => gpt-4.1-mini
-# tools => []
-# prompts => []
-# max-tokens => 2048
-# images => []
-# argument-renames => {api-key => auth-key, stop-tokens => stop}
-# embedding-function => &OpenAIEmbeddings
-# stop-tokens => []
-# name => chatgpt
-# function => &OpenAIChatCompletion
-# tool-response-insertion-function => (WhateverCode)
-# total-probability-cutoff => 0.03
-# temperature => 0.8
-# examples => []
-# tool-request-parser => (WhateverCode)
-# tool-prompt =>
 ```
 
 **Remark:** `llm-configuration(Whatever)` is equivalent to `llm-configuration('OpenAI')`.
@@ -225,34 +169,6 @@ Here is the default Gemini configuration:
 
 ```raku
 .say for llm-configuration('Gemini').Hash;
-```
-```
-# prompts => []
-# examples => []
-# verbosity => (Whatever)
-# argument-renames => {api-key => auth-key, max-tokens => max-output-tokens, stop-tokens => stop-sequences, tool-config => toolConfig}
-# api-key => (Whatever)
-# evaluator => (Whatever)
-# stop-tokens => []
-# total-probability-cutoff => 0
-# base-url => https://generativelanguage.googleapis.com/v1beta/models
-# tool-prompt => 
-# max-tokens => 4096
-# name => gemini
-# api-user-id => user:217147130577
-# embedding-model => embedding-001
-# function => &GeminiGenerateContent
-# reasoning-effort => (Whatever)
-# tools => []
-# module => WWW::Gemini
-# temperature => 0.4
-# embedding-function => &GeminiEmbedContent
-# format => values
-# prompt-delimiter =>  
-# images => []
-# tool-response-insertion-function => (WhateverCode)
-# tool-request-parser => (WhateverCode)
-# model => gemini-2.0-flash-lite
 ```
 
 -----
