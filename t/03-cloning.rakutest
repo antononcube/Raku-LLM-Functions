@@ -11,7 +11,7 @@ use Test;
 plan *;
 
 ## 1
-my $conf1 = llm-configuration('palm');
+my $conf1 = llm-configuration('gemini');
 my $conf2 = $conf1.clone;
 
 $conf2.prompts = ['new', "prompt"];
