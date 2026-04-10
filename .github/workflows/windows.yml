@@ -28,4 +28,4 @@ jobs:
       - name: Install Dependencies
         run: zef install --/test --test-depends --depends .
       - name: Run Tests
-        run: zef --debug --/prove --/tap-harness test .
+        run: zef --debug --/tap-harness test .
