@@ -35,7 +35,7 @@ is-deeply $evaluator3.conf.prompts, $prompt3;
 is $evaluator3.conf.temperature, 1.2534;
 
 ## 5
-is $evaluator3.conf.stop-tokens ~~ Positional && $evaluator3.conf.stop-tokens.all ~~ Str:D, True;
+is $evaluator3.conf.stop-tokens ~~ Positional && all($evaluator3.conf.stop-tokens) ~~ Str:D, True;
 
 
 done-testing;
