@@ -175,4 +175,13 @@ class LLM::Functions::Chat {
         note self.form(:$delim);
     }
 
+    #------------------------------------------------------
+    #| To Hash
+    method Hash (--> Hash) {
+        return %(:$!chat-id,
+                 llm-evaluator => self.llm-evaluator.Hash,
+                 :@!messages,
+                 :@!examples
+        );
+    }
 }
