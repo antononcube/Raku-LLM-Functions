@@ -17,8 +17,8 @@ class LLM::Functions::Chat {
         # There should be a more elegant way of doing this.
         with %args<chat-id>        { self.chat-id = %args<chat-id>; }
         with %args<llm-evaluator>  { self.llm-evaluator = %args<llm-evaluator>; }
-        with %args<messages>       { self.messages = %args<messages>; }
-        with %args<examples>       { self.messages = %args<examples>; }
+        with %args<messages>       { self.messages = |%args<messages>; }
+        with %args<examples>       { self.messages = |%args<examples>; }
         return self;
     }
 

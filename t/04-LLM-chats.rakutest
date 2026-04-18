@@ -26,9 +26,17 @@ is $chat2.llm-evaluator.conf.name.lc, 'gemini';
 #===========================================================
 ## 3
 #===========================================================
-my $chat3 = $chat2.clone;
-$chat3.messages.push($chat3.make-message(role => 'user', message => 'Another one.'));
-is $chat3.messages.elems > $chat2.messages.elems, True;
+subtest {
+        my $chat3a = $chat2.clone;
+        is-deeply $chat3a.messages, $chat2.messages, 'same messages';
+        $chat3a.messages.push($chat3a.make-message(role => 'user', message => 'Another one.'));
+        is $chat3a.messages.elems > $chat2.messages.elems, True, 'larger number of messages after adding a new one';
+
+        my $chat3b = llm-chat($chat2, messages => $chat3a.messages);
+        say $chat3a.messages;
+        is-deeply $chat3b.messages, $chat3a.messages, 'same messages after cloning with re-assignment';
+
+}, 'cloning';
 
 #===========================================================
 ## 4
