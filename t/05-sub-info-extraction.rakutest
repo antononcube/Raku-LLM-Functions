@@ -59,7 +59,7 @@ subtest {
     }
 
     #say llm-tool-definition(&calculate-area);
-    llm-tool-definition(&calculate-area, format => 'json');
+    isa-ok llm-tool-definition(&calculate-area, format => 'json'), Str:D;
 
 }, 'LLM tool spec';
 
