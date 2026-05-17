@@ -146,6 +146,11 @@ subtest {
 
     isa-ok LLM::Tool.new(%info, &func), LLM::Tool, 'additionalProperties => False';
 
+    %info<parameters> = {:!additionalProperties};
+    %info<required> = [];
+
+    isa-ok LLM::Tool.new(%info, &func), LLM::Tool, 'just :!additionalProperties';
+
 }, 'Creation with additionalProperties';
 
 done-testing;
