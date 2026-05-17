@@ -123,4 +123,29 @@ subtest {
 
 }, 'Two positional arguments and three named arguments sub';
 
+## 4
+subtest {
+    my %info =
+            :name("add"),
+            :description("\nAdd two numbers.\n\nArgs:\n    a: First number.\n    b: Second number.\n"),
+            :parameters({
+                :a({:description(""), :named(Bool::True), :type("string")}),
+                :b({:description(""), :named(Bool::True), :type("string")}),
+                additionalProperties => %()
+            }),
+            :required(["a", "b"]);
+
+    my &func =  -> *@args, *%args {
+        note "LLM::Tool::arguments: ", (:@args, :%args);
+        @args.sum
+    };
+
+    isa-ok LLM::Tool.new(%info, &func), LLM::Tool, 'additionalProperties => %()';
+
+    %info<parameters><additionalProperties> = False;
+
+    isa-ok LLM::Tool.new(%info, &func), LLM::Tool, 'additionalProperties => False';
+
+}, 'Creation with additionalProperties';
+
 done-testing;
