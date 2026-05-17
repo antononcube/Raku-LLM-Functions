@@ -1,7 +1,10 @@
 Revision history for "LLM::Functions"
 
 0.5.8 2026-05-17
-    - Proper :strict flag check when LLM-tool specifications are made.
+    - Added comprehensive validation check error messages for LLM-tool specs.
+    - Refactoring:
+        - Proper :strict flag check when LLM-tool specifications are made.
+        - More robust handling "additionalProperties" specs.
     - Better LLM-tools tests.
 
 0.5.7 2026-04-18
