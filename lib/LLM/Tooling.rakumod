@@ -82,12 +82,15 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json', Bool:D :$warn = Tr
     # The %info<parameters> is expected to be collection of key->hashmap pairs,
     # except for the value 'additionalProperties' that can be a hashmap or boolean.
     my @paramSpecs = do if %info<parameters> ~~ Map:D {
-        %info<parameters>.grep(* ~~ Map:D).map({ [|$_.value, name => $_.key] })».Hash
+        if %info<parameters><additionalProperties>:exists {
+            %parameters<additionalProperties> = %info<parameters><additionalProperties>
+        }
+        %info<parameters>.grep({ $_.key ne 'additionalProperties'}).map({ [|$_.value, name => $_.key] })».Hash
     } else {
-       |%info<parameters>
+       |%info<parameters>.grep(*<name> ne 'additionalProperties')
     }
 
-    %properties = do for @paramSpecs.grep(*<name> ne 'additionalProperties') -> %r {
+    %properties = do for @paramSpecs -> %r {
         die 'The argument spec has no name.' unless %r<name>:exists;
         die "The argument spec for {%r<name>} has no type." unless %r<type>:exists;
 
@@ -117,7 +120,7 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json', Bool:D :$warn = Tr
         # "required" has to be always present
         %parameters<required> = @required ?? @required !! [];
         if %info<strict> // True {
-            %parameters<additionalProperties> = False
+            %parameters<additionalProperties> = %parameters<additionalProperties> // False
         }
     }
 
@@ -161,12 +164,26 @@ multi sub llm-tool-definition(
 #===========================================================
 
 sub validate-sub-info(%info) {
+    my @expectedKeys = <name description parameters required>;
     my $shapeCheck =
-            (%info.keys (&) <name description parameters required>).elems == 4
+            (%info.keys (&) @expectedKeys).elems == 4
             && %info<parameters> ~~ Map:D
             && %info<parameters>.values.all ~~ (Map:D | Bool:D);
 
+    unless $shapeCheck {
+        note "The expected keys are <{@expectedKeys.join('')}>."
+        unless (%info.keys (&) @expectedKeys).elems == 4;
+
+        note "The value of 'parameters' is expected to be a hashmap."
+        unless %info<parameters> ~~ Map:D;
+
+        note "Not all 'parameters' values are hashmaps or booleans."
+        unless %info<parameters>.values.all ~~ (Map:D | Bool:D);
+    }
+
     my $knownRequired = (%info<required> (-) %info<parameters>.keys).elems == 0;
+
+    note 'Not all required parameters are specified.' unless $knownRequired;
 
     return $shapeCheck && $knownRequired;
 }
