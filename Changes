@@ -1,5 +1,12 @@
 Revision history for "LLM::Functions"
 
+0.5.8 2026-05-17
+    - Proper :strict flag check when LLM-tool specifications are made.
+    - Better LLM-tools tests.
+
+0.5.7 2026-04-18
+    - Minor refactoring: removed redundant code, more robust chat message assignment.
+
 0.5.6 2026-04-10
     - Minor test changes (to pass Windows tests.)
     - Better gist for LLM-configuration objects.
