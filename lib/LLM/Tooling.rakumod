@@ -114,7 +114,7 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json', Bool:D :$warn = Tr
     if %properties {
         # "required" has to be always present
         %parameters<required> = @required ?? @required !! [];
-        if strict => %info<strict> // True {
+        if %info<strict> // True {
             %parameters<additionalProperties> = False
         }
     }
