@@ -79,13 +79,15 @@ multi sub llm-tool-definition(%info, Str:D :$format = 'json', Bool:D :$warn = Tr
     my %properties;
     my @required;
 
+    # The %info<parameters> is expected to be collection of key->hashmap pairs,
+    # except for the value 'additionalProperties' that can be a hashmap or boolean.
     my @paramSpecs = do if %info<parameters> ~~ Map:D {
-        %info<parameters>.map({ [|$_.value, name => $_.key] })».Hash
+        %info<parameters>.grep(* ~~ Map:D).map({ [|$_.value, name => $_.key] })».Hash
     } else {
        |%info<parameters>
     }
 
-    %properties = do for @paramSpecs -> %r {
+    %properties = do for @paramSpecs.grep(*<name> ne 'additionalProperties') -> %r {
         die 'The argument spec has no name.' unless %r<name>:exists;
         die "The argument spec for {%r<name>} has no type." unless %r<type>:exists;
 
@@ -162,7 +164,7 @@ sub validate-sub-info(%info) {
     my $shapeCheck =
             (%info.keys (&) <name description parameters required>).elems == 4
             && %info<parameters> ~~ Map:D
-            && %info<parameters>.values.all ~~ Map:D;
+            && %info<parameters>.values.all ~~ (Map:D | Bool:D);
 
     my $knownRequired = (%info<required> (-) %info<parameters>.keys).elems == 0;
 
