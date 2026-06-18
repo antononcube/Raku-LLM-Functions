@@ -5,6 +5,8 @@ use WWW::OpenAI;
 use WWW::OpenAI::TextCompletions;
 use WWW::OpenAI::ChatCompletions;
 use WWW::OpenAI::Embeddings;
+# Must not be imported by use -- WWW::OpenAI::Models::GetDefaultModel is defined as our
+#use WWW::OpenAI::Models;
 
 use WWW::Ollama;
 use WWW::Ollama::Client;
@@ -12,6 +14,8 @@ use WWW::Ollama::Client;
 use WWW::Gemini;
 use WWW::Gemini::GenerateContent;
 use WWW::Gemini::EmbedContent;
+# Must not be imported by use -- WWW::Gemini::Models::GetDefaultModel is defined as our
+#use WWW::Gemini::Models;
 
 use WWW::MistralAI;
 use WWW::MistralAI::ChatCompletions;
@@ -78,7 +82,7 @@ multi sub llm-configuration($spec, *%args) {
                             base-url => openai-base-url(),
                             model => 'gpt-3.5-turbo-instruct',
                             function => &OpenAITextCompletion,
-                            embedding-model => 'text-embedding-3-small',
+                            embedding-model => WWW::OpenAI::Models::GetDefaultModel(:embedding),
                             embedding-function => &OpenAIEmbeddings,
                             temperature => 0.8,
                             max-tokens => 2048, # 4096 - assumed prompt max-length, 2048. (Model dependent, it seems.)
@@ -96,7 +100,7 @@ multi sub llm-configuration($spec, *%args) {
                     my $obj = llm-configuration('openai',
                             name => 'chatgpt',
                             function => &OpenAIChatCompletion,
-                            model => 'gpt-4.1-mini',
+                            model => WWW::OpenAI::Models::GetDefaultModel(),
                             |%args.grep({ $_.key ∈ @mustPassConfKeys }).Hash);
 
                     $obj.evaluator = LLM::Functions::EvaluatorChat.new(conf => $obj);
@@ -152,9 +156,9 @@ multi sub llm-configuration($spec, *%args) {
                             api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
                             module => 'WWW::Gemini',
                             base-url => 'https://generativelanguage.googleapis.com/v1beta/models',
-                            model => 'gemini-2.0-flash-lite',
+                            model => WWW::Gemini::Models::GetDefaultModel(),
                             function => &GeminiGenerateContent,
-                            embedding-model => 'embedding-001',
+                            embedding-model => WWW::Gemini::Models::GetDefaultModel(:embedding),
                             embedding-function => &GeminiEmbedContent,
                             temperature => 0.4,
                             max-tokens => 4096,
