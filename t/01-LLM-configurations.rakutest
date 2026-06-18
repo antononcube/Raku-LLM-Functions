@@ -57,4 +57,24 @@ subtest {
 
 }, 'path handling';
 
+## 12
+subtest {
+        my $old=%*ENV<OPENAI_DEFAULT_MODEL>:exists ?? %*ENV<OPENAI_DEFAULT_MODEL> !! Whatever;
+        %*ENV<OPENAI_DEFAULT_MODEL>='gpt-5.24-blah-blah';
+        is llm-configuration('ChatGPT').Hash<model>, 'gpt-5.24-blah-blah', 'expected model name';
+        if $old {
+                %*ENV<OPENAI_DEFAULT_MODEL> = $old
+        }
+}, 'get default OpenAI model';
+
+## 13
+subtest {
+        my $old=%*ENV<GEMINI_DEFAULT_MODEL>:exists ?? %*ENV<GEMINI_DEFAULT_MODEL> !! Whatever;
+        %*ENV<GEMINI_DEFAULT_MODEL>='gemini-12.5-flasher-blah';
+        is llm-configuration('Gemini').Hash<model>, 'gemini-12.5-flasher-blah', 'expected model name';
+        if $old {
+                %*ENV<GEMINI_DEFAULT_MODEL> = $old
+        }
+}, 'get default Gemini model';
+
 done-testing;
