@@ -1,5 +1,8 @@
 Revision history for "LLM::Functions"
 
+0.5.9 2026-06-18
+    - Using special default model retrieval subs for OpenAI and Gemini.
+
 0.5.8 2026-05-17
     - Added comprehensive validation check error messages for LLM-tool specs.
     - Refactoring:
