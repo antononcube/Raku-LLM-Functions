@@ -77,4 +77,14 @@ subtest {
         }
 }, 'get default Gemini model';
 
+## 14
+subtest {
+        my $old=%*ENV<OLLAMA_DEFAULT_MODEL>:exists ?? %*ENV<OLLAMA_DEFAULT_MODEL> !! Whatever;
+        %*ENV<OLLAMA_DEFAULT_MODEL>='gpt-oss:123b';
+        is llm-configuration('Ollama').Hash<model>, 'gpt-oss:123b', 'expected model name';
+        if $old {
+                %*ENV<OLLAMA_DEFAULT_MODEL> = $old
+        }
+}, 'get default Ollama model';
+
 done-testing;
