@@ -21,6 +21,10 @@ use WWW::MistralAI;
 use WWW::MistralAI::ChatCompletions;
 use WWW::MistralAI::Embeddings;
 
+use WWW::OpenRouter;
+use WWW::OpenRouter::ChatCompletions;
+use WWW::OpenRouter::Embeddings;
+
 use WWW::LLaMA;
 use WWW::LLaMA::TextCompletions;
 use WWW::LLaMA::ChatCompletions;
@@ -188,6 +192,29 @@ multi sub llm-configuration($spec, *%args) {
                             embedding-function => &MistralAIEmbeddings,
                             temperature => 0.6,
                             max-tokens => 1024,
+                            total-probability-cutoff => 0.03,
+                            prompts => Empty,
+                            prompt-delimiter => ' ',
+                            examples => Empty,
+                            stop-tokens => Empty,
+                            argument-renames => %('api-key' => 'auth-key'),
+                            format => 'values');
+                }
+
+                when $_ ~~ Str:D && $_.lc ∈ <openrouter openrouter-chat open-router open-router-chat> {
+
+                    LLM::Functions::Configuration.new(
+                            name => 'openrouter',
+                            api-key => Whatever,
+                            api-user-id => 'user:' ~ ((10 ** 11 + 1) .. 10 ** 12).pick,
+                            module => 'WWW::OpenRouter',
+                            base-url => openrouter-base-url(),
+                            model => 'openrouter/free',
+                            function => &OpenRouterChatCompletion,
+                            embedding-model => 'nvidia/nemotron-3-embed-1b:free',
+                            embedding-function => &OpenRouterEmbeddings,
+                            temperature => 0.6,
+                            max-tokens => 2048,
                             total-probability-cutoff => 0.03,
                             prompts => Empty,
                             prompt-delimiter => ' ',
