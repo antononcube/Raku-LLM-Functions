@@ -6,4 +6,5 @@
 lib/.precomp
 .idea
 .DS_Store
+.iml
 
