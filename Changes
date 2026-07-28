@@ -1,5 +1,8 @@
 Revision history for "LLM::Functions"
 
+0.5.10 2026-07-28
+    - Added "WWW::OpenRouter" configurations.
+
 0.5.9 2026-06-18
     - Using special default model retrieval subs for OpenAI and Gemini.
 
