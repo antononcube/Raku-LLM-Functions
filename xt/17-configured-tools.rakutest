@@ -45,27 +45,14 @@ my $request = LLM::ToolRequest.new('add', %('$left' => 19, '$right' => 23));
 is generate-llm-tool-response($add-tool, $request).output, 42,
         'the configured tool can be invoked locally';
 
-# Chat.eval currently evaluates a message directly and does not run the
-# tool-execution loop. This helper uses the chat evaluator with llm-synthesize,
-# which discovers tools in its configuration, and records the exchange.
-sub ask-with-configured-tools(LLM::Functions::Chat:D $chat, Str:D $message --> Str:D) {
-    $chat.messages.push($chat.make-message(role => 'user', :$message));
-
-    my $answer = llm-synthesize($message, e => $chat.llm-evaluator).Str;
-
-    $chat.messages.push($chat.make-message(role => 'assistant', message => $answer));
-    $answer
-}
-
 # A live request is deliberately opt-in because it needs credentials and can
 # incur cost. The chat configuration is the only source of tools.
 if ((%*ENV<RUN_LIVE_TOOLS_TEST> // '') eq '1') && $api-key ~~ Str:D && $api-key.chars {
     $add-calls = 0;
-    my $answer = ask-with-configured-tools(
-            $chat,
+    my $answer = $chat.eval(
             'You must call the add tool; do not calculate yourself. What is 19 plus 23?');
 
-    ok $add-calls > 0, 'the chat evaluator invoked the tool from its configuration';
+    ok $add-calls > 0, 'chat.eval invoked the tool from its configuration';
     ok $answer.Str.contains('42'), 'the final answer includes the tool result';
     is $chat.messages.elems, 2, 'the chat records the user message and answer';
 } else {
