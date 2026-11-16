@@ -1,7 +1,10 @@
 use v6.d;
 
+# These tests are obsolete because Google's PaLM is obsolete.
+
 # use lib <. lib>;
 
+#`[
 use LLM::Functions;
 use Text::SubParsers;
 
@@ -45,3 +48,4 @@ like llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'ChatPaLM')(8).
 is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => $evlr4, form => { $_.trim.Int })(8), 88;
 
 done-testing;
+]
