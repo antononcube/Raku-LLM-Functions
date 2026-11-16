@@ -5,6 +5,7 @@
 .precomp
 lib/.precomp
 .idea
-.DS_Store
 .iml
+.log
+.DS_Store
 
