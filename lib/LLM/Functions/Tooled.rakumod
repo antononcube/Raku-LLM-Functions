@@ -19,4 +19,8 @@ class LLM::Functions::Tooled
     method extract-tool-requests(%assistant-content) {!!!}
 
     multi method eval(@texts, *%args) {!!!}
+
+    #| Evaluate a structured chat transcript with tools.
+    #| Returns a hash with C<result> and the newly generated C<messages>.
+    multi method eval-chat(@messages, *%args) {!!!}
 }

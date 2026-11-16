@@ -1,5 +1,8 @@
 use LLM::Functions::Evaluator;
 use LLM::Functions::Configuration;
+use LLM::Functions::TooledChatGPT;
+use LLM::Functions::TooledGemini;
+use LLM::Tooling;
 
 class LLM::Functions::EvaluatorChat
         is LLM::Functions::Evaluator {
@@ -98,6 +101,46 @@ class LLM::Functions::EvaluatorChat
 
         # Result
         return @messages;
+    }
+
+    #------------------------------------------------------
+    #| Evaluate a structured chat transcript, invoking the configured tools.
+    method eval-with-tools(@messages where @messages.all ~~ Map:D, *%args --> Hash) {
+
+        my @tool-objects = %args<tool-objects>:exists
+                ?? |%args<tool-objects>
+                !! |self.conf.tools;
+
+        die 'The configured tools are expected to be LLM::Tool objects.'
+        unless @tool-objects.all ~~ LLM::Tool:D;
+
+        # The chat keeps its system prompt in the evaluator context. Supply it
+        # to the provider without adding a duplicate, persistent chat message.
+        my @request-messages = @messages.map(*.Hash).Array;
+        my $context = %args<context> // self.context;
+        if $context ~~ Str:D && $context.chars
+                && !@request-messages.grep({ ($_<role> // '') eq self.system-role }).elems {
+            @request-messages.unshift(%(role => self.system-role, content => $context));
+        }
+
+        my LLM::Functions::Tooled:D $tool-evaluator = do given self.conf.name.lc {
+            when /gemini/ { LLM::Functions::TooledGemini.new(conf => self.conf) }
+            when /chatgpt|openai/ { LLM::Functions::TooledChatGPT.new(conf => self.conf) }
+            default {
+                die "No structured chat tool evaluator is available for configuration '{ self.conf.name }'.";
+            }
+        };
+
+        my %result = $tool-evaluator.eval-chat(
+                @request-messages,
+                :@tool-objects,
+                |%args);
+
+        die 'A tool evaluator is expected to return a hash with result and messages.'
+        unless (%result<result>:exists) && (%result<messages>:exists);
+
+        %result<result> = self.post-process(%result<result>, form => %args<form> // Whatever);
+        return %result;
     }
 
     #------------------------------------------------------
