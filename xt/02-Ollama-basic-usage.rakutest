@@ -37,7 +37,7 @@ is llm-function(&prompt4, llm-evaluator => 'ollama')(dish => 'salad', cuisine =>
 
 ## 6
 my &f6 = llm-function(
-        { "What is the average speed of $_ ?" },
+        { "What is the average speed of $_ ? NUMERIC ANSWER ONLY!" },
         form => sub-parser(Numeric),
         llm-evaluator => 'Ollama');
 
