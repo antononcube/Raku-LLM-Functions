@@ -1,0 +1,80 @@
+use v6.d;
+
+use Test;
+use LLM::Functions;
+use LLM::Tooling;
+
+plan *;
+
+#my $model = 'gpt-4.1-mini';
+my $model = 'gpt-5.6-luna';
+
+# A deliberately small, deterministic tool. 
+# The counter lets the live test prove that the model actually invoked the local function.
+my Int $add-calls = 0;
+
+#| Add two integers.
+sub add(Int:D $left, Int:D $right --> Int:D) {
+    $add-calls++;
+    $left + $right
+}
+
+my $add-tool = LLM::Tool.new(&add);
+my @tools = $add-tool;
+my $api-key = %*ENV<OPENAI_API_KEY> // Whatever;
+
+my $chat = llm-chat(
+        chat-id => 'debug-chat-with-tools',
+        prompts => 'You are a concise arithmetic assistant. You must call the add tool for every addition; do not calculate sums yourself.',
+        conf => llm-configuration('chatgpt', reasoning-effort => 'none'),
+        # TooledChatGPT currently implements the Chat Completions response
+        # shape, rather than the Responses API returned by the gpt-5/6 models.
+        :$model,
+        tools => @tools,
+        :$api-key,
+        temperature => 0,
+        max-tokens => 64);
+
+isa-ok $chat, LLM::Functions::Chat, 'a chat object is created';
+is $chat.llm-evaluator.conf.tools.elems, 1, 'the chat configuration has one tool';
+is $chat.llm-evaluator.conf.tools[0].info<name>, 'add', 'the configured tool is add';
+
+# Test the local half of tool calling without making a network request.
+my $request = LLM::ToolRequest.new('add', %('$left' => 19, '$right' => 23));
+my $tool-response = generate-llm-tool-response($add-tool, $request);
+is $tool-response.output, 42, 'the add tool receives arguments and returns its result';
+is $add-calls, 1, 'the local tool was invoked once';
+
+# Chat.eval currently evaluates messages directly, while tool execution is
+# provided by llm-synthesize-with-tools. This helper uses the chat's evaluator
+# for that tool loop and records the resulting exchange in the chat history.
+sub ask-with-tools(LLM::Functions::Chat:D $chat, Str:D $message, @tools --> Str:D) {
+    $chat.messages.push($chat.make-message(role => 'user', :$message));
+
+    my $answer = llm-synthesize-with-tools(
+            $message,
+            @tools,
+            e => $chat.llm-evaluator,
+            form => 'Str');
+
+    $answer = $answer.Str;
+    $chat.messages.push($chat.make-message(role => 'assistant', message => $answer));
+    $answer
+}
+
+# A live call is intentionally opt-in: it needs an API key and can incur cost.
+# Run it with, for example:
+#   OPENAI_API_KEY=... RUN_LIVE_TOOLS_TEST=1 raku -Ilib experiments/Debug-chat-with-tools.raku
+if ((%*ENV<RUN_LIVE_TOOLS_TEST> // '') eq '1') && $api-key ~~ Str:D && $api-key.chars {
+    $add-calls = 0;
+    my $answer = ask-with-tools($chat, 'What is 19 plus 23?', @tools);
+
+    ok $add-calls > 0, 'the model invoked the add tool';
+    ok $answer.contains('42'), 'the final answer includes the tool result';
+    is $chat.messages.elems, 2, 'the chat records the user message and answer';
+    $chat.say;
+} else {
+    skip 'Set OPENAI_API_KEY and RUN_LIVE_TOOLS_TEST=1 to run the live chat-with-tools test.', 3;
+}
+
+done-testing;
