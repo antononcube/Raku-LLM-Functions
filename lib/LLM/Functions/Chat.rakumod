@@ -81,10 +81,18 @@ class LLM::Functions::Chat {
         # Store message struct
         @!messages.push($message);
 
-        # Get LLM result
+        # Get LLM result. Tool-aware evaluators return the protocol events that
+        # belong in the transcript, including tool calls and tool responses.
         my $res;
+        my @tool-messages;
         try {
-            $res = $!llm-evaluator.eval(@!messages, |%args);
+            if $!llm-evaluator.conf.tools.elems {
+                my %tool-result = $!llm-evaluator.eval-with-tools(@!messages, |%args);
+                $res = %tool-result<result>;
+                @tool-messages = |%tool-result<messages>;
+            } else {
+                $res = $!llm-evaluator.eval(@!messages, |%args);
+            }
         }
 
         if $! {
@@ -92,7 +100,17 @@ class LLM::Functions::Chat {
             fail $!.payload.defined ?? $!.payload !! $!.raku;
         }
 
-        # Try to convert LLM response into a message
+        # Tool-aware evaluation already provides assistant and tool messages.
+        if @tool-messages.elems {
+            for @tool-messages -> $tool-message {
+                my %message = $tool-message.Hash;
+                %message<timestamp> //= DateTime.now;
+                @!messages.push(%message);
+            }
+            return $res;
+        }
+
+        # Try to convert a regular LLM response into a message
         my Str $msgRes;
         try {
             $msgRes = $res.deepmap({ $_.defined ?? $_ !! '(Any)' }).Str;
@@ -118,10 +136,10 @@ class LLM::Functions::Chat {
 
     #-------------------------------------------------------
     method gist(-->Str) {
-        my $res = "LLM::Functions::Chat(chat-id = $!chat-id, llm-evaluator.conf.name = { self.llm-evaluator.conf.name }, messages.elems = { self.messages.elems }";
+        my $res = "LLM::Functions::Chat(chat-id = $!chat-id, llm-evaluator.conf = { self.llm-evaluator.conf.gist }, messages.elems = { self.messages.elems }";
 
         if self.messages.elems {
-            $res ~= ", last.message = { self.messages.tail.raku // 'Nil' })";
+            $res ~= ", last.message = (role => {self.messages.tail<role>}, timestamp => {self.messages.tail<timestamp>.DateTime.Str.substr(^19)}))";
         } else {
             $res ~= ')'
         }

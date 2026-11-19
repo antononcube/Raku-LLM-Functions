@@ -1,7 +1,7 @@
-use v6.d;
+# These tests are obsolete because OpenAI's v1/completions models are obsolete.
 
+#`[
 # use lib <. lib>;
-
 use LLM::Functions;
 
 use Test;
@@ -30,3 +30,4 @@ is llm-example-function((1 .. 4) Z=> 11 «*« (1 .. 4))(8).trim, '88';
 is llm-example-function(((1 .. 4) Z=> 11 «*« (1 .. 4)), e => 'OpenAI', form => { $_.trim.Int })(8), 88;
 
 done-testing;
+]

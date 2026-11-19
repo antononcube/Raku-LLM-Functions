@@ -64,9 +64,9 @@ my $input = "What is the molecular mass of SO2?";
 
 my $final = llm-synthesize-with-tools(
         [$input, $nothingElsePrompt],
-        llm-evaluator => llm-configuration('Gemini', model => 'gemini-2.0-flash'),
+        @tool-objects,
+        llm-evaluator => llm-configuration('Gemini', model => 'gemini-3.5-flash'),
         :1max-iterations,
-        :@tool-objects,
         :@tool-specs,
        ):echo;
 #  form => sub-parser('JSON'):drop
