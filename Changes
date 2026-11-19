@@ -1,5 +1,8 @@
 Revision history for "LLM::Functions"
 
+0.6.0 2026-11-19
+    - Implemented the use of tools in chat objects.
+
 0.5.10 2026-07-28
     - Added "WWW::OpenRouter" configurations.
 
